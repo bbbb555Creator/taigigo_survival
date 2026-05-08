@@ -447,7 +447,11 @@
                         method: 'POST',
                         mode: 'no-cors',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name: playerName, score: score })
+                        body: JSON.stringify({ 
+    name: playerName, 
+    score: score,
+    accessKey: "03162017Rfv" // ← 好きな合言葉に変えてね！
+})
                     });
                     const res = await fetch(GAS_URL);
                     const rankingData = await res.json();
