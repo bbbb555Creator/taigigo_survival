@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
     
-    <title>対義語サバイバル - 動作安定版</title>
+    <title>対義語サバイバル - 音声常駐版</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -75,7 +75,7 @@
     <div id="game-container" class="w-full relative overflow-hidden">
         
         <div class="absolute top-14 left-6 z-40 text-[10px] text-slate-500 font-mono">
-            ver.3.5.4 (Final Audio Fix)
+            ver.1.1 (Mute Button Sticky)
         </div>
 
         <div id="fixed-mute-btn" class="absolute top-14 right-6 z-50">
@@ -232,7 +232,7 @@
             currentBgm = nextBgm;
             currentBgm.volume = 0.3;
             if (!isMuted) {
-                currentBgm.play().catch(e => console.log("BGM playback blocked or missing file"));
+                currentBgm.play().catch(e => console.log("BGM blocked"));
             }
         }
 
@@ -242,7 +242,7 @@
             if (sfx) { 
                 sfx.currentTime = 0; 
                 sfx.volume = 0.5; 
-                sfx.play().catch(e => console.log("SFX playback blocked or missing file")); 
+                sfx.play().catch(e => {}); 
             }
         }
 
@@ -271,7 +271,6 @@
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('instruction-screen').classList.add('hidden');
             document.getElementById('title-screen').classList.remove('hidden');
-            document.getElementById('fixed-mute-btn').classList.remove('hidden');
             updateHighScoreDisplay();
         }
 
@@ -281,7 +280,6 @@
         }
 
         function startGame() {
-            // エラーで止まらないように安全に音声初期化
             try {
                 const audios = document.querySelectorAll('audio');
                 audios.forEach(a => {
@@ -290,15 +288,12 @@
                         p.then(() => { a.pause(); a.currentTime = 0; }).catch(() => {});
                     }
                 });
-            } catch (e) {
-                console.log("Audio unlock failed, but continuing game...");
-            }
+            } catch (e) {}
 
             document.getElementById('overlay').classList.add('hidden');
             document.getElementById('title-screen').classList.add('hidden');
             document.getElementById('instruction-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
-            document.getElementById('fixed-mute-btn').classList.add('hidden');
             
             quizList = [];
             STAGES.forEach(stage => {
