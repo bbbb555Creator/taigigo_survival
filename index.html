@@ -78,19 +78,12 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 2.1.2-RANKING
+            VER 2.1.3-RANKING
         </div>
 
         <script>
             const GAS_URL = "https://script.google.com/macros/s/AKfycbyFbiDDP-u2nUyE1eDMTdKJ48cdMUwyxzaTAHbc1DKA5wrXSrAlEtN-s79-SJ9vIa_v2g/exec"; 
         </script>
-
-        <div id="fixed-mute-btn" class="absolute top-[9rem] right-6 z-50">
-            <button onclick="toggleMute()" class="p-3 bg-slate-800/90 rounded-full text-slate-400 border border-slate-700 shadow-lg active:scale-95 transition-all">
-                <svg id="vol-on" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.686-3.686a1 1 0 011.111-.238zm5.459 2.158a1 1 0 011.414 0 7.5 7.5 0 010 10.608 1 1 0 01-1.414-1.414 5.5 5.5 0 000-7.78 1 1 0 010-1.414zm-2.828 2.828a1 1 0 011.414 0 3.5 3.5 0 010 4.95" /></svg>
-                <svg id="vol-off" class="h-6 w-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
-            </button>
-        </div>
 
         <div id="title-screen" class="flex-grow flex flex-col items-center justify-center text-center py-20 px-8 fade-in">
             <div class="text-6xl font-black text-emerald-400 mb-2 drop-shadow-[0_0_20px_rgba(52,211,153,0.5)]">対義語</div>
@@ -142,11 +135,17 @@
 
         <div id="game-screen" class="hidden flex-grow flex flex-col p-6 fade-in relative">
             <div id="feedback-layer"></div>
-            <div class="flex justify-between items-center mb-4 pt-10">
+            <div class="flex justify-between items-end mb-4 pt-10">
                 <div id="level-badge" class="px-4 py-1.5 text-white text-xs rounded-full font-bold shadow-lg"></div>
-                <div class="text-right">
-                    <div class="text-[10px] text-slate-400 uppercase font-bold">Total Score</div>
-                    <div id="total-score" class="text-2xl font-black text-yellow-400 leading-none">0</div>
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleMute()" class="p-2 bg-slate-800/90 rounded-full text-slate-400 border border-slate-700 shadow-lg active:scale-95 transition-all">
+                        <svg id="vol-on" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.686-3.686a1 1 0 011.111-.238zm5.459 2.158a1 1 0 011.414 0 7.5 7.5 0 010 10.608 1 1 0 01-1.414-1.414 5.5 5.5 0 000-7.78 1 1 0 010-1.414zm-2.828 2.828a1 1 0 011.414 0 3.5 3.5 0 010 4.95" /></svg>
+                        <svg id="vol-off" class="h-5 w-5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
+                    </button>
+                    <div class="text-right">
+                        <div class="text-[10px] text-slate-400 uppercase font-bold">Total Score</div>
+                        <div id="total-score" class="text-2xl font-black text-yellow-400 leading-none">0</div>
+                    </div>
                 </div>
             </div>
             <div class="relative w-full bg-slate-800/60 h-3 rounded-full overflow-hidden border border-slate-700">
@@ -481,7 +480,7 @@
             bt.onclick = () => ov.classList.add('hidden');
 
             const list = document.getElementById('ranking-list');
-            list.innerHTML = '<div class="py-10 text-center text-slate-500 animate-pulse">読み込み中...</div>';
+            list.innerHTML = '<div class=\"py-10 text-center text-slate-500 animate-pulse\">読み込み中...</div>';
             
             if (GAS_URL.includes("https")) {
                 try {
@@ -489,10 +488,10 @@
                     const rankingData = await res.json();
                     renderRanking(rankingData);
                 } catch (e) {
-                    list.innerHTML = '<div class="py-10 text-center text-rose-400">通信エラー</div>';
+                    list.innerHTML = '<div class=\"py-10 text-center text-rose-400\">通信エラー</div>';
                 }
             } else {
-                list.innerHTML = '<div class="py-10 text-center text-slate-500">URL未設定</div>';
+                list.innerHTML = '<div class=\"py-10 text-center text-slate-500\">URL未設定</div>';
             }
         }
     </script>
