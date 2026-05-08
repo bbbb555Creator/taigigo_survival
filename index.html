@@ -78,14 +78,14 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 2.1.0-RANKING
+            VER 2.1.1-RANKING
         </div>
 
         <script>
             const GAS_URL = "https://script.google.com/macros/s/AKfycbyFbiDDP-u2nUyE1eDMTdKJ48cdMUwyxzaTAHbc1DKA5wrXSrAlEtN-s79-SJ9vIa_v2g/exec"; 
         </script>
 
-        <div id="fixed-mute-btn" class="absolute top-14 right-6 z-50">
+        <div id="fixed-mute-btn" class="absolute top-[7rem] right-6 z-50">
             <button onclick="toggleMute()" class="p-3 bg-slate-800/90 rounded-full text-slate-400 border border-slate-700 shadow-lg active:scale-95 transition-all">
                 <svg id="vol-on" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.686-3.686a1 1 0 011.111-.238zm5.459 2.158a1 1 0 011.414 0 7.5 7.5 0 010 10.608 1 1 0 01-1.414-1.414 5.5 5.5 0 000-7.78 1 1 0 010-1.414zm-2.828 2.828a1 1 0 011.414 0 3.5 3.5 0 010 4.95" /></svg>
                 <svg id="vol-off" class="h-6 w-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
@@ -279,6 +279,13 @@
             document.getElementById('overlay').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
             
+            // BGMリセット
+            if (currentBgm) {
+                currentBgm.pause();
+                currentBgm.currentTime = 0;
+                currentBgm = null;
+            }
+
             quizList = [];
             STAGES.forEach(stage => {
                 const source = DATA[stage.key];
