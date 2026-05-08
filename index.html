@@ -84,8 +84,8 @@
 
         <div id="fixed-mute-btn" class="absolute top-14 right-6 z-50">
             <button onclick="toggleMute()" class="p-3 bg-slate-800/90 rounded-full text-slate-400 border border-slate-700 shadow-lg active:scale-95 transition-all">
-                <svg id="vol-on" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.686-3.686a1 1 0 011.111-.238zm5.459 2.158a1 1 0 011.414 0 7.5 7.5 0 010 10.608 1 1 0 01-1.414-1.414 5.5 5.5 0 000-7.78 1 1 0 010-1.414zm-2.828 2.828a1 1 0 011.414 0 3.5 3.5 0 010 4.95" /></svg>
-                <svg id="vol-off" class="h-6 w-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
+                <svg class="volume-on h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.686-3.686a1 1 0 011.111-.238zm5.459 2.158a1 1 0 011.414 0 7.5 7.5 0 010 10.608 1 1 0 01-1.414-1.414 5.5 5.5 0 000-7.78 1 1 0 010-1.414zm-2.828 2.828a1 1 0 011.414 0 3.5 3.5 0 010 4.95" /></svg>
+                <svg class="volume-off h-6 w-6 hidden" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12" /></svg>
             </button>
         </div>
 
@@ -102,19 +102,10 @@
 
         <div id="instruction-screen" class="hidden flex-grow flex flex-col items-center justify-center p-6 fade-in">
             <h2 class="text-4xl font-black text-emerald-400 mb-8">遊び方</h2>
-            <div class="bg-slate-900/80 rounded-3xl p-8 border-2 border-emerald-500/30 text-slate-200 space-y-6 mb-10 w-full max-w-sm shadow-2xl backdrop-blur-md">
-                <div class="flex items-start gap-4">
-                    <span class="bg-emerald-500 text-slate-900 w-6 h-6 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">1</span>
-                    <p class="leading-relaxed">全60問のサバイバル。<br><span class="text-rose-400 font-bold">1問のミス</span>で即終了です。</p>
-                </div>
-                <div class="flex items-start gap-4">
-                    <span class="bg-emerald-500 text-slate-900 w-6 h-6 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">2</span>
-                    <p class="leading-relaxed">解答速度に応じて<span class="text-yellow-400 font-bold">ボーナススコア</span>が加算されます。</p>
-                </div>
-                <div class="flex items-start gap-4">
-                    <span class="bg-emerald-500 text-slate-900 w-6 h-6 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</span>
-                    <p class="leading-relaxed">ステージが進むごとに語彙の難易度が上昇します。</p>
-                </div>
+            <div class="bg-slate-800/50 rounded-3xl p-6 border border-slate-700 text-slate-300 space-y-4 mb-10 w-full max-w-sm">
+                <p>・全60問。1問ミスで終了！</p>
+                <p>・速く答えるほどスコアUP！</p>
+                <p>・目指せ全国ランキング1位！</p>
             </div>
             <button onclick="showNicknameInput()" class="w-full max-w-xs py-5 bg-emerald-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95">
                 次へ進む
@@ -122,7 +113,7 @@
         </div>
 
         <div id="nickname-screen" class="hidden flex-grow flex flex-col items-center justify-center p-8 fade-in">
-            <h2 class="text-3xl font-black text-white mb-8 text-center leading-relaxed">あなたの名を<br>刻んでください</h2>
+            <h2 class="text-3xl font-black text-white mb-8">ニックネームを入力してください</h2>
             <input type="text" id="player-name" maxlength="10" placeholder="ニックネームを入力" 
                 class="w-full max-w-xs py-5 px-6 bg-slate-800 border-2 border-emerald-500 rounded-2xl text-white text-center text-2xl mb-8 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 shadow-2xl">
             <button onclick="initialStart()" class="w-full max-w-xs py-5 bg-gradient-to-r from-emerald-500 to-blue-600 rounded-2xl text-white font-black text-2xl shadow-xl active:scale-95 transition-all">
@@ -196,7 +187,7 @@
     <audio id="sfx-wrong" preload="auto"><source src="batu.mp3" type="audio/mpeg"></audio>
 
     <script>
-        // データ（省略せずに保持）
+        // データ（略称。中身は以前のものと同じ）
         const DATA = {
             elementary: [{q:'表',a:'裏',d:['外','横','奥']},{q:'右',a:'左',d:['上','下','後']},{q:'入口',a:'出口',d:['窓口','北口','改札']},{q:'長い',a:'短い',d:['広い','狭い','高い']},{q:'大きい',a:'小さい',d:['細い','薄い','軽い']},{q:'新しい',a:'古い',d:['汚い','遅い','弱い']},{q:'勝つ',a:'負ける',d:['逃げる','耐える','挑む']},{q:'行く',a:'来る',d:['帰る','止まる','歩く']},{q:'寒い',a:'暑い',d:['温かい','涼しい','痛い']},{q:'夜',a:'昼',d:['朝','夕','晩']},{q:'好き',a:'嫌い',d:['普通','苦手','怖い']},{q:'男',a:'女',d:['人','友','親']},{q:'善',a:'悪',d:['偽','真','無']},{q:'得',a:'損',d:['負','負','苦']},{q:'白',a:'黒',d:['赤','青','黄']},{q:'縦',a:'横',d:['奥','斜','深']},{q:'空',a:'陸',d:['海','山','川']},{q:'北',a:'南',d:['西','東','中央']},{q:'昨日',a:'明日',d:['今日','明後日','一昨日']},{q:'敵',a:'味方',d:['親友','仲間','隣人']},{q:'広い',a:'狭い',d:['長い','太い','重い']},{q:'重い',a:'軽い',d:['薄い','低い','弱い']},{q:'強い',a:'弱い',d:['軽い','低い','遅い']},{q:'高い',a:'低い',d:['狭い','薄い','浅い']},{q:'暑い',a:'寒い',d:['涼しい','温かい','痛い']},{q:'明るい',a:'暗い',d:['重い','遅い','狭い']},{q:'太い',a:'細い',d:['短い','薄い','低い']},{q:'速い',a:'遅い',d:['弱い','短い','低い']},{q:'深い',a:'浅い',d:['低い','短い','薄い']},{q:'厚い',a:'薄い',d:['低い','短い','浅い']},{q:'安全',a:'危険',d:['不安','心配','不全']},{q:'正解',a:'不正解',d:['失敗','間違い','誤答']},{q:'成功',a:'失敗',d:['負け','間違い','中止']},{q:'安心',a:'不安',d:['心配','危険','恐怖']},{q:'開ける',a:'閉める',d:['止める','引く','押す']},{q:'押す',a:'引く',d:['止める','開ける','閉める']},{q:'出す',a:'入れる',d:['消す','止める','捨てる']},{q:'上',a:'下',d:['右','左','中']},{q:'左',a:'右',d:['上','下','中']},{q:'前',a:'後',d:['上','下','横']},{q:'始まり',a:'終わり',d:['中止','停止','休み']},{q:'最初',a:'最後',d:['途中','終盤','末尾']},{q:'売る',a:'買う',d:['貸す','捨てる','送る']},{q:'貸す',a:'借りる',d:['売る','返す','送る']},{q:'笑う',a:'泣く',d:['怒る','叫ぶ','黙る']},{q:'春',a:'秋',d:['夏','冬','雨']},{q:'夏',a:'冬',d:['春','秋','朝']},{q:'東',a:'西',d:['南','北','中央']},{q:'質問',a:'回答',d:['問題','返事','返信']},{q:'嘘',a:'本当',d:['誠実','真実','正解']}],
             intermediate: [{q:'肯定',a:'否定',d:['反対','拒否','批判']},{q:'需要',a:'供給',d:['配給','支給','提供']},{q:'理想',a:'現実',d:['実情','現場','事象']},{q:'楽観',a:'悲観',d:['達観','諦観','冷静']},{q:'積極',a:'消極',d:['静止','後退','謙虚']},{q:'具体',a:'抽象',d:['曖昧','複雑','概念']},{q:'容易',a:'困難',d:['複雑','劣悪','多忙']},{q:'開始',a:'終了',d:['閉鎖','撤退','停止']},{q:'幸福',a:'不幸',d:['悲劇','憂鬱','災難']},{q:'期待',a:'失望',d:['絶望','後悔','落胆']},{q:'信頼',a:'不信',d:['疑惑','嫌悪','恐怖']},{q:'許可',a:'禁止',d:['拒絶','却下','制限']},{q:'主役',a:'脇役',d:['端役','悪役','代役']},{q:'平和',a:'戦争',d:['紛争','混乱','暴動']},{q:'自然',a:'人工',d:['模造','創作','合成']},{q:'過去',a:'未来',d:['現在','来世','昨今']},{q:'天国',a:'地獄',d:['煉獄','下界','深淵']},{q:'直感',a:'論理',d:['思考','推理','経験']},{q:'輸出',a:'輸入',d:['移送','転送','搬入']},{q:'利益',a:'損失',d:['負債','経費','減益']},{q:'原因',a:'結果',d:['成果','結論','事象']},{q:'供給',a:'需要',d:['支給','配給','需要']},{q:'集中',a:'拡散',d:['散乱','分離','独立']},{q:'主観',a:'客観',d:['達観','俯瞰','傍観']},{q:'能動',a:'受動',d:['反動','流動','振動']},{q:'偶然',a:'必然',d:['当然','自然','強制的']},{q:'保存',a:'破棄',d:['消去','削除','移動']},{q:'拡大',a:'縮小',d:['減少','低下','減衰']},{q:'文明',a:'野蛮',d:['原始','未開','混沌']},{q:'直接',a:'間接',d:['経由','遠隔','付近']},{q:'個人',a:'団体',d:['社会','組織','集合']},{q:'平等',a:'差別',d:['格差','偏見','孤立']},{q:'共通',a:'固有',d:['独自','個別','特殊']},{q:'固定',a:'流動',d:['移動','変化','不安定']},{q:'勝利',a:'敗北',d:['惜敗','惨敗','撤退']},{q:'一般',a:'特殊',d:['個別','例外','特定']},{q:'本物',a:'偽物',d:['模造','コピー','カバー']},{q:'集中',a:'分散',d:['分離','解体','消滅']},{q:'増加',a:'減少',d:['低下','縮小','減衰']},{q:'誕生',a:'死亡',d:['消滅','解体','撤去']},{q:'謙虚',a:'傲慢',d:['横柄','不遜','不敵']},{q:'勇気',a:'臆病',d:['臆面','弱気','慎重']},{q:'歓迎',a:'拒絶',d:['辞退','謝絶','却下']},{q:'開放',a:'閉鎖',d:['停止','禁止','終了']},{q:'集合',a:'解散',d:['離散','分離','撤退']},{q:'内側',a:'外側',d:['側面','背面','周辺']},{q:'上昇',a:'下降',d:['低下','沈下','減衰']},{q:'増加',a:'削減',d:['減少','撤廃','縮小']},{q:'親切',a:'不親切',d:['冷淡','残酷','無慈悲']},{q:'可能',a:'不可能',d:['難解','困難','無理']}],
@@ -225,11 +216,7 @@
             if (currentBgm) { currentBgm.pause(); currentBgm.currentTime = 0; }
             currentBgm = nextBgm;
             currentBgm.volume = 0.3;
-            if (!isMuted) {
-                currentBgm.play().catch(e => {
-                    console.log("Audio play blocked. Waiting for interaction.");
-                });
-            }
+            if (!isMuted) currentBgm.play().catch(e => {});
         }
 
         function playSfx(id) {
@@ -240,8 +227,8 @@
 
         function toggleMute() {
             isMuted = !isMuted;
-            document.getElementById('vol-on').classList.toggle('hidden', isMuted);
-            document.getElementById('vol-off').classList.toggle('hidden', !isMuted);
+            document.querySelectorAll('.volume-on').forEach(el => el.classList.toggle('hidden', isMuted));
+            document.querySelectorAll('.volume-off').forEach(el => el.classList.toggle('hidden', !isMuted));
             if (currentBgm) isMuted ? currentBgm.pause() : currentBgm.play().catch(e => {});
         }
 
@@ -273,6 +260,7 @@
             document.getElementById('nickname-screen').classList.add('hidden');
             document.getElementById('overlay').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('fixed-mute-btn').classList.add('hidden');
             
             quizList = [];
             STAGES.forEach(stage => {
@@ -322,8 +310,9 @@
                 playSfx('sfx-correct');
                 const timeTaken = (Date.now() - questionStartTime) / 1000;
                 let bonus = 0;
-                if (timeTaken < 1.2) bonus = 500;
-                else if (timeTaken < 2.5) bonus = 200;
+                if (timeTaken < 1.0) bonus = 500;
+                else if (timeTaken < 2.0) bonus = 300;
+                else if (timeTaken < 3.5) bonus = 100;
 
                 const points = 1000 + bonus;
                 score += points;
@@ -352,28 +341,37 @@
             setTimeout(() => el.remove(), 800);
         }
 
+        // ステージクリア画面（続きから遊べる）
         function showStageClear() {
             const ov = document.getElementById('overlay');
             ov.classList.remove('hidden');
+            
+            // ステージクリア時はランキングを隠してシンプルに
             document.getElementById('ranking-container').classList.add('hidden');
             document.getElementById('review-box').classList.add('hidden');
             document.getElementById('score-report').classList.remove('hidden');
             document.getElementById('final-score').textContent = score.toLocaleString();
             document.getElementById('ranking-status').textContent = "ステージクリア!";
+
             document.getElementById('overlay-icon').textContent = "🏅";
-            document.getElementById('overlay-message').innerHTML = `<span class="text-emerald-400">STAGE ${currentIndex/15} クリア!</span><br>さらなる深淵へ...`;
+            document.getElementById('overlay-message').innerHTML = `<span class="text-emerald-400">STAGE ${currentIndex/15} クリア!</span><br>次はもっと難しくなるよ！`;
             
             const bt = document.getElementById('action-btn');
             bt.textContent = "次のステージへ進む";
+            bt.className = "w-full py-6 bg-emerald-600 text-white rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all";
+            
+            // ボタンを押したら「次の問題（initQuiz）」へ
             bt.onclick = () => {
                 ov.classList.add('hidden');
                 initQuiz();
             };
         }
 
+        // ゲームオーバー・完全制覇画面（リセット必須）
         async function showResult(isWin) {
             const ov = document.getElementById('overlay');
             ov.classList.remove('hidden');
+            
             document.getElementById('ranking-container').classList.remove('hidden');
             document.getElementById('score-report').classList.remove('hidden');
             document.getElementById('final-score').textContent = score.toLocaleString();
@@ -387,25 +385,29 @@
             if (isWin) {
                 playBgm('bgm-ending');
                 ic.textContent = "👑";
-                m.textContent = "完全制覇！お見事です。";
+                m.textContent = "おめでとう！全ステージ完全制覇！";
                 review.classList.add('hidden');
                 bt.textContent = "もう一度挑戦";
+                bt.className = "w-full py-6 bg-emerald-600 text-white rounded-3xl font-black text-2xl shadow-xl";
             } else {
                 ic.textContent = "💀";
-                m.innerHTML = `<span class="text-rose-500">サバイバル終了</span><br>記録: ${currentIndex} 問`;
+                m.innerHTML = `<span class="text-rose-500">サバイバル終了...</span><br>記録: ${currentIndex} 問目`;
                 const q = quizList[currentIndex];
                 document.getElementById('rev-q').textContent = q.q;
                 document.getElementById('rev-a').textContent = q.a;
                 review.classList.remove('hidden');
-                bt.textContent = "リベンジする";
+                bt.textContent = "1問目からリベンジ";
+                bt.className = "w-full py-6 bg-slate-700 text-white rounded-3xl font-black text-2xl shadow-xl";
             }
 
+            // 負けた時や完全クリア時は、再挑戦で1問目から
             bt.onclick = () => {
                 currentIndex = 0;
                 score = 0;
                 startGame();
             };
 
+            // ランキング送信・取得
             if (GAS_URL.includes("https")) {
                 status.textContent = "ランキング送信中...";
                 try {
@@ -415,6 +417,7 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name: playerName, score: score })
                     });
+                    
                     const res = await fetch(GAS_URL);
                     const rankingData = await res.json();
                     renderRanking(rankingData);
@@ -430,7 +433,7 @@
         function renderRanking(data) {
             const list = document.getElementById('ranking-list');
             list.innerHTML = data.map((r, i) => `
-                <div class="flex justify-between items-center py-3 px-4 rank-row ${r.name === playerName ? 'bg-emerald-500/20' : ''}">
+                <div class="flex justify-between items-center py-3 px-4 rank-row ${r.name === playerName && Number(r.score) === score ? 'bg-emerald-500/20' : ''}">
                     <div class="flex items-center">
                         <span class="w-6 text-xs font-black ${i<3 ? 'text-yellow-400' : 'text-slate-500'}">${i+1}</span>
                         <span class="text-sm font-bold text-slate-200">${r.name}</span>
