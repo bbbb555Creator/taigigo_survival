@@ -7,12 +7,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
     
-    <title>対義語サバイバル - 全国ランキング版</title>
+    <title>対義語サバイバル - 音声統合版</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500;900&family=Noto+Serif+JP:wght@900&family=Sawarabi+Mincho&display=swap');
-        
         body { 
             font-family: 'Kiwi Maru', serif; 
             background-color: #0f172a; 
@@ -68,102 +67,125 @@
             100% { opacity: 0; transform: translate(-50%, -80%) scale(0.8); }
         }
 
-        .rank-row {
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            transition: background 0.3s;
-        }
-        .rank-row:last-child { border-bottom: none; }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(52, 211, 153, 0.3); border-radius: 10px; }
     </style>
 </head>
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
-        <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 2.1.0-RANKING
+        
+        <div class="absolute top-14 left-6 z-40 text-[10px] text-slate-500 font-mono">
+            ver.3.5.2 (UI Adjusted)
         </div>
 
-        <script>
-            const GAS_URL = "https://script.google.com/macros/s/AKfycbyFbiDDP-u2nUyE1eDMTdKJ48cdMUwyxzaTAHbc1DKA5wrXSrAlEtN-s79-SJ9vIa_v2g/exec"; 
-        </script>
-
         <div id="fixed-mute-btn" class="absolute top-14 right-6 z-50">
-            <button onclick="toggleMute()" class="p-3 bg-slate-800/90 rounded-full text-slate-400 border border-slate-700 shadow-lg active:scale-95 transition-all">
-                <svg id="vol-on" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.686-3.686a1 1 0 011.111-.238zm5.459 2.158a1 1 0 011.414 0 7.5 7.5 0 010 10.608 1 1 0 01-1.414-1.414 5.5 5.5 0 000-7.78 1 1 0 010-1.414zm-2.828 2.828a1 1 0 011.414 0 3.5 3.5 0 010 4.95" /></svg>
-                <svg id="vol-off" class="h-6 w-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
+            <button onclick="toggleMute()" class="p-3 bg-slate-800/90 rounded-full text-slate-400 border border-slate-700 shadow-lg">
+                <svg class="volume-on h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.686-3.686a1 1 0 011.111-.238zm5.459 2.158a1 1 0 011.414 0 7.5 7.5 0 010 10.608 1 1 0 01-1.414-1.414 5.5 5.5 0 000-7.78 1 1 0 010-1.414zm-2.828 2.828a1 1 0 011.414 0 3.5 3.5 0 010 4.95" /></svg>
+                <svg class="volume-off h-6 w-6 hidden" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12" /></svg>
             </button>
         </div>
 
-        <div id="title-screen" class="flex-grow flex flex-col items-center justify-center text-center py-20 px-8 fade-in">
-            <div class="text-6xl font-black text-emerald-400 mb-2 drop-shadow-[0_0_20px_rgba(52,211,153,0.5)]">対義語</div>
-            <div class="text-4xl font-black text-white tracking-widest mb-12">サバイバル</div>
-            
-            <div class="w-full max-w-xs space-y-4">
+        <div id="title-screen" class="flex-grow flex flex-col items-center justify-between text-center py-20 px-8 fade-in">
+            <div class="flex-grow flex flex-col items-center justify-center w-full">
+                <div class="text-6xl font-black text-emerald-400 mb-2 drop-shadow-[0_0_20px_rgba(52,211,153,0.5)]">対義語</div>
+                <div class="text-4xl font-black text-white tracking-widest">サバイバル</div>
+                
+                <div class="mt-8 px-6 py-2 bg-slate-800/50 rounded-full border border-slate-700">
+                    <span class="text-slate-400 text-xs uppercase tracking-widest">Best Score</span>
+                    <div id="high-score-display" class="text-2xl font-black text-yellow-400">0</div>
+                </div>
+            </div>
+
+            <div class="w-full max-w-xs space-y-4 mb-10">
                 <button onclick="showInstructions()" class="w-full py-5 bg-emerald-600 hover:bg-emerald-500 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95 transition-all">
                     遊び方を見る
                 </button>
-                <button onclick="viewRankingOnly()" class="w-full py-4 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-2xl text-emerald-400 font-bold text-lg shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2">
-                    <span class="text-xl">🏆</span> 全国ランキング
+                <button onclick="startGame()" class="w-full py-5 bg-gradient-to-r from-emerald-500 to-blue-600 rounded-2xl text-white font-black text-2xl shadow-[0_0_20px_rgba(52,211,153,0.4)] active:scale-95 transition-all">
+                    挑戦を開始する
                 </button>
             </div>
         </div>
 
         <div id="instruction-screen" class="hidden flex-grow flex flex-col items-center justify-center p-6 fade-in">
-            <h2 class="text-4xl font-black text-emerald-400 mb-8">遊び方</h2>
-            <div class="bg-slate-900/80 rounded-3xl p-8 border-2 border-emerald-500/30 text-slate-200 space-y-6 mb-10 w-full max-w-sm shadow-2xl backdrop-blur-md">
-                <div class="flex items-start gap-4">
-                    <span class="bg-emerald-500 text-slate-900 w-6 h-6 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">1</span>
-                    <p class="leading-relaxed">全60問のサバイバル。<br><span class="text-rose-400 font-bold">1問のミス</span>で即終了です。</p>
+            <div class="w-full max-w-md flex flex-col h-full py-10">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-black text-emerald-400">遊び方</h2>
+                    <div class="h-1 w-20 bg-emerald-500 mx-auto mt-2 rounded-full"></div>
                 </div>
-                <div class="flex items-start gap-4">
-                    <span class="bg-emerald-500 text-slate-900 w-6 h-6 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">2</span>
-                    <p class="leading-relaxed">解答速度に応じて<span class="text-yellow-400 font-bold">ボーナススコア</span>が加算されます。</p>
+
+                <div class="flex-grow space-y-4 overflow-y-auto custom-scroll pr-1">
+                    <div class="bg-slate-800/50 rounded-3xl p-5 border border-slate-700 flex items-start space-x-4">
+                        <div class="bg-emerald-500/20 rounded-2xl p-3 text-2xl">🎯</div>
+                        <div>
+                            <h3 class="text-emerald-400 font-bold text-lg mb-1">基本ルール</h3>
+                            <p class="text-slate-300 text-sm">表示された単語の対義語を4つの選択肢から選ぶゲームです。</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-3xl p-5 border border-slate-700 flex items-start space-x-4">
+                        <div class="bg-blue-500/20 rounded-2xl p-3 text-2xl">⏱️</div>
+                        <div>
+                            <h3 class="text-blue-400 font-bold text-lg mb-1">スピード評価</h3>
+                            <p class="text-slate-300 text-sm">正解時の速さに応じてボーナススコアが入るよ。</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-3xl p-5 border border-slate-700 flex items-start space-x-4">
+                        <div class="bg-amber-500/20 rounded-2xl p-3 text-2xl">📖</div>
+                        <div>
+                            <h3 class="text-amber-400 font-bold text-lg mb-1">サバイバル</h3>
+                            <p class="text-slate-300 text-sm">全60問。1問でも間違えたら即終了。集中しよう！</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex items-start gap-4">
-                    <span class="bg-emerald-500 text-slate-900 w-6 h-6 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</span>
-                    <p class="leading-relaxed">ステージが進むごとに語彙の難易度が上昇します。</p>
+
+                <div class="mt-8 pt-4 border-t border-slate-800">
+                    <button onclick="startGame()" class="w-full py-5 bg-emerald-600 rounded-2xl text-xl font-black text-white active:scale-95 transition-transform">
+                        挑戦を開始する
+                    </button>
+                    <button onclick="resetToTitle()" class="w-full mt-4 py-3 text-slate-400 font-bold text-sm">戻る</button>
                 </div>
             </div>
-            <button onclick="showNicknameInput()" class="w-full max-w-xs py-5 bg-emerald-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95">
-                次へ進む
-            </button>
-        </div>
-
-        <div id="nickname-screen" class="hidden flex-grow flex flex-col items-center justify-center p-8 fade-in">
-            <h2 class="text-3xl font-black text-white mb-8 text-center leading-relaxed">あなたの名を<br>刻んでください</h2>
-            <input type="text" id="player-name" maxlength="10" placeholder="ニックネームを入力" 
-                class="w-full max-w-xs py-5 px-6 bg-slate-800 border-2 border-emerald-500 rounded-2xl text-white text-center text-2xl mb-8 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 shadow-2xl">
-            <button onclick="initialStart()" class="w-full max-w-xs py-5 bg-gradient-to-r from-emerald-500 to-blue-600 rounded-2xl text-white font-black text-2xl shadow-xl active:scale-95 transition-all">
-                挑戦を開始する
-            </button>
         </div>
 
         <div id="game-screen" class="hidden flex-grow flex flex-col p-6 fade-in relative">
             <div id="feedback-layer"></div>
-            <div class="flex justify-between items-center mb-4 pt-10">
+            
+            <div class="flex justify-between items-end mb-4 pt-8">
                 <div id="level-badge" class="px-4 py-1.5 text-white text-xs rounded-full font-bold shadow-lg"></div>
                 <div class="text-right">
                     <div class="text-[10px] text-slate-400 uppercase font-bold">Total Score</div>
-                    <div id="total-score" class="text-2xl font-black text-yellow-400 leading-none">0</div>
+                    <div id="total-score" class="text-2xl font-black text-yellow-400">0</div>
                 </div>
             </div>
+
             <div class="relative w-full bg-slate-800/60 h-3 rounded-full overflow-hidden border border-slate-700">
                 <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
             </div>
+
+            <div class="flex justify-center mt-3">
+                <button onclick="toggleMute()" class="px-4 py-2 bg-slate-800/50 rounded-full text-slate-400 border border-slate-700 flex items-center space-x-2 active:scale-95 transition-all">
+                    <svg class="volume-on h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.686-3.686a1 1 0 011.111-.238zm5.459 2.158a1 1 0 011.414 0 7.5 7.5 0 010 10.608 1 1 0 01-1.414-1.414 5.5 5.5 0 000-7.78 1 1 0 010-1.414zm-2.828 2.828a1 1 0 011.414 0 3.5 3.5 0 010 4.95" /></svg>
+                    <svg class="volume-off h-4 w-4 hidden" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12" /></svg>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Audio</span>
+                </button>
+            </div>
+
             <div class="text-center my-6 flex-grow flex flex-col justify-center">
-                <div class="text-slate-400 text-sm font-bold tracking-widest uppercase">Question <span id="q-num" class="text-white text-xl">1</span> / 60</div>
+                <div class="text-slate-400 text-sm font-bold uppercase tracking-widest">Question <span id="q-num" class="text-white text-xl">1</span> / 60</div>
                 <div id="word-box" class="w-full py-12 px-4 mx-auto mt-6 flex flex-col items-center justify-center relative">
                     <div id="question-word" class="text-5xl md:text-6xl font-black text-white drop-shadow-lg">---</div>
                 </div>
             </div>
+            
             <div id="choices-grid" class="grid grid-cols-1 gap-4 mt-auto mb-8"></div>
         </div>
 
-        <div id="overlay" class="hidden absolute inset-0 z-50 flex items-center justify-center bg-slate-950/98 p-6 backdrop-blur-xl text-center overflow-y-auto">
-            <div id="result-content" class="w-full max-w-sm fade-in flex flex-col items-center py-10">
-                <div id="overlay-icon" class="text-7xl mb-4"></div>
-                <div id="overlay-message" class="text-2xl font-bold mb-4 text-slate-200 leading-tight"></div>
+        <div id="overlay" class="hidden absolute inset-0 z-50 flex items-center justify-center bg-slate-950/95 p-8 backdrop-blur-md text-center">
+            <div class="w-full max-w-sm fade-in flex flex-col items-center">
+                <div id="overlay-icon" class="text-8xl mb-4"></div>
+                <div id="overlay-message" class="text-2xl font-bold mb-4 text-slate-200"></div>
                 
-                <div id="review-box" class="hidden w-full p-6 mb-6 bg-rose-950/30 border border-rose-500/50 rounded-3xl text-left">
-                    <div class="text-rose-400 text-[10px] font-bold uppercase mb-1">正解の確認</div>
+                <div id="review-box" class="hidden w-full p-6 mb-4 bg-rose-950/30 border border-rose-500/50 rounded-3xl text-left">
+                    <div class="text-rose-400 text-xs font-bold uppercase mb-2">正解の確認</div>
                     <div class="flex items-center justify-between">
                         <div id="rev-q" class="text-2xl font-black text-white">---</div>
                         <div class="text-rose-400 mx-2">⇔</div>
@@ -171,24 +193,14 @@
                     </div>
                 </div>
 
-                <div id="score-report" class="w-full mb-8 p-6 bg-slate-900/50 rounded-3xl border border-slate-800">
+                <div id="score-report" class="w-full mb-6 p-6 bg-slate-900 rounded-3xl border border-slate-800">
                     <div class="text-slate-400 text-xs uppercase mb-1">Final Score</div>
-                    <div id="final-score" class="text-5xl font-black text-yellow-400 mb-1">0</div>
-                    <div id="ranking-status" class="text-emerald-500 text-xs font-bold animate-pulse">スコア送信中...</div>
+                    <div id="final-score" class="text-5xl font-black text-yellow-400 mb-2">0</div>
+                    <div id="new-record-label" class="hidden text-emerald-400 font-bold animate-bounce text-sm">NEW RECORD!</div>
                 </div>
 
-                <div id="ranking-container" class="w-full mb-8">
-                    <h3 class="text-sm font-black text-slate-400 mb-4 tracking-[0.3em] uppercase flex items-center justify-center">
-                        <span class="h-px w-8 bg-slate-800 mr-2"></span>
-                        National Top 10
-                        <span class="h-px w-8 bg-slate-800 ml-2"></span>
-                    </h3>
-                    <div id="ranking-list" class="bg-slate-900/30 rounded-2xl border border-slate-800/50 overflow-hidden text-left min-h-[100px]">
-                    </div>
-                </div>
-
-                <button id="action-btn" class="w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white">アクションボタン</button>
-                <button onclick="location.reload()" class="mt-4 w-full py-3 text-slate-500 font-bold text-sm">タイトルへ戻る</button>
+                <button id="action-btn" class="w-full py-6 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-transform"></button>
+                <button id="back-btn" onclick="resetToTitle()" class="mt-4 w-full py-3 text-slate-500 font-bold text-sm">タイトルに戻る</button>
             </div>
         </div>
     </div>
@@ -203,12 +215,19 @@
 
     <script>
         const DATA = {
-            elementary: [{q:'表',a:'裏',d:['外','横','奥']},{q:'右',a:'左',d:['上','下','後']},{q:'入口',a:'出口',d:['窓口','北口','改札']},{q:'長い',a:'短い',d:['広い','狭い','高い']},{q:'大きい',a:'小さい',d:['細い','薄い','軽い']},{q:'新しい',a:'古い',d:['汚い','遅い','弱い']},{q:'勝つ',a:'負ける',d:['逃げる','耐える','挑む']},{q:'行く',a:'来る',d:['帰る','止まる','歩く']},{q:'寒い',a:'暑い',d:['温かい','涼しい','痛い']},{q:'夜',a:'昼',d:['朝','夕','晩']},{q:'好き',a:'嫌い',d:['普通','苦手','怖い']},{q:'男',a:'女',d:['人','友','親']},{q:'善',a:'悪',d:['偽','真','無']},{q:'得',a:'損',d:['負','負','苦']},{q:'白',a:'黒',d:['赤','青','黄']},{q:'縦',a:'横',d:['奥','斜','深']},{q:'空',a:'陸',d:['海','山','川']},{q:'北',a:'南',d:['西','東','中央']},{q:'昨日',a:'明日',d:['今日','明後日','一昨日']},{q:'敵',a:'味方',d:['親友','仲間','隣人']},{q:'広い',a:'狭い',d:['長い','太い','重い']},{q:'重い',a:'軽い',d:['薄い','低い','弱い']},{q:'強い',a:'弱い',d:['軽い','低い','遅い']},{q:'高い',a:'低い',d:['狭い','薄い','浅い']},{q:'暑い',a:'寒い',d:['涼しい','温かい','痛い']},{q:'明るい',a:'暗い',d:['重い','遅い','狭い']},{q:'太い',a:'細い',d:['短い','薄い','低い']},{q:'速い',a:'遅い',d:['弱い','短い','低い']},{q:'深い',a:'浅い',d:['低い','短い','薄い']},{q:'厚い',a:'薄い',d:['低い','短い','浅い']},{q:'安全',a:'危険',d:['不安','心配','不全']},{q:'正解',a:'不正解',d:['失敗','間違い','誤答']},{q:'成功',a:'失敗',d:['負け','間違い','中止']},{q:'安心',a:'不安',d:['心配','危険','恐怖']},{q:'開ける',a:'閉める',d:['止める','引く','押す']},{q:'押す',a:'引く',d:['止める','開ける','閉める']},{q:'出す',a:'入れる',d:['消す','止める','捨てる']},{q:'上',a:'下',d:['右','左','中']},{q:'左',a:'右',d:['上','下','中']},{q:'前',a:'後',d:['上','下','横']},{q:'始まり',a:'終わり',d:['中止','停止','休み']},{q:'最初',a:'最後',d:['途中','終盤','末尾']},{q:'売る',a:'買う',d:['貸す','捨てる','送る']},{q:'貸す',a:'借りる',d:['売る','返す','送る']},{q:'笑う',a:'泣く',d:['怒る','叫ぶ','黙る']},{q:'春',a:'秋',d:['夏','冬','雨']},{q:'夏',a:'冬',d:['春','秋','朝']},{q:'東',a:'西',d:['南','北','中央']},{q:'質問',a:'回答',d:['問題','返事','返信']},{q:'嘘',a:'本当',d:['誠実','真実','正解']}],
-            intermediate: [{q:'肯定',a:'否定',d:['反対','拒否','批判']},{q:'需要',a:'供給',d:['配給','支給','提供']},{q:'理想',a:'現実',d:['実情','現場','事象']},{q:'楽観',a:'悲観',d:['達観','諦観','冷静']},{q:'積極',a:'消極',d:['静止','後退','謙虚']},{q:'具体',a:'抽象',d:['曖昧','複雑','概念']},{q:'容易',a:'困難',d:['複雑','劣悪','多忙']},{q:'開始',a:'終了',d:['閉鎖','撤退','停止']},{q:'幸福',a:'不幸',d:['悲劇','憂鬱','災難']},{q:'期待',a:'失望',d:['絶望','後悔','落胆']},{q:'信頼',a:'不信',d:['疑惑','嫌悪','恐怖']},{q:'許可',a:'禁止',d:['拒絶','却下','制限']},{q:'主役',a:'脇役',d:['端役','悪役','代役']},{q:'平和',a:'戦争',d:['紛争','混乱','暴動']},{q:'自然',a:'人工',d:['模造','創作','合成']},{q:'過去',a:'未来',d:['現在','来世','昨今']},{q:'天国',a:'地獄',d:['煉獄','下界','深淵']},{q:'直感',a:'論理',d:['思考','推理','経験']},{q:'輸出',a:'輸入',d:['移送','転送','搬入']},{q:'利益',a:'損失',d:['負債','経費','減益']},{q:'原因',a:'結果',d:['成果','結論','事象']},{q:'供給',a:'需要',d:['支給','配給','需要']},{q:'集中',a:'拡散',d:['散乱','分離','独立']},{q:'主観',a:'客観',d:['達観','俯瞰','傍観']},{q:'能動',a:'受動',d:['反動','流動','振動']},{q:'偶然',a:'必然',d:['当然','自然','強制的']},{q:'保存',a:'破棄',d:['消去','削除','移動']},{q:'拡大',a:'縮小',d:['減少','低下','減衰']},{q:'文明',a:'野蛮',d:['原始','未開','混沌']},{q:'直接',a:'間接',d:['経由','遠隔','付近']},{q:'個人',a:'団体',d:['社会','組織','集合']},{q:'平等',a:'差別',d:['格差','偏見','孤立']},{q:'共通',a:'固有',d:['独自','個別','特殊']},{q:'固定',a:'流動',d:['移動','変化','不安定']},{q:'勝利',a:'敗北',d:['惜敗','惨敗','撤退']},{q:'一般',a:'特殊',d:['個別','例外','特定']},{q:'本物',a:'偽物',d:['模造','コピー','カバー']},{q:'集中',a:'分散',d:['分離','解体','消滅']},{q:'増加',a:'減少',d:['低下','縮小','減衰']},{q:'誕生',a:'死亡',d:['消滅','解体','撤去']},{q:'謙虚',a:'傲慢',d:['横柄','不遜','不敵']},{q:'勇気',a:'臆病',d:['臆面','弱気','慎重']},{q:'歓迎',a:'拒絶',d:['辞退','謝絶','却下']},{q:'開放',a:'閉鎖',d:['停止','禁止','終了']},{q:'集合',a:'解散',d:['離散','分離','撤退']},{q:'内側',a:'外側',d:['側面','背面','周辺']},{q:'上昇',a:'下降',d:['低下','沈下','減衰']},{q:'増加',a:'削減',d:['減少','撤廃','縮小']},{q:'親切',a:'不親切',d:['冷淡','残酷','無慈悲']},{q:'可能',a:'不可能',d:['難解','困難','無理']}],
-            advanced: [{q:'克己',a:'放縦',d:['妥協','怠惰','屈服']},{q:'帰納',a:'演繹',d:['類推','推論','逆説']},{q:'普遍',a:'特殊',d:['個別','例外','局所']},{q:'緻密',a:'粗雑',d:['散漫','粗末','適当']},{q:'脆弱',a:'強靭',d:['堅牢','頑丈','巨大']},{q:'饒舌',a:'寡黙',d:['沈黙','臆病','謙虚']},{q:'収束',a:'拡散',d:['膨張','発散','混乱']},{q:'絶対',a:'相対',d:['曖昧','比較','流動']},{q:'洗練',a:'野卑',d:['粗末','凡庸','稚拙']},{q:'内在',a:'超越',d:['外挿','逸脱','顕在']},{q:'隆起',a:'沈降',d:['没落','低下','沈殿']},{q:'隠蔽',a:'露呈',d:['発覚','暴露','提示']},{q:'過剰',a:'過小',d:['欠乏','枯渇','貧弱']},{q:'承諾',a:'拒絶',d:['謝絶','却下','辞退']},{q:'主導',a:'追随',d:['依存','随行','劣勢']},{q:'秩序',a:'混沌',d:['混迷','無法','散乱']},{q:'独創',a:'模倣',d:['複製','剽窃','借用']},{q:'建設',a:'破壊',d:['解体','撤去','消滅']},{q:'革新',a:'保守',d:['維持','停滞','伝統']},{q:'楽観',a:'悲観',d:['絶望','後悔','落胆']},{q:'剛毅',a:'柔弱',d:['虚弱','軟弱','貧弱']},{q:'枯渇',a:'氾濫',d:['充満','過剰','充足']},{q:'暫定',a:'確定',d:['本決定','恒久','終結']},{q:'需要',a:'供給',d:['支給','配給','提供']},{q:'遵守',a:'逸脱',d:['違反','放棄','無視']},{q:'促進',a:'抑制',d:['阻害','停止','遅延']},{q:'対立',a:'調和',d:['融和','妥協','協力']},{q:'抽象',a:'具体',d:['実体','詳細','個別']},{q:'沈黙',a:'雄弁',d:['演説','発言','叫び']},{q:'停滞',a:'進展',d:['前進','飛躍','活動']},{q:'統制',a:'放任',d:['自由','混乱','独立']},{q:'内向',a:'外向',d:['外交','社交','活発']},{q:'卑屈',a:'尊大',d:['横柄','不遜','不敵']},{q:'披露',a:'秘匿',d:['隠蔽','内緒','秘密']},{q:'膨張',a:'収縮',d:['縮小','凝縮','圧縮']},{q:'包括',a:'除外',d:['排除','例外','孤立']},{q:'冒涜',a:'崇拝',d:['信仰','礼賛','尊敬']},{q:'矛盾',a:'整合',d:['一致','妥当','正当']},{q:'野生',a:'飼育',d:['家畜','養殖','栽培']},{q:'優越',a:'劣等',d:['下位','敗北','凡庸']},{q:'有益',a:'無益',d:['有害','不要','損害']},{q:'抑制',a:'促進',d:['加速','奨励','推進']},{q:'利己',a:'利他',d:['奉仕','慈愛','慈善']},{q:'流動',a:'固定',d:['静止','安定','不変']},{q:'理論',a:'実践',d:['実務','実行','現物']},{q:'冷静',a:'興奮',d:['混乱','激昂','動揺']},{q:'露呈',a:'隠蔽',d:['秘匿','秘蔵','潜伏']},{q:'和解',a:'決裂',d:['対立','破局','衝突']},{q:'婉曲',a:'露骨',d:['直截','単刀直入','明白']},{q:'傲慢',a:'謙虚',d:['卑下','謙遜','慎み']}],
-            katakana: [{q:'メリット',a:'デメリット',d:['アセット','クレジット','リミット']},{q:'インドア',a:'アウトドア',d:['サイドドア','バックドア','ルーフ']},{q:'ポジティブ',a:'ネガティブ',d:['アクティブ','オルタナティブ','ネイティブ']},{q:'アナログ',a:'デジタル',d:['シグナル','チャネル','ビジュアル']},{q:'インフレ',a:'デフレ',d:['リフレ','デバフ','デリート']},{q:'プラス',a:'マイナス',d:['ボーナス','バランス','ステータス']},{q:'プロローグ',a:'エピローグ',d:['カタログ','モノローグ','ダイアログ']},{q:'マクロ',a:'ミクロ',d:['マグロ','レトロ','メトロ']},{q:'インプット',a:'アウトプット',d:['スループット','オフセット','アップセット']},{q:'メジャー',a:'マイナー',d:['レジャー','バリア','マスター']},{q:'アッパー',a:'ダウナー',d:['ショッパー','ホッパー','ストッパー']},{q:'バーチャル',a:'リアル',d:['ビジュアル','デジタル','メンタル']},{q:'マキシマム',a:'ミニマム',d:['ミディアム','プレミアム','アルバム']},{q:'パッシブ',a:'アクティブ',d:['ネガティブ','ポジティブ','プロアクティブ']},{q:'ハード',a:'ソフト',d:['カード','モード','ルート']},{q:'オン',a:'オフ',d:['アウト','オーバー','オープン']},{q:'ライト',a:'レフト',d:['ライド','ライド','ラスト']},{q:'シンプル',a:'コンプレックス',d:['コミックス','デュプレックス','サービス']},{q:'メロディ',a:'リズム',d:['ハーモニー','コーラス','ライブ']},{q:'フィジカル',a:'メンタル',d:['ビジュアル','デジタル','メディカル']},{q:'インポート',a:'エクスポート',d:['サポート','レポート','トランスポート']},{q:'ドライ',a:'ウェット',d:['セット','ホット','カット']},{q:'マジョリティ',a:'マイノリティ',d:['クオリティ','セキュリティ','プロパティ']},{q:'ハイ',a:'ロー',d:['ニュートラル','ロング','ワイド']},{q:'ビギナー',a:'エキスパート',d:['プレイヤー','マネージャー','パートナー']},{q:'ストレート',a:'カーブ',d:['シュート','スライダー','フォーク']},{q:'アタック',a:'ディフェンス',d:['ガード','ブロック','リターン']},{q:'オリジナル',a:'コピー',d:['フェイク','カバー','レプリカ']},{q:'フロント',a:'バック',d:['リア','サイド','トップ']},{q:'エントリー',a:'イグジット',d:['リタイア','エディット','リセット']},{q:'ベスト',a:'ワースト',d:['ラスト','コスト','テスト']},{q:'ボトム',a:'トップ',d:['アップ','ピーク','ハイ']},{q:'スタート',a:'ゴール',d:['フィニッシュ','エンド','ストップ']},{q:'シンクロ',a:'アシンクロ',d:['同期','反動','流動']},{q:'オーガニック',a:'ケミカル',d:['マジカル','フィジカル','テクニカル']},{q:'コンサバ',a:'プログレ',d:['アグレッシブ','カジュアル','トラッド']},{q:'ワイド',a:'ナロー',d:['スリム','タイト','ショート']},{q:'フィクション',a:'ノンフィクション',d:['ドキュメント','リアル','ファクト']},{q:'アップ',a:'ダウン',d:['オフ','アウト','バック']},{q:'オープン',a:'クローズ',d:['シャット','ロック','エンド']},{q:'セーフ',a:'アウト',d:['ファウル','エラー','ストライク']},{q:'ピーク',a:'ボトム',d:['ベース','ラスト','エンド']},{q:'セントラル',a:'ペリフェラル',d:['外部','シェル','カバー']},{q:'アウェー',a:'ホーム',d:['ハウス','ルーム','コート']},{q:'シングル',a:'ダブル',d:['ペア','コンビ','ユニット']},{q:'ショート',a:'ロング',d:['ワイド','トール','ラージ']},{q:'プロ',a:'アマ',d:['初心者','ルーキー','ファン']},{q:'ホワイト',a:'ブラック',d:['ブルー','レッド','グレー']},{q:'プッシュ',a:'プル',d:['プレス','タップ','スライド']},{q:'フロントエンド',a:'バックエンド',d:['サーバーサイド','クライアント','インフラ']}]
+            elementary: [
+                {q:'表',a:'裏',d:['外','横','奥']},{q:'右',a:'左',d:['上','下','後']},{q:'入口',a:'出口',d:['窓口','北口','改札']},{q:'長い',a:'短い',d:['広い','狭い','高い']},{q:'大きい',a:'小さい',d:['細い','薄い','軽い']},{q:'新しい',a:'古い',d:['汚い','遅い','弱い']},{q:'勝つ',a:'負ける',d:['逃げる','耐える','挑む']},{q:'行く',a:'来る',d:['帰る','止まる','歩く']},{q:'寒い',a:'暑い',d:['温かい','涼しい','痛い']},{q:'夜',a:'昼',d:['朝','夕','晩']},{q:'好き',a:'嫌い',d:['普通','苦手','怖い']},{q:'男',a:'女',d:['人','友','親']},{q:'善',a:'悪',d:['偽','真','無']},{q:'得',a:'損',d:['負','負','苦']},{q:'白',a:'黒',d:['赤','青','黄']},{q:'縦',a:'横',d:['奥','斜','深']},{q:'空',a:'陸',d:['海','山','川']},{q:'北',a:'南',d:['西','東','中央']},{q:'昨日',a:'明日',d:['今日','明後日','一昨日']},{q:'敵',a:'味方',d:['親友','仲間','隣人']},{q:'広い',a:'狭い',d:['長い','太い','重い']},{q:'重い',a:'軽い',d:['薄い','低い','弱い']},{q:'強い',a:'弱い',d:['軽い','低い','遅い']},{q:'高い',a:'低い',d:['狭い','薄い','浅い']},{q:'暑い',a:'寒い',d:['涼しい','温かい','痛い']},{q:'明るい',a:'暗い',d:['重い','遅い','狭い']},{q:'太い',a:'細い',d:['短い','薄い','低い']},{q:'速い',a:'遅い',d:['弱い','短い','低い']},{q:'深い',a:'浅い',d:['低い','短い','薄い']},{q:'厚い',a:'薄い',d:['低い','短い','浅い']},{q:'安全',a:'危険',d:['不安','心配','不全']},{q:'正解',a:'不正解',d:['失敗','間違い','誤答']},{q:'成功',a:'失敗',d:['負け','間違い','中止']},{q:'安心',a:'不安',d:['心配','危険','恐怖']},{q:'開ける',a:'閉める',d:['止める','引く','押す']},{q:'押す',a:'引く',d:['止める','開ける','閉める']},{q:'出す',a:'入れる',d:['消す','止める','捨てる']},{q:'上',a:'下',d:['右','左','中']},{q:'左',a:'右',d:['上','下','中']},{q:'前',a:'後',d:['上','下','横']},{q:'始まり',a:'終わり',d:['中止','停止','休み']},{q:'最初',a:'最後',d:['途中','終盤','末尾']},{q:'売る',a:'買う',d:['貸す','捨てる','送る']},{q:'貸す',a:'借りる',d:['売る','返す','送る']},{q:'笑う',a:'泣く',d:['怒る','叫ぶ','黙る']},{q:'春',a:'秋',d:['夏','冬','雨']},{q:'夏',a:'冬',d:['春','秋','朝']},{q:'東',a:'西',d:['南','北','中央']},{q:'質問',a:'回答',d:['問題','返事','返信']},{q:'嘘',a:'本当',d:['誠実','真実','正解']}
+            ],
+            intermediate: [
+                {q:'肯定',a:'否定',d:['反対','拒否','批判']},{q:'需要',a:'供給',d:['配給','支給','提供']},{q:'理想',a:'現実',d:['実情','現場','事象']},{q:'楽観',a:'悲観',d:['達観','諦観','冷静']},{q:'積極',a:'消極',d:['静止','後退','謙虚']},{q:'具体',a:'抽象',d:['曖昧','複雑','概念']},{q:'容易',a:'困難',d:['複雑','劣悪','多忙']},{q:'開始',a:'終了',d:['閉鎖','撤退','停止']},{q:'幸福',a:'不幸',d:['悲劇','憂鬱','災難']},{q:'期待',a:'失望',d:['絶望','後悔','落胆']},{q:'信頼',a:'不信',d:['疑惑','嫌悪','恐怖']},{q:'許可',a:'禁止',d:['拒絶','却下','制限']},{q:'主役',a:'脇役',d:['端役','悪役','代役']},{q:'平和',a:'戦争',d:['紛争','混乱','暴動']},{q:'自然',a:'人工',d:['模造','創作','合成']},{q:'過去',a:'未来',d:['現在','来世','昨今']},{q:'天国',a:'地獄',d:['煉獄','下界','深淵']},{q:'直感',a:'論理',d:['思考','推理','経験']},{q:'輸出',a:'輸入',d:['移送','転送','搬入']},{q:'利益',a:'損失',d:['負債','経費','減益']},{q:'原因',a:'結果',d:['成果','結論','事象']},{q:'供給',a:'需要',d:['支給','配給','需要']},{q:'集中',a:'拡散',d:['散乱','分離','独立']},{q:'主観',a:'客観',d:['達観','俯瞰','傍観']},{q:'能動',a:'受動',d:['反動','流動','振動']},{q:'偶然',a:'必然',d:['当然','自然','強制的']},{q:'保存',a:'破棄',d:['消去','削除','移動']},{q:'拡大',a:'縮小',d:['減少','低下','減衰']},{q:'文明',a:'野蛮',d:['原始','未開','混沌']},{q:'直接',a:'間接',d:['経由','遠隔','付近']},{q:'個人',a:'団体',d:['社会','組織','集合']},{q:'平等',a:'差別',d:['格差','偏見','孤立']},{q:'共通',a:'固有',d:['独自','個別','特殊']},{q:'固定',a:'流動',d:['移動','変化','不安定']},{q:'勝利',a:'敗北',d:['惜敗','惨敗','撤退']},{q:'一般',a:'特殊',d:['個別','例外','特定']},{q:'本物',a:'偽物',d:['模造','コピー','カバー']},{q:'集中',a:'分散',d:['分離','解体','消滅']},{q:'増加',a:'減少',d:['低下','縮小','減衰']},{q:'誕生',a:'死亡',d:['消滅','解体','撤去']},{q:'謙虚',a:'傲慢',d:['横柄','不遜','不敵']},{q:'勇気',a:'臆病',d:['臆面','弱気','慎重']},{q:'歓迎',a:'拒絶',d:['辞退','撤退','却下']},{q:'開放',a:'閉鎖',d:['停止','禁止','終了']},{q:'集合',a:'解散',d:['離散','分離','撤退']},{q:'内側',a:'外側',d:['側面','背面','周辺']},{q:'上昇',a:'下降',d:['低下','沈下','減衰']},{q:'増加',a:'削減',d:['減少','撤廃','縮小']},{q:'親切',a:'不親切',d:['冷淡','残酷','無慈悲']},{q:'可能',a:'不可能',d:['難解','困難','無理']}
+            ],
+            advanced: [
+                {q:'克己',a:'放縦',d:['妥協','怠惰','屈服']},{q:'帰納',a:'演繹',d:['類推','推論','逆説']},{q:'普遍',a:'特殊',d:['個別','例外','局所']},{q:'緻密',a:'粗雑',d:['散漫','粗末','適当']},{q:'脆弱',a:'強靭',d:['堅牢','頑丈','巨大']},{q:'饒舌',a:'寡黙',d:['沈黙','臆病','謙虚']},{q:'収束',a:'拡散',d:['膨張','発散','混乱']},{q:'絶対',a:'相対',d:['曖昧','比較','流動']},{q:'洗練',a:'野卑',d:['粗末','凡庸','稚拙']},{q:'内在',a:'超越',d:['外挿','逸脱','顕在']},{q:'隆起',a:'沈降',d:['没落','低下','沈殿']},{q:'隠蔽',a:'露呈',d:['発覚','暴露','提示']},{q:'過剰',a:'過小',d:['欠乏','枯渇','貧弱']},{q:'承諾',a:'拒絶',d:['謝絶','却下','辞退']},{q:'主導',a:'追随',d:['依存','随行','劣勢']},{q:'秩序',a:'混沌',d:['混迷','無法','散乱']},{q:'独創',a:'模倣',d:['複製','剽窃','借用']},{q:'建設',a:'破壊',d:['解体','撤去','消滅']},{q:'革新',a:'保守',d:['維持','停滞','伝統']},{q:'楽観',a:'悲観',d:['絶望','後悔','落胆']},{q:'剛毅',a:'柔弱',d:['虚弱','軟弱','貧弱']},{q:'枯渇',a:'氾濫',d:['充満','過剰','充足']},{q:'暫定',a:'確定',d:['本決定','恒久','終結']},{q:'需要',a:'供給',d:['支給','配給','提供']},{q:'遵守',a:'逸脱',d:['違反','放棄','無視']},{q:'促進',a:'抑制',d:['阻害','停止','遅延']},{q:'対立',a:'調和',d:['融和','妥協','協力']},{q:'抽象',a:'具体',d:['実体','詳細','個別']},{q:'沈黙',a:'雄弁',d:['演説','発言','叫び']},{q:'停滞',a:'進展',d:['前進','飛躍','活動']},{q:'統制',a:'放任',d:['自由','混乱','独立']},{q:'内向',a:'外向',d:['外交','社交','活発']},{q:'卑屈',a:'尊大',d:['横柄','不遜','不敵']},{q:'披露',a:'秘匿',d:['隠蔽','内緒','秘密']},{q:'膨張',a:'収縮',d:['縮小','凝縮','圧縮']},{q:'包括',a:'除外',d:['排除','例外','冒涜']},{q:'冒涜',a:'崇拝',d:['信仰','礼賛','尊敬']},{q:'矛盾',a:'整合',d:['一致','妥当','正当']},{q:'野生',a:'飼育',d:['家畜','養殖','栽培']},{q:'優越',a:'劣等',d:['下位','敗北','凡庸']},{q:'有益',a:'無益',d:['有害','不要','損害']},{q:'抑制',a:'促進',d:['加速','奨励','推進']},{q:'利己',a:'利他',d:['奉仕','慈愛','慈善']},{q:'流動',a:'固定',d:['静止','安定','不変']},{q:'理論',a:'実践',d:['実務','実行','現物']},{q:'冷静',a:'興奮',d:['混乱','激昂','動揺']},{q:'露呈',a:'隠蔽',d:['秘匿','秘蔵','潜伏']},{q:'和解',a:'決裂',d:['対立','破局','衝突']},{q:'婉曲',a:'露骨',d:['直截','単刀直入','明白']},{q:'傲慢',a:'謙虚',d:['卑下','謙遜','慎み']}
+            ],
+            katakana: [
+                {q:'メリット',a:'デメリット',d:['アセット','クレジット','リミット']},{q:'インドア',a:'アウトドア',d:['サイドドア','バックドア','ルーフ']},{q:'ポジティブ',a:'ネガティブ',d:['アクティブ','オルタナティブ','ネイティブ']},{q:'アナログ',a:'デジタル',d:['シグナル','チャネル','ビジュアル']},{q:'インフレ',a:'デフレ',d:['リフレ','デバフ','デリート']},{q:'プラス',a:'マイナス',d:['ボーナス','バランス','ステータス']},{q:'プロローグ',a:'エピローグ',d:['カタログ','モノローグ','ダイアログ']},{q:'マクロ',a:'ミクロ',d:['マグロ','レトロ','メトロ']},{q:'インプット',a:'アウトプット',d:['スループット','オフセット','アップセット']},{q:'メジャー',a:'マイナー',d:['レジャー','バリア','マスター']},{q:'アッパー',a:'ダウナー',d:['ショッパー','ホッパー','ストッパー']},{q:'バーチャル',a:'リアル',d:['ビジュアル','デジタル','メンタル']},{q:'マキシマム',a:'ミニマム',d:['ミディアム','プレミアム','アルバム']},{q:'パッシブ',a:'アクティブ',d:['ネガティブ','ポジティブ','プロアクティブ']},{q:'ハード',a:'ソフト',d:['カード','モード','ルート']},{q:'オン',a:'オフ',d:['アウト','オーバー','オープン']},{q:'ライト',a:'レフト',d:['ライド','ライド','ラスト']},{q:'シンプル',a:'コンプレックス',d:['コミックス','デュプレックス','サービス']},{q:'メロディ',a:'リズム',d:['ハーモニー','コーラス','ライブ']},{q:'フィジカル',a:'メンタル',d:['ビジュアル','デジタル','メディカル']},{q:'インポート',a:'エクスポート',d:['サポート','レポート','トランスポート']},{q:'ドライ',a:'ウェット',d:['セット','ホット','カット']},{q:'マジョリティ',a:'マイノリティ',d:['クオリティ','セキュリティ','プロパティ']},{q:'ハイ',a:'ロー',d:['ニュートラル','ロング','ワイド']},{q:'ビギナー',a:'エキスパート',d:['プレイヤー','マネージャー','パートナー']},{q:'ストレート',a:'カーブ',d:['シュート','スライダー','フォーク']},{q:'アタック',a:'ディフェンス',d:['ガード','ブロック','リターン']},{q:'オリジナル',a:'コピー',d:['フェイク','カバー','レプリカ']},{q:'フロント',a:'バック',d:['リア','サイド','トップ']},{q:'エントリー',a:'イグジット',d:['リタイア','エディット','リセット']},{q:'ベスト',a:'ワースト',d:['ラスト','コスト','テスト']},{q:'ボトム',a:'トップ',d:['アップ','ピーク','ハイ']},{q:'スタート',a:'ゴール',d:['フィニッシュ','エンド','ストップ']},{q:'シンクロ',a:'アシンクロ',d:['同期','反動','流動']},{q:'オーガニック',a:'ケミカル',d:['マジカル','フィジカル','テクニカル']},{q:'コンサバ',a:'プログレ',d:['アグレッシブ','カジュアル','トラッド']},{q:'ワイド',a:'ナロー',d:['スリム','タイト','ショート']},{q:'フィクション',a:'ノンフィクション',d:['ドキュメント','リアル','ファクト']},{q:'アップ',a:'ダウン',d:['オフ','アウト','バック']},{q:'オープン',a:'クローズ',d:['シャット','ロック','エンド']},{q:'セーフ',a:'アウト',d:['ファウル','エラー','ストライク']},{q:'ピーク',a:'ボトム',d:['ベース','ラスト','エンド']},{q:'セントラル',a:'ペリフェラル',d:['外部','シェル','カバー']},{q:'アウェー',a:'ホーム',d:['ハウス','ルーム','コート']},{q:'シングル',a:'ダブル',d:['ペア','コンビ','ユニット']},{q:'ショート',a:'ロング',d:['ワイド','トール','ラージ']},{q:'プロ',a:'アマ',d:['初心者','ルーキー','ファン']},{q:'ホワイト',a:'ブラック',d:['ブルー','レッド','グレー']},{q:'プッシュ',a:'プル',d:['プレス','タップ','スライド']},{q:'フロントエンド',a:'バックエンド',d:['サーバーサイド','クライアント','インフラ']}
+            ]
         };
-
         const STAGES = [
             { id: 1, name: "初級：日常語", key: 'elementary', color: "bg-blue-600", bgm: "bgm-stage1" },
             { id: 2, name: "中級：概念語", key: 'intermediate', color: "bg-emerald-600", bgm: "bgm-stage2" },
@@ -219,10 +238,14 @@
         let quizList = [];
         let currentIndex = 0;
         let score = 0;
-        let playerName = "ななし";
         let questionStartTime = 0;
+        let highScore = localStorage.getItem('antonym_survival_highscore') || 0;
         let currentBgm = null;
         let isMuted = false;
+
+        window.onload = () => {
+            updateHighScoreDisplay();
+        };
 
         function playBgm(id) {
             const nextBgm = document.getElementById(id);
@@ -230,11 +253,7 @@
             if (currentBgm) { currentBgm.pause(); currentBgm.currentTime = 0; }
             currentBgm = nextBgm;
             currentBgm.volume = 0.3;
-            if (!isMuted) {
-                currentBgm.play().catch(e => {
-                    console.log("Audio play blocked. Waiting for interaction.");
-                });
-            }
+            if (!isMuted) currentBgm.play().catch(e => {});
         }
 
         function playSfx(id) {
@@ -245,9 +264,13 @@
 
         function toggleMute() {
             isMuted = !isMuted;
-            document.getElementById('vol-on').classList.toggle('hidden', isMuted);
-            document.getElementById('vol-off').classList.toggle('hidden', !isMuted);
+            document.querySelectorAll('.volume-on').forEach(el => el.classList.toggle('hidden', isMuted));
+            document.querySelectorAll('.volume-off').forEach(el => el.classList.toggle('hidden', !isMuted));
             if (currentBgm) isMuted ? currentBgm.pause() : currentBgm.play().catch(e => {});
+        }
+
+        function updateHighScoreDisplay() {
+            document.getElementById('high-score-display').textContent = Number(highScore).toLocaleString();
         }
 
         function shuffle(array) {
@@ -258,26 +281,28 @@
             return array;
         }
 
+        function resetToTitle() {
+            if (currentBgm) { currentBgm.pause(); currentBgm.currentTime = 0; currentBgm = null; }
+            document.getElementById('overlay').classList.add('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('instruction-screen').classList.add('hidden');
+            document.getElementById('title-screen').classList.remove('hidden');
+            document.getElementById('fixed-mute-btn').classList.remove('hidden');
+            updateHighScoreDisplay();
+        }
+
         function showInstructions() {
             document.getElementById('title-screen').classList.add('hidden');
             document.getElementById('instruction-screen').classList.remove('hidden');
         }
 
-        function showNicknameInput() {
-            document.getElementById('instruction-screen').classList.add('hidden');
-            document.getElementById('nickname-screen').classList.remove('hidden');
-        }
-
-        function initialStart() {
-            const nameInput = document.getElementById('player-name').value.trim();
-            playerName = nameInput || "ななしのチャレンジャー";
-            startGame();
-        }
-
         function startGame() {
-            document.getElementById('nickname-screen').classList.add('hidden');
             document.getElementById('overlay').classList.add('hidden');
+            document.getElementById('title-screen').classList.add('hidden');
+            document.getElementById('instruction-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('review-box').classList.add('hidden');
+            document.getElementById('fixed-mute-btn').classList.add('hidden');
             
             quizList = [];
             STAGES.forEach(stage => {
@@ -285,7 +310,6 @@
                 const shuffled = shuffle([...source]);
                 quizList = quizList.concat(shuffled.slice(0, 15).map(item => ({...item, stage})));
             });
-
             currentIndex = 0;
             score = 0;
             document.getElementById('total-score').textContent = "0";
@@ -326,20 +350,22 @@
             if (isCorrect) {
                 playSfx('sfx-correct');
                 const timeTaken = (Date.now() - questionStartTime) / 1000;
-                let bonus = 0;
-                if (timeTaken < 1.2) bonus = 500;
-                else if (timeTaken < 2.5) bonus = 200;
+                let evaluation = "", evalColor = "", bonus = 0;
+                if (timeTaken < 1.0) { evaluation = "EXCELLENT!!"; evalColor = "text-yellow-400"; bonus = 500; }
+                else if (timeTaken < 2.0) { evaluation = "GOOD!"; evalColor = "text-emerald-400"; bonus = 300; }
+                else if (timeTaken < 3.5) { evaluation = "NICE"; evalColor = "text-blue-400"; bonus = 100; }
+                else { evaluation = "SLOW..."; evalColor = "text-slate-400"; bonus = 0; }
 
                 const points = 1000 + bonus;
                 score += points;
                 document.getElementById('total-score').textContent = score.toLocaleString();
-                showFeedback(points);
+                showFeedback(evaluation, evalColor, points);
 
                 currentIndex++;
                 setTimeout(() => {
-                    if (currentIndex >= 60) showResult(true);
-                    else if (currentIndex % 15 === 0) showStageClear();
-                    else initQuiz();
+                    if (currentIndex >= 60) { showResult(true); }
+                    else if (currentIndex % 15 === 0) { showStageClear(); }
+                    else { initQuiz(); }
                 }, 600);
             } else {
                 if (currentBgm) currentBgm.pause();
@@ -348,11 +374,14 @@
             }
         }
 
-        function showFeedback(points) {
+        function showFeedback(text, colorClass, points) {
             const layer = document.getElementById('feedback-layer');
             const el = document.createElement('div');
             el.className = `feedback-pop flex flex-col items-center`;
-            el.innerHTML = `<div class="text-4xl font-black text-emerald-400 drop-shadow-lg">正解!</div><div class="text-xl font-bold text-white mt-1">+${points}</div>`;
+            el.innerHTML = `
+                <div class="text-4xl font-black italic drop-shadow-lg ${colorClass}">${text}</div>
+                <div class="text-xl font-bold text-white mt-1">+${points}</div>
+            `;
             layer.appendChild(el);
             setTimeout(() => el.remove(), 800);
         }
@@ -360,129 +389,56 @@
         function showStageClear() {
             const ov = document.getElementById('overlay');
             ov.classList.remove('hidden');
-            document.getElementById('ranking-container').classList.add('hidden');
+            document.getElementById('score-report').classList.add('hidden');
+            document.getElementById('back-btn').classList.add('hidden');
             document.getElementById('review-box').classList.add('hidden');
-            document.getElementById('score-report').classList.remove('hidden');
-            document.getElementById('final-score').textContent = score.toLocaleString();
-            document.getElementById('ranking-status').textContent = "ステージクリア!";
-            document.getElementById('overlay-icon').textContent = "🏅";
-            document.getElementById('overlay-message').innerHTML = `<span class="text-emerald-400">STAGE ${currentIndex/15} クリア!</span><br>さらなる深淵へ...`;
             
+            document.getElementById('overlay-icon').textContent = "🏅";
+            document.getElementById('overlay-message').innerHTML = `<span class="text-emerald-400">STAGE ${currentIndex/15} CLEAR!</span><br>その調子！`;
             const bt = document.getElementById('action-btn');
-            bt.textContent = "次のステージへ進む";
-            bt.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
-            bt.onclick = () => {
-                ov.classList.add('hidden');
-                initQuiz();
-            };
+            bt.textContent = "次のステージへ";
+            bt.className = "w-full py-6 bg-blue-600 text-white rounded-3xl font-black text-2xl shadow-xl";
+            bt.onclick = () => { ov.classList.add('hidden'); initQuiz(); };
         }
 
-        async function showResult(isWin) {
+        function showResult(isWin) {
             const ov = document.getElementById('overlay');
             ov.classList.remove('hidden');
-            document.getElementById('ranking-container').classList.remove('hidden');
             document.getElementById('score-report').classList.remove('hidden');
+            document.getElementById('back-btn').classList.remove('hidden');
             document.getElementById('final-score').textContent = score.toLocaleString();
 
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('antonym_survival_highscore', highScore);
+                document.getElementById('new-record-label').classList.remove('hidden');
+            } else {
+                document.getElementById('new-record-label').classList.add('hidden');
+            }
+
+            const bt = document.getElementById('action-btn');
             const m = document.getElementById('overlay-message');
             const ic = document.getElementById('overlay-icon');
             const review = document.getElementById('review-box');
-            const status = document.getElementById('ranking-status');
-            const bt = document.getElementById('action-btn');
 
             if (isWin) {
                 playBgm('bgm-ending');
                 ic.textContent = "👑";
-                m.textContent = "完全制覇！お見事です。";
+                m.textContent = "全ステージ完全制覇！";
                 review.classList.add('hidden');
                 bt.textContent = "もう一度挑戦";
-                bt.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
+                bt.className = "w-full py-6 bg-emerald-600 text-white rounded-3xl font-black text-2xl shadow-xl";
             } else {
                 ic.textContent = "💀";
-                m.innerHTML = `<span class="text-rose-500">サバイバル終了</span><br>記録: ${currentIndex} 問`;
+                m.innerHTML = `<span class="text-rose-500">サバイバル終了...</span><br>記録: ${currentIndex} 問`;
                 const q = quizList[currentIndex];
                 document.getElementById('rev-q').textContent = q.q;
                 document.getElementById('rev-a').textContent = q.a;
                 review.classList.remove('hidden');
                 bt.textContent = "リベンジする";
-                bt.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
+                bt.className = "w-full py-6 bg-slate-700 text-white rounded-3xl font-black text-2xl shadow-xl";
             }
-
-            bt.onclick = () => {
-                currentIndex = 0;
-                score = 0;
-                startGame();
-            };
-
-            if (GAS_URL.includes("https")) {
-                status.textContent = "ランキング送信中...";
-                try {
-                    await fetch(GAS_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name: playerName, score: score })
-                    });
-                    const res = await fetch(GAS_URL);
-                    const rankingData = await res.json();
-                    renderRanking(rankingData);
-                    status.textContent = "全国ランキング更新！";
-                } catch (e) {
-                    status.textContent = "通信エラー";
-                }
-            } else {
-                status.textContent = "URL未設定";
-            }
-        }
-
-        function renderRanking(data) {
-            const list = document.getElementById('ranking-list');
-            list.innerHTML = data.map((r, i) => `
-                <div class="flex justify-between items-center py-3 px-4 rank-row ${r.name === playerName ? 'bg-emerald-500/20' : ''}">
-                    <div class="flex items-center">
-                        <span class="w-6 text-xs font-black ${i<3 ? 'text-yellow-400' : 'text-slate-500'}">${i+1}</span>
-                        <span class="text-sm font-bold text-slate-200">${r.name}</span>
-                    </div>
-                    <span class="text-sm font-black text-emerald-400 font-mono">${Number(r.score).toLocaleString()}</span>
-                </div>
-            `).join('');
-        }
-
-        // 全国ランキングだけを閲覧する機能
-        async function viewRankingOnly() {
-            const ov = document.getElementById('overlay');
-            const ic = document.getElementById('overlay-icon');
-            const m = document.getElementById('overlay-message');
-            const review = document.getElementById('review-box');
-            const scoreReport = document.getElementById('score-report');
-            const rankingContainer = document.getElementById('ranking-container');
-            const bt = document.getElementById('action-btn');
-
-            ov.classList.remove('hidden');
-            ic.textContent = "🏆";
-            m.textContent = "全国ランキング";
-            review.classList.add('hidden');
-            scoreReport.classList.add('hidden');
-            rankingContainer.classList.remove('hidden');
-            
-            bt.textContent = "閉じる";
-            bt.className = "w-full py-6 bg-slate-700 text-white rounded-3xl font-black text-2xl shadow-xl";
-            bt.onclick = () => ov.classList.add('hidden');
-
-            const list = document.getElementById('ranking-list');
-            list.innerHTML = '<div class="py-10 text-center text-slate-500 animate-pulse">読み込み中...</div>';
-            
-            if (GAS_URL.includes("https")) {
-                try {
-                    const res = await fetch(GAS_URL);
-                    const rankingData = await res.json();
-                    renderRanking(rankingData);
-                } catch (e) {
-                    list.innerHTML = '<div class="py-10 text-center text-rose-400">通信エラー</div>';
-                }
-            } else {
-                list.innerHTML = '<div class="py-10 text-center text-slate-500">URL未設定</div>';
-            }
+            bt.onclick = startGame;
         }
     </script>
 </body>
