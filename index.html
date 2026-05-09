@@ -87,12 +87,13 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 2.2.1-Result2
+            VER 2.3.0
         </div>
 
         <script>
             const GAS_URL = "https://script.google.com/macros/s/AKfycbyFbiDDP-u2nUyE1eDMTdKJ48cdMUwyxzaTAHbc1DKA5wrXSrAlEtN-s79-SJ9vIa_v2g/exec";
 
+            // インストールガイドの表示
             function showInstallGuide() {
                 const ov = document.getElementById('overlay');
                 const ic = document.getElementById('overlay-icon');
@@ -148,6 +149,7 @@
                 bt.className = "w-full py-6 bg-slate-700 text-white rounded-3xl font-black text-2xl shadow-xl mt-6";
                 bt.onclick = () => {
                     ov.classList.add('hidden');
+                    // 閉じる時にランキング表示の可能性をリセット（他への影響を防ぐ）
                     rankingContainer.classList.remove('hidden');
                 };
             }
@@ -254,19 +256,12 @@
                 </div>
 
                 <div id="score-report" class="w-full mb-8 p-6 bg-slate-900/50 rounded-3xl border border-slate-800">
-                    <div class="text-slate-400 text-xs uppercase mb-1">Final Score</div>
-                    <div id="final-score" class="text-5xl font-black text-yellow-400 mb-1">0</div>
-                    <div id="ranking-status" class="text-emerald-500 text-xs font-bold animate-pulse">スコア送信中...</div>
-                </div>
-
-                <div id="ranking-container" class="w-full mb-8">
-                    <h3 class="text-sm font-black text-slate-400 mb-4 tracking-[0.3em] uppercase flex items-center justify-center">
-                        <span class="h-px w-8 bg-slate-800 mr-2"></span>
-                        National Top 10
-                        <span class="h-px w-8 bg-slate-800 ml-2"></span>
-                    </h3>
-                    <div id="ranking-list" class="bg-slate-900/30 rounded-2xl border border-slate-800/50 overflow-hidden text-left min-h-[100px]">
                     </div>
+
+                                <div id="ranking-container" class="w-full mb-8">
+                    <button onclick="viewRankingOnly()" class="w-full active:scale-95 transition-all">
+                        <img src="ranking.png" alt="全国ランキング" class="w-full drop-shadow-lg pointer-events-none">
+                    </button>
                 </div>
 
                 <button id="action-btn" class="w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white">アクションボタン</button>
@@ -297,6 +292,23 @@
             { id: 3, name: "上級：難読熟語", key: 'advanced', color: "bg-amber-600", bgm: "bgm-stage3" },
             { id: 4, name: "番外：カタカナ語", key: 'katakana', color: "bg-rose-600", bgm: "bgm-stage4" }
         ];
+
+        // --- 称号ワードデータ ---
+        const ADJECTIVES = {
+            A: ["鼻血が出そうな", "お湯も沸かせる", "味が濃すぎる", "地球を救いそうな", "牛乳を吹き出す", "目がバッキバキの", "100点満点を超えた", "止まると死ぬ", "お祭り騒ぎの", "筋肉痛になりそうな", "稲妻が走る", "本気を出しすぎた", "奇跡しか起きない", "絶好調すぎる", "燃えさかる", "声がデカすぎる", "夢にまで出てくる", "宇宙まで飛んでいく", "完璧に仕上がった", "神がかり的な", "爆笑を誘う", "まばたきを忘れた", "画面が割れそうな", "磁石のように吸い付く", "100年に一度の", "勢いが止まらない", "誰にも止められない", "太陽より熱い", "伝説になりそうな", "息継ぎなしの"],
+            B: ["脂が乗ってきた", "おかわりが欲しい", "ノリにノっている", "鼻歌まじりの", "準備万端な", "歯切れの良い", "結構やる気な", "ドヤ顔がすぎる", "勢いがある", "ちょっと自慢げな", "期待を裏切らない", "かなりキマっている", "独自のキレがある", "油断ならない", "本気を出しかけた", "絶妙なタイミングの", "噂になりそうな", "磨けば光る", "安定感のある", "独自の進化をした", "声高らかな", "手応えバッチリの", "確信に満ちた", "意外と強気な", "独自のセンスが光る", "一味ちがう", "自信満々な", "スピードに乗った", "キラキラしている", "ちょうど食べごろな"],
+            C: ["そこそこやる", "クラスで3番目の", "絶妙にふつうの", "意外と頑張る", "腹八分目の", "安定した", "ほどよい温度の", "どこにでもいる", "平均的な", "無難すぎる", "まあまあの", "どっちつかずの", "パッとしない", "ほどほどに温まった", "右へならえの", "標準的な", "可もなく不可もない", "世渡り上手な", "適当にこなす", "世間並みの", "ほどよく焼けた", "馴染みのある", "ど真ん中を行く", "箸休めのような", "まあまあの出来の", "それなりの", "目立たない", "安定の", "ちょうど真ん中の", "普通を極めた"],
+            D: ["伸びしろしかない", "寝起きの", "よちよちの", "迷走している", "震える足の", "産まれたての", "おぼつかない", "崖っぷちの", "頼りない", "初々しい", "危なっかしい", "心もとない", "彷徨っている", "弱気な", "控えめな", "遠慮がちな", "借りてきた猫のような", "半信半疑の", "おそるおそるの", "手探りな", "未熟な", "幼い", "甘噛みの", "へっぴり腰の", "自信なげな", "霧の中にいるような", "ぼんやりした", "お腹をこわした", "忘れ物をした", "宿題が嫌いな"],
+            E: ["ほぼ寝ている", "止まったままの", "ぐにゃぐにゃな", "お腹がすいた", "ぼーっとした", "穴のあいた", "すべって転んだ", "宿題を忘れた", "忘れ物ばかりの", "歯をみがいていない", "迷子になった", "自信のない", "まだ準備中の", "弱々しい", "まばたきしすぎた", "鼻歌まじりの", "ぼんやりした", "ふらふらの", "夢の中の", "ぼーっとしている", "お菓子を食べたい", "ぬるくなった", "頼りない", "影のうすい", "眠気に負けた", "風に流された", "名前を忘れた", "足がしびれた", "ぼけっとしている", "魂が抜けた"]
+        };
+
+        const NOUNS = {
+            A: ["ヒーロー", "大統領", "王様", "優勝者", "宇宙人", "伝説", "天才", "守護神", "救世主", "1等賞", "金メダル", "ボス", "隊長", "師匠", "魔法使い", "チャンピオン", "主人公", "未来人", "知恵袋", "司令官", "発明家", "星", "太陽", "超人", "大黒柱", "神様", "巨匠", "勝ち組", "生き字引", "冒険王"],
+            B: ["期待の星", "選手", "隊員", "リーダー", "兄貴", "職人", "先輩", "実力者", "実行委員", "人気者", "代表者", "助っ人", "有名人", "まとめ役", "現場監督", "勝ち組の卵", "特待生", "優等生", "秘密兵器", "副隊長", "班長", "勝ち組候補", "やり手", "切れ者", "指導員", "選抜メンバー", "自信家", "働き者", "知恵者", "鉄人"],
+            C: ["一般市民", "村人", "通行人", "観客", "どこかの誰か", "隣の住人", "バイトリーダー", "係員", "出席者", "案内係", "メンバー", "サラリーマン", "主婦", "郵便屋さん", "おじさん", "お姉さん", "店員さん", "普通の人", "背番号のないエース", "掃除当番", "予備軍", "飼育員", "受講生", "散歩中の人", "待機中の人", "看板娘", "住み込みの人", "会員", "旅行者"],
+            D: ["挑戦者", "ひよこ", "初心者", "見習い", "練習生", "散歩中の子犬", "隠れキャラ", "野良猫", "迷走中の人", "研究生", "補習を受けている人", "予備校生", "駆け出し", "まだ何者でもない人", "新入り", "迷子の大人", "迷子のクジラ", "まだ起きていない人", "名前を募集中の方", "練習中の方", "探しもの中の人", "たまご", "冒険の準備中の人", "お留守番係", "見守り隊", "お昼寝中の人", "順番待ちの人", "忘れ物を取りに帰った人", "準備体操中の人", "通りすがりの人"],
+            E: ["かかし", "石ころ", "置物", "どろだんご", "お地蔵さん", "消しゴムのかす", "ぬけがら", "ちり紙", "落ち葉", "ありんこ", "砂つぶ", "ほこり", "影ぼうし", "まくら", "たわし", "水たまり", "空き箱", "雑草", "ビー玉", "扇風機（弱）", "かたつむり", "おたまじゃくし", "豆腐", "プリン", "ふせん", "穴のあいた靴下", "迷子のひよこ", "割れたコップ", "鉛筆のしん", "1円玉"]
+        };
 
         let quizList = [];
         let currentIndex = 0;
@@ -361,6 +373,7 @@
             document.getElementById('overlay').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
             
+            // BGMリセット
             if (currentBgm) {
                 currentBgm.pause();
                 currentBgm.currentTime = 0;
@@ -445,6 +458,7 @@
             const layer = document.getElementById('feedback-layer');
             const el = document.createElement('div');
             el.className = `feedback-pop flex flex-col items-center`;
+            // 枠線と背景を追加して視認性を向上
             el.innerHTML = `
                 <div class="bg-slate-900/90 border-2 border-emerald-500 rounded-2xl px-6 py-4 shadow-[0_0_20px_rgba(52,211,153,0.4)] flex flex-col items-center min-w-[160px]">
                     <div class="text-3xl font-black ${colorClass} drop-shadow-md mb-1 italic tracking-wider">${rating}</div>
@@ -461,8 +475,18 @@
             document.getElementById('ranking-container').classList.add('hidden');
             document.getElementById('review-box').classList.add('hidden');
             document.getElementById('score-report').classList.remove('hidden');
-            document.getElementById('final-score').textContent = score.toLocaleString();
-            document.getElementById('ranking-status').textContent = "ステージクリア!";
+            
+            // ステージクリア時も称号を仮表示（お遊び要素）
+            const title = generateTitle(score, currentIndex);
+            const scoreReport = document.getElementById('score-report');
+            scoreReport.innerHTML = `
+                <div class="text-slate-400 text-sm mb-1">現在の暫定称号</div>
+                <div class="text-2xl font-black text-amber-400 mb-4">【${title}】</div>
+                <div class="text-slate-400 text-xs uppercase mb-1">Current Score</div>
+                <div id="final-score" class="text-5xl font-black text-yellow-400 mb-1">${score.toLocaleString()}</div>
+                <div id="ranking-status" class="text-emerald-500 text-xs font-bold animate-pulse">ステージクリア!</div>
+            `;
+
             document.getElementById('overlay-icon').textContent = "🏅";
             document.getElementById('overlay-message').innerHTML = `<span class="text-emerald-400">STAGE ${currentIndex/15} クリア!</span><br>さらなる深淵へ...`;
             const bt = document.getElementById('action-btn');
@@ -474,17 +498,23 @@
             };
         }
 
-        function getTitle(score, isWin) {
-            if (isWin) {
-                if (score >= 85000) return { t: "対義語の覇者", c: "text-yellow-400" };
-                if (score >= 75000) return { t: "言語の魔術師", c: "text-emerald-400" };
-                return { t: "サバイバル達成者", c: "text-blue-400" };
-            } else {
-                if (currentIndex >= 45) return { t: "博学の士", c: "text-emerald-400" };
-                if (currentIndex >= 30) return { t: "中堅の実力者", c: "text-blue-400" };
-                if (currentIndex >= 15) return { t: "駆け出しの探求者", c: "text-slate-400" };
-                return { t: "一般市民", c: "text-slate-500" };
-            }
+        // --- 称号生成ロジック ---
+        function generateTitle(totalScore, solvedCount) {
+            let sRank = 'E';
+            if (totalScore >= 70000) sRank = 'A';
+            else if (totalScore >= 50000) sRank = 'B';
+            else if (totalScore >= 30000) sRank = 'C';
+            else if (totalScore >= 10000) sRank = 'D';
+
+            let cRank = 'E';
+            if (solvedCount >= 60) cRank = 'A';
+            else if (solvedCount >= 45) cRank = 'B';
+            else if (solvedCount >= 30) cRank = 'C';
+            else if (solvedCount >= 15) cRank = 'D';
+
+            const adj = ADJECTIVES[sRank][Math.floor(Math.random() * 30)];
+            const noun = NOUNS[cRank][Math.floor(Math.random() * 30)];
+            return `${adj}${noun}`;
         }
 
         async function showResult(isWin) {
@@ -492,7 +522,25 @@
             ov.classList.remove('hidden');
             document.getElementById('ranking-container').classList.remove('hidden');
             document.getElementById('score-report').classList.remove('hidden');
-            document.getElementById('final-score').textContent = score.toLocaleString();
+
+            // 称号生成と反映
+            const title = generateTitle(score, currentIndex);
+            const scoreReport = document.getElementById('score-report');
+            scoreReport.innerHTML = `
+                <div class="text-slate-400 text-sm mb-1">獲得称号</div>
+                <div class="text-2xl font-black text-amber-400 mb-4">【${title}】</div>
+                <div class="flex justify-between items-end">
+                    <div>
+                        <div class="text-slate-400 text-xs uppercase">Final Score</div>
+                        <div id="final-score" class="text-4xl font-black text-yellow-400">${score.toLocaleString()}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-slate-400 text-xs uppercase">Solved</div>
+                        <div class="text-2xl font-black text-slate-200">${currentIndex}<span class="text-sm ml-1 text-slate-400">問</span></div>
+                    </div>
+                </div>
+                <div id="ranking-status" class="text-emerald-500 text-[10px] font-bold mt-4 animate-pulse uppercase tracking-widest">スコア送信中...</div>
+            `;
 
             const m = document.getElementById('overlay-message');
             const ic = document.getElementById('overlay-icon');
@@ -500,18 +548,16 @@
             const status = document.getElementById('ranking-status');
             const bt = document.getElementById('action-btn');
 
-            const rank = getTitle(score, isWin);
-
             if (isWin) {
                 playBgm('bgm-ending');
                 ic.textContent = "👑";
-                m.innerHTML = `<span class="text-[14px] text-slate-400 font-bold tracking-widest uppercase mb-1 block">Title: ${rank.t}</span>完全制覇！お見事です。`;
+                m.textContent = "完全制覇！お見事です。";
                 review.classList.add('hidden');
                 bt.textContent = "もう一度挑戦";
                 bt.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
             } else {
                 ic.textContent = "💀";
-                m.innerHTML = `<span class="text-[14px] text-slate-400 font-bold tracking-widest uppercase mb-1 block">Title: ${rank.t}</span><span class="text-rose-500">サバイバル終了</span><br>記録: ${currentIndex} 問`;
+                m.innerHTML = `<span class="text-rose-500">サバイバル終了</span><br>記録: ${currentIndex} 問`;
                 const q = quizList[currentIndex];
                 document.getElementById('rev-q').textContent = q.q;
                 document.getElementById('rev-a').textContent = q.a;
