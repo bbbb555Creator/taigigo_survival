@@ -1,4 +1,4 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -60,6 +60,7 @@
 
         .choice-btn:active { transform: scale(0.95); background: #34d399; color: #0f172a; }
         
+        /* ① 以前の Excellent! 演出スタイル */
         .feedback-pop {
             position: absolute;
             top: 40%;
@@ -69,13 +70,19 @@
             z-index: 100;
             text-align: center;
             white-space: nowrap;
-            animation: feedbackAnim 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
+            background: rgba(16, 185, 129, 0.9);
+            border: 3px solid white;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            animation: feedbackAnim 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
         }
 
         @keyframes feedbackAnim {
-            0% { opacity: 0; transform: translate(-50%, -30%) scale(0.5); }
-            20% { opacity: 1; transform: translate(-50%, -55%) scale(1.1); }
-            100% { opacity: 0; transform: translate(-50%, -70%) scale(1); }
+            0% { opacity: 0; transform: translate(-50%, -30%) scale(0.5) rotate(-5deg); }
+            30% { opacity: 1; transform: translate(-50%, -55%) scale(1.1) rotate(5deg); }
+            100% { opacity: 0; transform: translate(-50%, -70%) scale(1) rotate(0deg); }
         }
 
         .rank-row {
@@ -88,7 +95,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 2.4.0
+            VER 2.5.0
         </div>
 
         <script>
@@ -272,8 +279,8 @@
                     </div>
                 </div>
 
-                <button id="action-btn" onclick="location.reload()" class="w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white">リベンジする</button>
-                <button id="reload-btn" onclick="location.reload()" class="mt-4 w-full py-3 text-slate-500 font-bold text-sm">タイトルへ戻る</button>
+                <button id="action-btn" onclick="sendAndReload()" class="w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white">リベンジする</button>
+                <button id="reload-btn" onclick="sendAndReload()" class="mt-4 w-full py-3 text-slate-500 font-bold text-sm">タイトルへ戻る</button>
             </div>
         </div>
     </div>
@@ -439,26 +446,34 @@
                 score += points;
                 document.getElementById('total-score').textContent = score.toLocaleString();
                 
-                // 演出の表示
-                let feedbackText = "正解！";
-                if (timeTaken < 1.2) feedbackText = "Excellent!";
-                else if (timeTaken < 2.5) feedbackText = "Speed Bonus!";
-                showFeedback(feedbackText, "text-emerald-400");
+                // ① エフェクト演出（四角い枠付きに変更）
+                let bonusLabel = "";
+                if (timeTaken < 1.2) bonusLabel = "EXCELLENT!!<br>";
+                else if (timeTaken < 2.5) bonusLabel = "SPEED BONUS!<br>";
+                showFeedback(`${bonusLabel}+${points} pts`, "text-white");
                 
                 currentQuestionIndex++;
                 setTimeout(nextQuestion, 600);
             } else {
                 playSfx('sfx-wrong');
-                showFeedback("不正解...", "text-rose-400");
+                // 不正解時はそのまま
+                const layer = document.getElementById('feedback-layer');
+                const pop = document.createElement('div');
+                pop.className = `feedback-pop !bg-rose-600 !border-white text-3xl font-black italic text-white drop-shadow-2xl`;
+                pop.textContent = "不正解...";
+                layer.appendChild(pop);
+                setTimeout(() => pop.remove(), 800);
+                
                 setTimeout(() => endGame(false, question, correct), 600);
             }
         }
 
+        // ① エフェクト演出用のHTML生成
         function showFeedback(text, colorClass) {
             const layer = document.getElementById('feedback-layer');
             const pop = document.createElement('div');
-            pop.className = `feedback-pop text-5xl font-black italic ${colorClass} drop-shadow-2xl`;
-            pop.textContent = text;
+            pop.className = `feedback-pop text-2xl font-black italic ${colorClass} drop-shadow-2xl`;
+            pop.innerHTML = text; // 改行を許可するためinnerHTML
             layer.appendChild(pop);
             setTimeout(() => pop.remove(), 800);
         }
@@ -512,19 +527,19 @@
                 <div class="text-slate-400 text-xs font-bold uppercase mb-2">称号</div>
                 <div class="text-xl font-bold text-white leading-tight" id="final-title-text">${title}</div>
             `;
-
-            bt.textContent = "リベンジする";
-            bt.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
-            bt.onclick = () => location.reload();
+            
+            // ② スコア送信を自動化（ランキングを押す前でも送信されるように）
+            // ボタンそのものはリフレッシュ用
         }
 
-        // スコア送信処理を分離
+        // ② スコア送信処理
         async function sendScoreAuto() {
-            if (hasSentScore) return;
+            if (hasSentScore || score === 0) return;
             const titleText = document.getElementById('final-title-text')?.textContent || "サバイバー";
             try {
                 hasSentScore = true;
-                await fetch(GAS_URL, {
+                // Fetchは非同期で投げっぱなしにする
+                fetch(GAS_URL, {
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
@@ -536,8 +551,13 @@
             }
         }
 
+        // ② 全ての終了ボタンから呼ばれる関数
+        async function sendAndReload() {
+            await sendScoreAuto();
+            location.reload();
+        }
+
         async function viewRankingOnly(fromResult = false) {
-            // リザルトからの場合は自動送信を実行
             if (fromResult) {
                 sendScoreAuto();
             }
@@ -580,7 +600,7 @@
                     }
                     bt.textContent = "リベンジする";
                     bt.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
-                    bt.onclick = () => location.reload();
+                    bt.onclick = () => sendAndReload();
                 } else {
                     ov.classList.add('hidden');
                 }
@@ -636,4 +656,4 @@
         }
     </script>
 </body>
-</html>l>
+</html>
