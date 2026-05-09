@@ -87,7 +87,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 2.6.0
+            VER 2.3.0
         </div>
 
         <script>
@@ -150,7 +150,7 @@
                 bt.onclick = () => {
                     ov.classList.add('hidden');
                     // 閉じる時にランキング表示の可能性をリセット（他への影響を防ぐ）
-                    if(document.getElementById('ranking-container')) document.getElementById('ranking-container').classList.add('hidden');
+                    rankingContainer.classList.remove('hidden');
                 };
             }
         </script>
@@ -601,92 +601,10 @@
             }
         }
 
-        
-        async function viewRankingFromResult() {
-            const ov = document.getElementById('overlay');
-            const ic = document.getElementById('overlay-icon');
-            const m = document.getElementById('overlay-message');
-            const scoreReport = document.getElementById('score-report');
-            const resBtn = document.getElementById('view-ranking-btn-result');
-            const resCont = document.getElementById('ranking-container-result');
-            const reviewBox = document.getElementById('review-box');
-            const bt = document.getElementById('action-btn');
-
-            // 表示切り替え
-            ic.textContent = "🏆";
-            m.textContent = "全国ランキング";
-            scoreReport.classList.add('hidden');
-            resBtn.classList.add('hidden');
-            reviewBox.classList.add('hidden');
-            resCont.classList.remove('hidden');
-
-            const list = document.getElementById('ranking-list-result');
-            list.innerHTML = '<div class="py-10 text-center text-slate-500 animate-pulse">読み込み中...</div>';
-            
-            // データの取得と描画
-            if (GAS_URL.includes("https")) {
-                try {
-                    const res = await fetch(GAS_URL);
-                    const rankingData = await res.json();
-                    renderRankingWithTarget(rankingData, 'ranking-list-result');
-                } catch (e) {
-                    list.innerHTML = '<div class="py-10 text-center text-rose-400">通信エラー</div>';
-                }
-            }
-
-            // 元のボタン状態を保持
-            const prevText = bt.textContent;
-            const prevClass = bt.className;
-            const prevClick = bt.onclick;
-
-            // 「リザルトに戻る」ボタンへ変更
-            bt.textContent = "リザルトに戻る";
-            bt.className = "w-full py-6 bg-slate-700 text-white rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all";
-            bt.onclick = () => {
-                // 状態復元
-                resCont.classList.add('hidden');
-                scoreReport.classList.remove('hidden');
-                resBtn.classList.remove('hidden');
-                
-                if (state.currentIndex >= 60) {
-                    ic.textContent = "👑";
-                    m.textContent = "完全制覇達成！";
-                } else {
-                    ic.textContent = "👻";
-                    m.textContent = "サバイバル失敗...";
-                    reviewBox.classList.remove('hidden');
-                }
-                
-                bt.textContent = prevText;
-                bt.className = prevClass;
-                bt.onclick = prevClick;
-            };
-        }
-
-        // ターゲットを指定してランキングを描画する共通関数
-        function renderRankingWithTarget(data, targetId) {
-            const list = document.getElementById(targetId);
-            if(!list) return;
-            list.innerHTML = "";
-            data.forEach((row, i) => {
-                const div = document.createElement('div');
-                div.className = "rank-row flex items-center p-4 gap-4";
-                const rankColor = i===0 ? 'text-yellow-400' : i===1 ? 'text-slate-300' : i===2 ? 'text-amber-600' : 'text-slate-500';
-                div.innerHTML = `
-                    <div class="text-2xl font-black ${rankColor} w-8 text-center">${i+1}</div>
-                    <div class="flex-grow">
-                        <div class="text-white font-bold truncate w-32">${row.name}</div>
-                        <div class="text-[10px] text-slate-500">${row.count}問到達</div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-xs text-slate-500 font-bold uppercase tracking-tighter">Score</div>
-                        <div class="text-lg font-black text-emerald-400">${Math.floor(row.score).toLocaleString()}</div>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-        }
-">
+        function renderRanking(data) {
+            const list = document.getElementById('ranking-list');
+            list.innerHTML = data.map((r, i) => `
+                <div class="flex justify-between items-center py-3 px-4 rank-row ${r.name === playerName ? 'bg-emerald-500/20' : ''}">
                     <div class="flex items-center">
                         <span class="w-6 text-xs font-black ${i<3 ? 'text-yellow-400' : 'text-slate-500'}">${i+1}</span>
                         <span class="text-sm font-bold text-slate-200">${r.name}</span>
@@ -696,54 +614,25 @@
             `).join('');
         }
 
-        
         async function viewRankingOnly() {
             const ov = document.getElementById('overlay');
             const ic = document.getElementById('overlay-icon');
             const m = document.getElementById('overlay-message');
             const review = document.getElementById('review-box');
             const scoreReport = document.getElementById('score-report');
-            // トップページ用コンテナを生成/取得
-            let rankingContainer = document.getElementById('ranking-container');
-            
-            // もしリザルト画面のボタンが残っていたら隠す
-            const resBtn = document.getElementById('view-ranking-btn-result');
-            if(resBtn) resBtn.classList.add('hidden');
-            const resCont = document.getElementById('ranking-container-result');
-            if(resCont) resCont.classList.add('hidden');
-
-            // ランキング表示用の枠組みを強制再セット（トップページ用）
-            // コンテナがなければ action-btn の前に作る
-            if(!rankingContainer) {
-                rankingContainer = document.createElement('div');
-                rankingContainer.id = 'ranking-container';
-                rankingContainer.className = 'w-full mb-8';
-                scoreReport.parentNode.insertBefore(rankingContainer, document.getElementById('action-btn'));
-            }
-            
-            rankingContainer.innerHTML = `
-                <h3 class="text-sm font-black text-slate-400 mb-4 tracking-[0.3em] uppercase flex items-center justify-center">
-                    <span class="h-px w-8 bg-slate-800 mr-2"></span>
-                    National Top 10
-                    <span class="h-px w-8 bg-slate-800 ml-2"></span>
-                </h3>
-                <div id="ranking-list" class="bg-slate-900/30 rounded-2xl border border-slate-800/50 overflow-hidden text-left min-h-[100px]"></div>
-            `;
-            if(document.getElementById('ranking-container')) document.getElementById('ranking-container').classList.add('hidden');
+            const rankingContainer = document.getElementById('ranking-container');
+            const bt = document.getElementById('action-btn');
 
             ov.classList.remove('hidden');
             ic.textContent = "🏆";
             m.textContent = "全国ランキング";
             review.classList.add('hidden');
             scoreReport.classList.add('hidden');
+            rankingContainer.classList.remove('hidden');
             
-            const bt = document.getElementById('action-btn');
             bt.textContent = "閉じる";
             bt.className = "w-full py-6 bg-slate-700 text-white rounded-3xl font-black text-2xl shadow-xl";
-            bt.onclick = () => {
-                ov.classList.add('hidden');
-                rankingContainer.classList.add('hidden');
-            };
+            bt.onclick = () => ov.classList.add('hidden');
 
             const list = document.getElementById('ranking-list');
             list.innerHTML = '<div class="py-10 text-center text-slate-500 animate-pulse">読み込み中...</div>';
@@ -752,13 +641,8 @@
                 try {
                     const res = await fetch(GAS_URL);
                     const rankingData = await res.json();
-                    renderRankingWithTarget(rankingData, 'ranking-list');
+                    renderRanking(rankingData);
                 } catch (e) {
-                    list.innerHTML = '<div class="py-10 text-center text-rose-400">通信エラー</div>';
-                }
-            }
-        }
- catch (e) {
                     list.innerHTML = '<div class="py-10 text-center text-rose-400">通信エラー</div>';
                 }
             } else {
