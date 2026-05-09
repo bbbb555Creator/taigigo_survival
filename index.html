@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
     
-    <title>対義語サバイバル - 全国ランキング版 v2.1</title>
+    <title>対義語サバイバル - 全国ランキング版 v2.2</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -610,8 +610,25 @@
             `).join('');
         }
 
-        async function viewRankingOnly() {
+                async function viewRankingOnly() {
             const ov = document.getElementById('overlay');
+            const ic = document.getElementById('result-icon');
+            const m = document.getElementById('result-message');
+            const review = document.getElementById('review-box');
+            const scoreReport = document.getElementById('score-report');
+            const rankingContainer = document.getElementById('ranking-container');
+            const bt = document.getElementById('action-btn');
+
+            // ランキング表示用に中身をリセット（ボタンを消してリストを再設置）
+            rankingContainer.innerHTML = `
+                <h3 class="text-sm font-black text-slate-400 mb-4 tracking-[0.3em] uppercase flex items-center justify-center">
+                    <span class="h-px w-8 bg-slate-800 mr-2"></span>
+                    National Top 10
+                    <span class="h-px w-8 bg-slate-800 ml-2"></span>
+                </h3>
+                <div id="ranking-list" class="bg-slate-900/30 rounded-2xl border border-slate-800/50 overflow-hidden text-left min-h-[100px]">
+                </div>
+            `;
             const ic = document.getElementById('overlay-icon');
             const m = document.getElementById('overlay-message');
             const review = document.getElementById('review-box');
