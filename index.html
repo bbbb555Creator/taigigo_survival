@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <meta charset="UTF-8"><!DOCTYPE html>
+<html lang="ja">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,6 +21,7 @@
         body { 
             font-family: 'Kiwi Maru', serif; 
             background-color: #0f172a;
+            /* # 壁紙画像の差し込み位置 */
             background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('bg.png');
             background-size: cover;
             background-position: center;
@@ -60,7 +64,6 @@
 
         .choice-btn:active { transform: scale(0.95); background: #34d399; color: #0f172a; }
         
-        /* ① 以前の Excellent! 演出スタイル */
         .feedback-pop {
             position: absolute;
             top: 40%;
@@ -68,21 +71,13 @@
             transform: translate(-50%, -50%);
             pointer-events: none;
             z-index: 100;
-            text-align: center;
-            white-space: nowrap;
-            background: rgba(16, 185, 129, 0.9);
-            border: 3px solid white;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            animation: feedbackAnim 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
+            animation: feedbackAnim 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
         }
 
         @keyframes feedbackAnim {
-            0% { opacity: 0; transform: translate(-50%, -30%) scale(0.5) rotate(-5deg); }
-            30% { opacity: 1; transform: translate(-50%, -55%) scale(1.1) rotate(5deg); }
-            100% { opacity: 0; transform: translate(-50%, -70%) scale(1) rotate(0deg); }
+            0% { opacity: 0; transform: translate(-50%, -30%) scale(0.5); }
+            20% { opacity: 1; transform: translate(-50%, -55%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -70%) scale(0.9); }
         }
 
         .rank-row {
@@ -95,12 +90,13 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 2.5.0
+            VER 2.3.0
         </div>
 
         <script>
             const GAS_URL = "https://script.google.com/macros/s/AKfycbyFbiDDP-u2nUyE1eDMTdKJ48cdMUwyxzaTAHbc1DKA5wrXSrAlEtN-s79-SJ9vIa_v2g/exec";
 
+            // インストールガイドの表示
             function showInstallGuide() {
                 const ov = document.getElementById('overlay');
                 const ic = document.getElementById('overlay-icon');
@@ -108,7 +104,6 @@
                 const review = document.getElementById('review-box');
                 const scoreReport = document.getElementById('score-report');
                 const rankingContainer = document.getElementById('ranking-container');
-                const rankingTrigger = document.getElementById('result-ranking-trigger');
                 const bt = document.getElementById('action-btn');
 
                 ov.classList.remove('hidden');
@@ -116,7 +111,6 @@
                 review.classList.add('hidden');
                 scoreReport.classList.add('hidden');
                 rankingContainer.classList.add('hidden');
-                rankingTrigger.classList.add('hidden');
 
                 const ua = navigator.userAgent.toLowerCase();
                 const isiOS = /iphone|ipad|ipod/.test(ua);
@@ -158,6 +152,8 @@
                 bt.className = "w-full py-6 bg-slate-700 text-white rounded-3xl font-black text-2xl shadow-xl mt-6";
                 bt.onclick = () => {
                     ov.classList.add('hidden');
+                    // 閉じる時にランキング表示の可能性をリセット（他への影響を防ぐ）
+                    rankingContainer.classList.remove('hidden');
                 };
             }
         </script>
@@ -248,8 +244,8 @@
             <div id="choices-grid" class="grid grid-cols-1 gap-4 mt-auto mb-8"></div>
         </div>
 
-        <div id="overlay" class="hidden absolute inset-0 z-50 flex items-start justify-center bg-slate-950/98 p-6 backdrop-blur-xl text-center overflow-y-auto pt-10 pb-10">
-            <div id="result-content" class="w-full max-w-sm fade-in flex flex-col items-center">
+        <div id="overlay" class="hidden absolute inset-0 z-50 flex items-center justify-center bg-slate-950/98 p-6 backdrop-blur-xl text-center overflow-y-auto">
+            <div id="result-content" class="w-full max-w-sm fade-in flex flex-col items-center py-10">
                 <div id="overlay-icon" class="text-7xl mb-4"></div>
                 <div id="overlay-message" class="text-2xl font-bold mb-4 text-slate-200 leading-tight"></div>
                 
@@ -263,13 +259,9 @@
                 </div>
 
                 <div id="score-report" class="w-full mb-8 p-6 bg-slate-900/50 rounded-3xl border border-slate-800">
-                </div>
+                    </div>
 
-                <button id="result-ranking-trigger" onclick="viewRankingOnly(true)" class="w-full mb-6 active:scale-95 transition-all">
-                    <img src="ranking.png" alt="全国ランキング" class="w-full drop-shadow-lg pointer-events-none">
-                </button>
-
-                <div id="ranking-container" class="hidden w-full mb-8">
+                <div id="ranking-container" class="w-full mb-8">
                     <h3 class="text-sm font-black text-slate-400 mb-4 tracking-[0.3em] uppercase flex items-center justify-center">
                         <span class="h-px w-8 bg-slate-800 mr-2"></span>
                         National Top 10
@@ -279,8 +271,8 @@
                     </div>
                 </div>
 
-                <button id="action-btn" onclick="sendAndReload()" class="w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white">リベンジする</button>
-                <button id="reload-btn" onclick="sendAndReload()" class="mt-4 w-full py-3 text-slate-500 font-bold text-sm">タイトルへ戻る</button>
+                <button id="action-btn" class="w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white">アクションボタン</button>
+                <button onclick="location.reload()" class="mt-4 w-full py-3 text-slate-500 font-bold text-sm">タイトルへ戻る</button>
             </div>
         </div>
     </div>
@@ -308,55 +300,63 @@
             { id: 4, name: "番外：カタカナ語", key: 'katakana', color: "bg-rose-600", bgm: "bgm-stage4" }
         ];
 
+        // --- 称号ワードデータ ---
         const ADJECTIVES = {
             A: ["鼻血が出そうな", "お湯も沸かせる", "味が濃すぎる", "地球を救いそうな", "牛乳を吹き出す", "目がバッキバキの", "100点満点を超えた", "止まると死ぬ", "お祭り騒ぎの", "筋肉痛になりそうな", "稲妻が走る", "本気を出しすぎた", "奇跡しか起きない", "絶好調すぎる", "燃えさかる", "声がデカすぎる", "夢にまで出てくる", "宇宙まで飛んでいく", "完璧に仕上がった", "神がかり的な", "爆笑を誘う", "まばたきを忘れた", "画面が割れそうな", "磁石のように吸い付く", "100年に一度の", "勢いが止まらない", "誰にも止められない", "太陽より熱い", "伝説になりそうな", "息継ぎなしの"],
             B: ["脂が乗ってきた", "おかわりが欲しい", "ノリにノっている", "鼻歌まじりの", "準備万端な", "歯切れの良い", "結構やる気な", "ドヤ顔がすぎる", "勢いがある", "ちょっと自慢げな", "期待を裏切らない", "かなりキマっている", "独自のキレがある", "油断ならない", "本気を出しかけた", "絶妙なタイミングの", "噂になりそうな", "磨けば光る", "安定感のある", "独自の進化をした", "声高らかな", "手応えバッチリの", "確信に満ちた", "意外と強気な", "独自のセンスが光る", "一味ちがう", "自信満々な", "スピードに乗った", "キラキラしている", "ちょうど食べごろな"],
-            C: ["そこそこやる", "クラスで3番目の", "絶妙にふつうの", "意外と頑張る", "腹八分目の", "安定した", "ほどよい温度の", "どこにでもいる", "平均的な", "無難すぎる", "まあまあの", "どっちつかずの", "パッとしない", "ほどほどに温まった", "右へならえの", "標準的な", "可もなく不可もない", "世渡り上手な", "適当にこなす", "世間並みの", "ほどよく焼けた", "馴染みのある", "ど真ん中を行く", "箸休めのような", "まあまらの出来の", "それなりの", "目立たない", "安定の", "ちょうど真ん中の", "普通を極めた"]
+            C: ["そこそこやる", "クラスで3番目の", "絶妙にふつうの", "意外と頑張る", "腹八分目の", "安定した", "ほどよい温度の", "どこにでもいる", "平均的な", "無難すぎる", "まあまあの", "どっちつかずの", "パッとしない", "ほどほどに温まった", "右へならえの", "標準的な", "可もなく不可もない", "世渡り上手な", "適当にこなす", "世間並みの", "ほどよく焼けた", "馴染みのある", "ど真ん中を行く", "箸休めのような", "まあまあの出来の", "それなりの", "目立たない", "安定の", "ちょうど真ん中の", "普通を極めた"],
+            D: ["伸びしろしかない", "寝起きの", "よちよちの", "迷走している", "震える足の", "産まれたての", "おぼつかない", "崖っぷちの", "頼りない", "初々しい", "危なっかしい", "心もとない", "彷徨っている", "弱気な", "控えめな", "遠慮がちな", "借りてきた猫のような", "半信半疑の", "おそるおそるの", "手探りな", "未熟な", "幼い", "甘噛みの", "へっぴり腰の", "自信なげな", "霧の中にいるような", "ぼんやりした", "お腹をこわした", "忘れ物をした", "宿題が嫌いな"],
+            E: ["ほぼ寝ている", "止まったままの", "ぐにゃぐにゃな", "お腹がすいた", "ぼーっとした", "穴のあいた", "すべって転んだ", "宿題を忘れた", "忘れ物ばかりの", "歯をみがいていない", "迷子になった", "自信のない", "まだ準備中の", "弱々しい", "まばたきしすぎた", "鼻歌まじりの", "ぼんやりした", "ふらふらの", "夢の中の", "ぼーっとしている", "お菓子を食べたい", "ぬるくなった", "頼りない", "影のうすい", "眠気に負けた", "風に流された", "名前を忘れた", "足がしびれた", "ぼけっとしている", "魂が抜けた"]
         };
 
-        const NOUNS = ["対義語職人", "言葉の魔術師", "サバイバー", "語彙力の神", "猛者", "スピードスター", "守護神", "開拓者", "冒険家", "仕事人", "表現者", "伝道師", "探求者", "鉄人", "達人", "求道者", "マスター", "支配者", "覇者", "天才", "逸材", "革命児", "超新星", "英雄", "巨匠", "賢者", "策士", "実力派", "風雲児", "最終兵器"];
+        const NOUNS = {
+            A: ["ヒーロー", "大統領", "王様", "優勝者", "宇宙人", "伝説", "天才", "守護神", "救世主", "1等賞", "金メダル", "ボス", "隊長", "師匠", "魔法使い", "チャンピオン", "主人公", "未来人", "知恵袋", "司令官", "発明家", "星", "太陽", "超人", "大黒柱", "神様", "巨匠", "勝ち組", "生き字引", "冒険王"],
+            B: ["期待の星", "選手", "隊員", "リーダー", "兄貴", "職人", "先輩", "実力者", "実行委員", "人気者", "代表者", "助っ人", "有名人", "まとめ役", "現場監督", "勝ち組の卵", "特待生", "優等生", "秘密兵器", "副隊長", "班長", "勝ち組候補", "やり手", "切れ者", "指導員", "選抜メンバー", "自信家", "働き者", "知恵者", "鉄人"],
+            C: ["一般市民", "村人", "通行人", "観客", "どこかの誰か", "隣の住人", "バイトリーダー", "係員", "出席者", "案内係", "メンバー", "サラリーマン", "主婦", "郵便屋さん", "おじさん", "お姉さん", "店員さん", "普通の人", "背番号のないエース", "掃除当番", "予備軍", "飼育員", "受講生", "散歩中の人", "待機中の人", "看板娘", "住み込みの人", "会員", "旅行者"],
+            D: ["挑戦者", "ひよこ", "初心者", "見習い", "練習生", "散歩中の子犬", "隠れキャラ", "野良猫", "迷走中の人", "研究生", "補習を受けている人", "予備校生", "駆け出し", "まだ何者でもない人", "新入り", "迷子の大人", "迷子のクジラ", "まだ起きていない人", "名前を募集中の方", "練習中の方", "探しもの中の人", "たまご", "冒険の準備中の人", "お留守番係", "見守り隊", "お昼寝中の人", "順番待ちの人", "忘れ物を取りに帰った人", "準備体操中の人", "通りすがりの人"],
+            E: ["かかし", "石ころ", "置物", "どろだんご", "お地蔵さん", "消しゴムのかす", "ぬけがら", "ちり紙", "落ち葉", "ありんこ", "砂つぶ", "ほこり", "影ぼうし", "まくら", "たわし", "水たまり", "空き箱", "雑草", "ビー玉", "扇風機（弱）", "かたつむり", "おたまじゃくし", "豆腐", "プリン", "ふせん", "穴のあいた靴下", "迷子のひよこ", "割れたコップ", "鉛筆のしん", "1円玉"]
+        };
 
+        let quizList = [];
+        let currentIndex = 0;
         let score = 0;
-        let currentQuestionIndex = 0;
-        let currentStageIndex = 0;
-        let combo = 0;
-        let isMuted = false;
-        let playerName = "名無し";
+        let playerName = "ななし";
         let questionStartTime = 0;
-        let usedQuestions = [];
-        let hasSentScore = false;
-
-        function toggleMute() {
-            isMuted = !isMuted;
-            const svgsOn = [document.getElementById('title-volume-on'), document.getElementById('game-volume-on')];
-            const svgsOff = [document.getElementById('title-volume-off'), document.getElementById('game-volume-off')];
-            svgsOn.forEach(s => s.classList.toggle('hidden', isMuted));
-            svgsOff.forEach(s => s.classList.toggle('hidden', !isMuted));
-            Object.values(currentBgms).forEach(b => b.muted = isMuted);
-            ["sfx-correct", "sfx-wrong"].forEach(id => document.getElementById(id).muted = isMuted);
-        }
-
-        const currentBgms = {
-            'bgm-stage1': document.getElementById('bgm-stage1'),
-            'bgm-stage2': document.getElementById('bgm-stage2'),
-            'bgm-stage3': document.getElementById('bgm-stage3'),
-            'bgm-stage4': document.getElementById('bgm-stage4'),
-            'bgm-ending': document.getElementById('bgm-ending')
-        };
-
-        function stopAllBgm() {
-            Object.values(currentBgms).forEach(b => { b.pause(); b.currentTime = 0; });
-        }
+        let currentBgm = null;
+        let isMuted = false;
 
         function playBgm(id) {
-            stopAllBgm();
-            const bgm = currentBgms[id];
-            if (bgm) { bgm.muted = isMuted; bgm.play().catch(() => {}); }
+            const nextBgm = document.getElementById(id);
+            if (!nextBgm || currentBgm === nextBgm) return;
+            if (currentBgm) { currentBgm.pause(); currentBgm.currentTime = 0; }
+            currentBgm = nextBgm;
+            currentBgm.volume = 0.3;
+            if (!isMuted) {
+                currentBgm.play().catch(e => {
+                    console.log("Audio play blocked. Waiting for interaction.");
+                });
+            }
         }
 
         function playSfx(id) {
+            if (isMuted) return;
             const sfx = document.getElementById(id);
-            if (sfx) { sfx.currentTime = 0; sfx.muted = isMuted; sfx.play().catch(() => {}); }
+            if (sfx) { sfx.currentTime = 0; sfx.volume = 0.5; sfx.play().catch(e => {}); }
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            document.querySelectorAll('[id$="volume-on"]').forEach(i => i.classList.toggle('hidden', isMuted));
+            document.querySelectorAll('[id$="volume-off"]').forEach(i => i.classList.toggle('hidden', !isMuted));
+            if (currentBgm) isMuted ? currentBgm.pause() : currentBgm.play().catch(e => {});
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
         }
 
         function showInstructions() {
@@ -371,240 +371,271 @@
 
         function initialStart() {
             const nameInput = document.getElementById('player-name').value.trim();
-            if (nameInput) playerName = nameInput;
-            document.getElementById('nickname-screen').classList.add('hidden');
+            playerName = nameInput || "ななしのチャレンジャー";
             startGame();
         }
 
         function startGame() {
-            score = 0;
-            currentQuestionIndex = 0;
-            currentStageIndex = 0;
-            combo = 0;
-            usedQuestions = [];
-            hasSentScore = false;
-            document.getElementById('total-score').textContent = "0";
+            document.getElementById('nickname-screen').classList.add('hidden');
+            document.getElementById('overlay').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
-            playBgm(STAGES[0].bgm);
-            nextQuestion();
+            
+            // BGMリセット
+            if (currentBgm) {
+                currentBgm.pause();
+                currentBgm.currentTime = 0;
+                currentBgm = null;
+            }
+
+            quizList = [];
+            STAGES.forEach(stage => {
+                const source = DATA[stage.key];
+                const shuffled = shuffle([...source]);
+                quizList = quizList.concat(shuffled.slice(0, 15).map(item => ({...item, stage})));
+            });
+            currentIndex = 0;
+            score = 0;
+            document.getElementById('total-score').textContent = "0";
+            initQuiz();
         }
 
-        function nextQuestion() {
-            if (currentQuestionIndex >= 60) {
-                endGame(true);
-                return;
-            }
+        function initQuiz() {
+            const q = quizList[currentIndex];
+            const s = q.stage;
+            playBgm(s.bgm);
 
-            const stageThresholds = [0, 15, 30, 45];
-            const nextStageIndex = stageThresholds.findLastIndex(t => currentQuestionIndex >= t);
-            
-            if (nextStageIndex !== currentStageIndex) {
-                currentStageIndex = nextStageIndex;
-                playBgm(STAGES[currentStageIndex].bgm);
-            }
-
-            const currentStage = STAGES[currentStageIndex];
-            const stageBadge = document.getElementById('level-badge');
-            stageBadge.textContent = currentStage.name;
-            stageBadge.className = `px-4 py-1.5 text-white text-xs rounded-full font-bold shadow-lg ${currentStage.color}`;
-
-            const stageQuestions = DATA[currentStage.key];
-            let qData;
-            do {
-                qData = stageQuestions[Math.floor(Math.random() * stageQuestions.length)];
-            } while (usedQuestions.includes(qData.q));
-            
-            usedQuestions.push(qData.q);
-
-            document.getElementById('q-num').textContent = currentQuestionIndex + 1;
-            document.getElementById('question-word').textContent = qData.q;
-            document.getElementById('progress-bar').style.width = `${(currentQuestionIndex / 60) * 100}%`;
-
-            const choices = [qData.a, ...qData.d].sort(() => Math.random() - 0.5);
+            document.getElementById('question-word').textContent = q.q;
+            document.getElementById('q-num').textContent = currentIndex + 1;
+            document.getElementById('progress-bar').style.width = `${(currentIndex / 60) * 100}%`;
+            const badge = document.getElementById('level-badge');
+            badge.textContent = s.name;
+            badge.className = `px-4 py-1.5 ${s.color} text-white text-xs rounded-full font-bold shadow-lg`;
+            const choices = shuffle([q.a, ...q.d]);
             const grid = document.getElementById('choices-grid');
             grid.innerHTML = '';
-            
-            choices.forEach(choice => {
+            choices.forEach(text => {
                 const btn = document.createElement('button');
-                btn.className = "choice-btn w-full py-5 rounded-2xl font-bold text-xl shadow-md active:scale-95";
-                btn.textContent = choice;
-                btn.onclick = () => checkAnswer(choice, qData.a, qData.q);
+                btn.className = "choice-btn py-5 rounded-2xl text-xl font-bold active:scale-95 transition-all";
+                btn.textContent = text;
+                btn.onclick = () => checkAnswer(text);
                 grid.appendChild(btn);
             });
-
             questionStartTime = Date.now();
         }
 
-        function checkAnswer(selected, correct, question) {
-            const timeTaken = (Date.now() - questionStartTime) / 1000;
+        function checkAnswer(selected) {
+            const q = quizList[currentIndex];
+            const isCorrect = (selected === q.a);
             
-            if (selected === correct) {
+            if (isCorrect) {
                 playSfx('sfx-correct');
-                const timeBonus = Math.max(0, Math.floor((5 - timeTaken) * 100));
-                const basePoints = 100 + (currentStageIndex * 50);
-                const points = basePoints + timeBonus;
+                const timeTaken = (Date.now() - questionStartTime) / 1000;
+                let bonus = 0;
+                let rating = "GOOD";
+                let ratingColor = "text-white";
+                if (timeTaken < 1.2) {
+                    bonus = 500;
+                    rating = "EXCELLENT!!";
+                    ratingColor = "text-yellow-300";
+                } else if (timeTaken < 2.5) {
+                    bonus = 200;
+                    rating = "GREAT!";
+                    ratingColor = "text-emerald-300";
+                }
+
+                const points = 1000 + bonus;
                 score += points;
                 document.getElementById('total-score').textContent = score.toLocaleString();
-                
-                // ① エフェクト演出（四角い枠付きに変更）
-                let bonusLabel = "";
-                if (timeTaken < 1.2) bonusLabel = "EXCELLENT!!<br>";
-                else if (timeTaken < 2.5) bonusLabel = "SPEED BONUS!<br>";
-                showFeedback(`${bonusLabel}+${points} pts`, "text-white");
-                
-                currentQuestionIndex++;
-                setTimeout(nextQuestion, 600);
+                showFeedback(points, rating, ratingColor);
+
+                currentIndex++;
+                setTimeout(() => {
+                    if (currentIndex >= 60) showResult(true);
+                    else if (currentIndex % 15 === 0) showStageClear();
+                    else initQuiz();
+                }, 600);
             } else {
+                if (currentBgm) currentBgm.pause();
                 playSfx('sfx-wrong');
-                // 不正解時はそのまま
-                const layer = document.getElementById('feedback-layer');
-                const pop = document.createElement('div');
-                pop.className = `feedback-pop !bg-rose-600 !border-white text-3xl font-black italic text-white drop-shadow-2xl`;
-                pop.textContent = "不正解...";
-                layer.appendChild(pop);
-                setTimeout(() => pop.remove(), 800);
-                
-                setTimeout(() => endGame(false, question, correct), 600);
+                showResult(false);
             }
         }
 
-        // ① エフェクト演出用のHTML生成
-        function showFeedback(text, colorClass) {
+        function showFeedback(points, rating, colorClass) {
             const layer = document.getElementById('feedback-layer');
-            const pop = document.createElement('div');
-            pop.className = `feedback-pop text-2xl font-black italic ${colorClass} drop-shadow-2xl`;
-            pop.innerHTML = text; // 改行を許可するためinnerHTML
-            layer.appendChild(pop);
-            setTimeout(() => pop.remove(), 800);
+            const el = document.createElement('div');
+            el.className = `feedback-pop flex flex-col items-center`;
+            // 枠線と背景を追加して視認性を向上
+            el.innerHTML = `
+                <div class="bg-slate-900/90 border-2 border-emerald-500 rounded-2xl px-6 py-4 shadow-[0_0_20px_rgba(52,211,153,0.4)] flex flex-col items-center min-w-[160px]">
+                    <div class="text-3xl font-black ${colorClass} drop-shadow-md mb-1 italic tracking-wider">${rating}</div>
+                    <div class="text-xl font-bold text-white">+${points.toLocaleString()}</div>
+                </div>
+            `;
+            layer.appendChild(el);
+            setTimeout(() => el.remove(), 800);
         }
 
-        function getTitle(score) {
-            let cat = 'C';
-            if (score > 12000) cat = 'A';
-            else if (score > 6000) cat = 'B';
+        function showStageClear() {
+            const ov = document.getElementById('overlay');
+            ov.classList.remove('hidden');
+            document.getElementById('ranking-container').classList.add('hidden');
+            document.getElementById('review-box').classList.add('hidden');
+            document.getElementById('score-report').classList.remove('hidden');
             
-            const adj = ADJECTIVES[cat][Math.floor(Math.random() * ADJECTIVES[cat].length)];
-            const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+            // ステージクリア時も称号を仮表示（お遊び要素）
+            const title = generateTitle(score, currentIndex);
+            const scoreReport = document.getElementById('score-report');
+            scoreReport.innerHTML = `
+                <div class="text-slate-400 text-sm mb-1">現在の暫定称号</div>
+                <div class="text-2xl font-black text-amber-400 mb-4">【${title}】</div>
+                <div class="text-slate-400 text-xs uppercase mb-1">Current Score</div>
+                <div id="final-score" class="text-5xl font-black text-yellow-400 mb-1">${score.toLocaleString()}</div>
+                <div id="ranking-status" class="text-emerald-500 text-xs font-bold animate-pulse">ステージクリア!</div>
+            `;
+
+            document.getElementById('overlay-icon').textContent = "🏅";
+            document.getElementById('overlay-message').innerHTML = `<span class="text-emerald-400">STAGE ${currentIndex/15} クリア!</span><br>さらなる深淵へ...`;
+            const bt = document.getElementById('action-btn');
+            bt.textContent = "次のステージへ進む";
+            bt.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
+            bt.onclick = () => {
+                ov.classList.add('hidden');
+                initQuiz();
+            };
+        }
+
+        // --- 称号生成ロジック ---
+        function generateTitle(totalScore, solvedCount) {
+            let sRank = 'E';
+            if (totalScore >= 70000) sRank = 'A';
+            else if (totalScore >= 50000) sRank = 'B';
+            else if (totalScore >= 30000) sRank = 'C';
+            else if (totalScore >= 10000) sRank = 'D';
+
+            let cRank = 'E';
+            if (solvedCount >= 60) cRank = 'A';
+            else if (solvedCount >= 45) cRank = 'B';
+            else if (solvedCount >= 30) cRank = 'C';
+            else if (solvedCount >= 15) cRank = 'D';
+
+            const adj = ADJECTIVES[sRank][Math.floor(Math.random() * 30)];
+            const noun = NOUNS[cRank][Math.floor(Math.random() * 30)];
             return `${adj}${noun}`;
         }
 
-        async function endGame(isClear, lastQ = '', correctA = '') {
-            document.getElementById('game-screen').classList.add('hidden');
+        async function showResult(isWin) {
             const ov = document.getElementById('overlay');
-            const ic = document.getElementById('overlay-icon');
-            const m = document.getElementById('overlay-message');
-            const review = document.getElementById('review-box');
-            const scoreReport = document.getElementById('score-report');
-            const rankingContainer = document.getElementById('ranking-container');
-            const rankingTrigger = document.getElementById('result-ranking-trigger');
-            const bt = document.getElementById('action-btn');
-            const reloadBtn = document.getElementById('reload-btn');
-
             ov.classList.remove('hidden');
-            rankingContainer.classList.add('hidden');
-            rankingTrigger.classList.remove('hidden');
-            reloadBtn.classList.remove('hidden');
-            ov.scrollTop = 0;
+            document.getElementById('ranking-container').classList.remove('hidden');
+            document.getElementById('score-report').classList.remove('hidden');
 
-            if (isClear) {
+            // 称号生成と反映
+            const title = generateTitle(score, currentIndex);
+            const scoreReport = document.getElementById('score-report');
+            scoreReport.innerHTML = `
+                <div class="text-slate-400 text-sm mb-1">獲得称号</div>
+                <div class="text-2xl font-black text-amber-400 mb-4">【${title}】</div>
+                <div class="flex justify-between items-end">
+                    <div>
+                        <div class="text-slate-400 text-xs uppercase">Final Score</div>
+                        <div id="final-score" class="text-4xl font-black text-yellow-400">${score.toLocaleString()}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-slate-400 text-xs uppercase">Solved</div>
+                        <div class="text-2xl font-black text-slate-200">${currentIndex}<span class="text-sm ml-1 text-slate-400">問</span></div>
+                    </div>
+                </div>
+                <div id="ranking-status" class="text-emerald-500 text-[10px] font-bold mt-4 animate-pulse uppercase tracking-widest">スコア送信中...</div>
+            `;
+
+            const m = document.getElementById('overlay-message');
+            const ic = document.getElementById('overlay-icon');
+            const review = document.getElementById('review-box');
+            const status = document.getElementById('ranking-status');
+            const bt = document.getElementById('action-btn');
+
+            if (isWin) {
                 playBgm('bgm-ending');
                 ic.textContent = "👑";
-                m.textContent = "完全制覇！";
+                m.textContent = "完全制覇！お見事です。";
                 review.classList.add('hidden');
+                bt.textContent = "もう一度挑戦";
+                bt.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
             } else {
-                stopAllBgm();
                 ic.textContent = "💀";
-                m.textContent = "サバイバル終了";
+                m.innerHTML = `<span class="text-rose-500">サバイバル終了</span><br>記録: ${currentIndex} 問`;
+                const q = quizList[currentIndex];
+                document.getElementById('rev-q').textContent = q.q;
+                document.getElementById('rev-a').textContent = q.a;
                 review.classList.remove('hidden');
-                document.getElementById('rev-q').textContent = lastQ;
-                document.getElementById('rev-a').textContent = correctA;
+                bt.textContent = "リベンジする";
+                bt.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
             }
 
-            const title = getTitle(score);
-            scoreReport.innerHTML = `
-                <div class="text-slate-400 text-xs font-bold uppercase mb-2">Final Score</div>
-                <div class="text-5xl font-black text-yellow-400 mb-6 drop-shadow-lg">${score.toLocaleString()}</div>
-                <div class="text-slate-400 text-xs font-bold uppercase mb-2">称号</div>
-                <div class="text-xl font-bold text-white leading-tight" id="final-title-text">${title}</div>
-            `;
-            
-            // ② スコア送信を自動化（ランキングを押す前でも送信されるように）
-            // ボタンそのものはリフレッシュ用
-        }
+            bt.onclick = () => {
+                currentIndex = 0;
+                score = 0;
+                startGame();
+            };
 
-        // ② スコア送信処理
-        async function sendScoreAuto() {
-            if (hasSentScore || score === 0) return;
-            const titleText = document.getElementById('final-title-text')?.textContent || "サバイバー";
-            try {
-                hasSentScore = true;
-                // Fetchは非同期で投げっぱなしにする
-                fetch(GAS_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name: playerName, score: score, title: titleText })
-                });
-            } catch (e) {
-                hasSentScore = false;
-                console.error("Score sending failed");
+            if (GAS_URL.includes("https")) {
+                status.textContent = "ランキング送信中...";
+                try {
+                    await fetch(GAS_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            name: playerName, 
+                            score: score,
+                            accessKey: "03162017Rfv" 
+                        })
+                    });
+                    const res = await fetch(GAS_URL);
+                    const rankingData = await res.json();
+                    renderRanking(rankingData);
+                    status.textContent = "全国ランキング更新！";
+                } catch (e) {
+                    status.textContent = "通信エラー";
+                }
+            } else {
+                status.textContent = "URL未設定";
             }
         }
 
-        // ② 全ての終了ボタンから呼ばれる関数
-        async function sendAndReload() {
-            await sendScoreAuto();
-            location.reload();
+        function renderRanking(data) {
+            const list = document.getElementById('ranking-list');
+            list.innerHTML = data.map((r, i) => `
+                <div class="flex justify-between items-center py-3 px-4 rank-row ${r.name === playerName ? 'bg-emerald-500/20' : ''}">
+                    <div class="flex items-center">
+                        <span class="w-6 text-xs font-black ${i<3 ? 'text-yellow-400' : 'text-slate-500'}">${i+1}</span>
+                        <span class="text-sm font-bold text-slate-200">${r.name}</span>
+                    </div>
+                    <span class="text-sm font-black text-emerald-400 font-mono">${Number(r.score).toLocaleString()}</span>
+                </div>
+            `).join('');
         }
 
-        async function viewRankingOnly(fromResult = false) {
-            if (fromResult) {
-                sendScoreAuto();
-            }
-
+        async function viewRankingOnly() {
             const ov = document.getElementById('overlay');
             const ic = document.getElementById('overlay-icon');
             const m = document.getElementById('overlay-message');
             const review = document.getElementById('review-box');
             const scoreReport = document.getElementById('score-report');
             const rankingContainer = document.getElementById('ranking-container');
-            const rankingTrigger = document.getElementById('result-ranking-trigger');
             const bt = document.getElementById('action-btn');
-            const reloadBtn = document.getElementById('reload-btn');
 
             ov.classList.remove('hidden');
-            ov.scrollTop = 0;
             ic.textContent = "🏆";
             m.textContent = "全国ランキング";
             review.classList.add('hidden');
             scoreReport.classList.add('hidden');
-            rankingTrigger.classList.add('hidden');
             rankingContainer.classList.remove('hidden');
             
-            bt.textContent = "戻る";
+            bt.textContent = "閉じる";
             bt.className = "w-full py-6 bg-slate-700 text-white rounded-3xl font-black text-2xl shadow-xl";
-            
-            bt.onclick = () => {
-                if (fromResult) {
-                    rankingContainer.classList.add('hidden');
-                    rankingTrigger.classList.remove('hidden');
-                    scoreReport.classList.remove('hidden');
-                    reloadBtn.classList.remove('hidden');
-                    if (score > 0 && currentQuestionIndex < 60) {
-                        ic.textContent = "💀";
-                        m.textContent = "サバイバル終了";
-                        review.classList.remove('hidden');
-                    } else if (currentQuestionIndex >= 60) {
-                        ic.textContent = "👑";
-                        m.textContent = "完全制覇！";
-                    }
-                    bt.textContent = "リベンジする";
-                    bt.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
-                    bt.onclick = () => sendAndReload();
-                } else {
-                    ov.classList.add('hidden');
-                }
-            };
+            bt.onclick = () => ov.classList.add('hidden');
 
             const list = document.getElementById('ranking-list');
             list.innerHTML = '<div class="py-10 text-center text-slate-500 animate-pulse">読み込み中...</div>';
@@ -620,39 +651,6 @@
             } else {
                 list.innerHTML = '<div class="py-10 text-center text-slate-500">URL未設定</div>';
             }
-        }
-
-        function renderRanking(data) {
-            const list = document.getElementById('ranking-list');
-            list.innerHTML = '';
-            
-            if (!data || data.length === 0) {
-                list.innerHTML = '<div class="py-10 text-center text-slate-500">データがありません</div>';
-                return;
-            }
-
-            data.slice(0, 10).forEach((item, index) => {
-                const row = document.createElement('div');
-                row.className = "rank-row flex items-center p-4 gap-4";
-                
-                let rankColor = "text-slate-400";
-                if (index === 0) rankColor = "text-yellow-400";
-                if (index === 1) rankColor = "text-slate-300";
-                if (index === 2) rankColor = "text-amber-600";
-
-                row.innerHTML = `
-                    <div class="text-2xl font-black ${rankColor} w-8 text-center">${index + 1}</div>
-                    <div class="flex-grow overflow-hidden">
-                        <div class="text-white font-bold truncate">${item.name || '名無し'}</div>
-                        <div class="text-[10px] text-slate-500 truncate">${item.title || '-'}</div>
-                    </div>
-                    <div class="text-right flex-shrink-0">
-                        <div class="text-emerald-400 font-black text-lg">${(item.score || 0).toLocaleString()}</div>
-                        <div class="text-[8px] text-slate-600 uppercase">Points</div>
-                    </div>
-                `;
-                list.appendChild(row);
-            });
         }
     </script>
 </body>
