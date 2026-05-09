@@ -87,7 +87,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 2.3.0
+            VER 2.5.0
         </div>
 
         <script>
@@ -150,7 +150,7 @@
                 bt.onclick = () => {
                     ov.classList.add('hidden');
                     // 閉じる時にランキング表示の可能性をリセット（他への影響を防ぐ）
-                    rankingContainer.classList.remove('hidden');
+                    if(rankingContainer) rankingContainer.classList.add('hidden');
                 };
             }
         </script>
@@ -628,7 +628,7 @@
             m.textContent = "全国ランキング";
             review.classList.add('hidden');
             scoreReport.classList.add('hidden');
-            rankingContainer.classList.remove('hidden');
+            if(rankingContainer) rankingContainer.classList.add('hidden');
             
             bt.textContent = "閉じる";
             bt.className = "w-full py-6 bg-slate-700 text-white rounded-3xl font-black text-2xl shadow-xl";
@@ -649,6 +649,69 @@
                 list.innerHTML = '<div class="py-10 text-center text-slate-500">URL未設定</div>';
             }
         }
+    
+        // リザルト画面専用のランキング表示
+        async function viewRankingFromResult() {
+            const rankingContainer = document.getElementById('ranking-container');
+            const scoreReport = document.getElementById('score-report');
+            const rankingViewBtn = document.getElementById('view-ranking-btn-result');
+            const reviewBox = document.getElementById('review-box');
+            const ic = document.getElementById('overlay-icon');
+            const m = document.getElementById('overlay-message');
+            const bt = document.getElementById('action-btn');
+
+            // 表示の切り替え
+            ic.textContent = "🏆";
+            m.textContent = "全国ランキング";
+            scoreReport.classList.add('hidden');
+            rankingViewBtn.classList.add('hidden');
+            reviewBox.classList.add('hidden');
+            if(rankingContainer) rankingContainer.classList.add('hidden');
+
+            // ランキング取得
+            const list = document.getElementById('ranking-list');
+            list.innerHTML = '<div class="py-10 text-center text-slate-500 animate-pulse">読み込み中...</div>';
+            
+            if (GAS_URL.includes("https")) {
+                try {
+                    const res = await fetch(GAS_URL);
+                    const rankingData = await res.json();
+                    renderRanking(rankingData);
+                } catch (e) {
+                    list.innerHTML = '<div class="py-10 text-center text-rose-400">通信エラー</div>';
+                }
+            }
+
+            // 「リザルトに戻る」ボタンに書き換え
+            const originalBtnText = bt.textContent;
+            const originalBtnClass = bt.className;
+            const originalBtnOnClick = bt.onclick;
+
+            bt.textContent = "リザルトに戻る";
+            bt.className = "w-full py-6 bg-slate-700 text-white rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all";
+            bt.onclick = () => {
+                // リザルト画面の元の状態を復元
+                rankingContainer.classList.add('hidden');
+                scoreReport.classList.remove('hidden');
+                rankingViewBtn.classList.remove('hidden');
+                
+                // 元のメッセージとアイコンに戻す
+                if (state.currentIndex >= 60) {
+                    ic.textContent = "👑";
+                    m.textContent = "完全制覇達成！";
+                } else {
+                    ic.textContent = "👻";
+                    m.textContent = "サバイバル失敗...";
+                    reviewBox.classList.remove('hidden');
+                }
+                
+                // ボタンも元に戻す
+                bt.textContent = originalBtnText;
+                bt.className = originalBtnClass;
+                bt.onclick = originalBtnOnClick;
+            };
+        }
+
     </script>
 </body>
 </html>
