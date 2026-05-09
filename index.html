@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
     
-    <title>対義語サバイバル - 全国ランキング版</title>
+    <title>対義語サバイバル - 全国ランキング版 v2.1</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -107,7 +107,7 @@
                 ic.textContent = "📲";
                 review.classList.add('hidden');
                 scoreReport.classList.add('hidden');
-                rankingContainer.classList.add('hidden');
+                rankingContainer.classList.remove('hidden');
 
                 const ua = navigator.userAgent.toLowerCase();
                 const isiOS = /iphone|ipad|ipod/.test(ua);
@@ -258,14 +258,10 @@
                 <div id="score-report" class="w-full mb-8 p-6 bg-slate-900/50 rounded-3xl border border-slate-800">
                     </div>
 
-                <div id="ranking-container" class="w-full mb-8">
-                    <h3 class="text-sm font-black text-slate-400 mb-4 tracking-[0.3em] uppercase flex items-center justify-center">
-                        <span class="h-px w-8 bg-slate-800 mr-2"></span>
-                        National Top 10
-                        <span class="h-px w-8 bg-slate-800 ml-2"></span>
-                    </h3>
-                    <div id="ranking-list" class="bg-slate-900/30 rounded-2xl border border-slate-800/50 overflow-hidden text-left min-h-[100px]">
-                    </div>
+                                <div id="ranking-container" class="w-full mb-8">
+                    <button onclick="viewRankingOnly()" class="w-full active:scale-95 transition-all">
+                        <img src="ranking.png" alt="全国ランキング" class="w-full drop-shadow-lg pointer-events-none">
+                    </button>
                 </div>
 
                 <button id="action-btn" class="w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white">アクションボタン</button>
