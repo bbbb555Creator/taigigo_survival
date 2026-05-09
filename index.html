@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -18,7 +18,6 @@
         body { 
             font-family: 'Kiwi Maru', serif; 
             background-color: #0f172a;
-            /* # 壁紙画像の差し込み位置 */
             background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('bg.png');
             background-size: cover;
             background-position: center;
@@ -68,13 +67,15 @@
             transform: translate(-50%, -50%);
             pointer-events: none;
             z-index: 100;
+            text-align: center;
+            white-space: nowrap;
             animation: feedbackAnim 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
         }
 
         @keyframes feedbackAnim {
             0% { opacity: 0; transform: translate(-50%, -30%) scale(0.5); }
-            20% { opacity: 1; transform: translate(-50%, -55%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -70%) scale(0.9); }
+            20% { opacity: 1; transform: translate(-50%, -55%) scale(1.1); }
+            100% { opacity: 0; transform: translate(-50%, -70%) scale(1); }
         }
 
         .rank-row {
@@ -87,13 +88,12 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 2.3.0
+            VER 2.4.0
         </div>
 
         <script>
             const GAS_URL = "https://script.google.com/macros/s/AKfycbyFbiDDP-u2nUyE1eDMTdKJ48cdMUwyxzaTAHbc1DKA5wrXSrAlEtN-s79-SJ9vIa_v2g/exec";
 
-            // インストールガイドの表示
             function showInstallGuide() {
                 const ov = document.getElementById('overlay');
                 const ic = document.getElementById('overlay-icon');
@@ -241,8 +241,8 @@
             <div id="choices-grid" class="grid grid-cols-1 gap-4 mt-auto mb-8"></div>
         </div>
 
-        <div id="overlay" class="hidden absolute inset-0 z-50 flex items-center justify-center bg-slate-950/98 p-6 backdrop-blur-xl text-center overflow-y-auto">
-            <div id="result-content" class="w-full max-w-sm fade-in flex flex-col items-center py-10">
+        <div id="overlay" class="hidden absolute inset-0 z-50 flex items-start justify-center bg-slate-950/98 p-6 backdrop-blur-xl text-center overflow-y-auto pt-10 pb-10">
+            <div id="result-content" class="w-full max-w-sm fade-in flex flex-col items-center">
                 <div id="overlay-icon" class="text-7xl mb-4"></div>
                 <div id="overlay-message" class="text-2xl font-bold mb-4 text-slate-200 leading-tight"></div>
                 
@@ -272,7 +272,7 @@
                     </div>
                 </div>
 
-                <button id="action-btn" class="w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white">アクションボタン</button>
+                <button id="action-btn" onclick="location.reload()" class="w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white">リベンジする</button>
                 <button id="reload-btn" onclick="location.reload()" class="mt-4 w-full py-3 text-slate-500 font-bold text-sm">タイトルへ戻る</button>
             </div>
         </div>
@@ -304,7 +304,7 @@
         const ADJECTIVES = {
             A: ["鼻血が出そうな", "お湯も沸かせる", "味が濃すぎる", "地球を救いそうな", "牛乳を吹き出す", "目がバッキバキの", "100点満点を超えた", "止まると死ぬ", "お祭り騒ぎの", "筋肉痛になりそうな", "稲妻が走る", "本気を出しすぎた", "奇跡しか起きない", "絶好調すぎる", "燃えさかる", "声がデカすぎる", "夢にまで出てくる", "宇宙まで飛んでいく", "完璧に仕上がった", "神がかり的な", "爆笑を誘う", "まばたきを忘れた", "画面が割れそうな", "磁石のように吸い付く", "100年に一度の", "勢いが止まらない", "誰にも止められない", "太陽より熱い", "伝説になりそうな", "息継ぎなしの"],
             B: ["脂が乗ってきた", "おかわりが欲しい", "ノリにノっている", "鼻歌まじりの", "準備万端な", "歯切れの良い", "結構やる気な", "ドヤ顔がすぎる", "勢いがある", "ちょっと自慢げな", "期待を裏切らない", "かなりキマっている", "独自のキレがある", "油断ならない", "本気を出しかけた", "絶妙なタイミングの", "噂になりそうな", "磨けば光る", "安定感のある", "独自の進化をした", "声高らかな", "手応えバッチリの", "確信に満ちた", "意外と強気な", "独自のセンスが光る", "一味ちがう", "自信満々な", "スピードに乗った", "キラキラしている", "ちょうど食べごろな"],
-            C: ["そこそこやる", "クラスで3番目の", "絶妙にふつうの", "意外と頑張る", "腹八分目の", "安定した", "ほどよい温度の", "どこにでもいる", "平均的な", "無難すぎる", "まあまあの", "どっちつかずの", "パッとしない", "ほどほどに温まった", "右へならえの", "標準的な", "可もなく不可もない", "世渡り上手な", "適当にこなす", "世間並みの", "ほどよく焼けた", "馴染みのある", "ど真ん中を行く", "箸休めのような", "まあまあの出来の", "それなりの", "目立たない", "安定の", "ちょうど真ん中の", "普通を極めた"]
+            C: ["そこそこやる", "クラスで3番目の", "絶妙にふつうの", "意外と頑張る", "腹八分目の", "安定した", "ほどよい温度の", "どこにでもいる", "平均的な", "無難すぎる", "まあまあの", "どっちつかずの", "パッとしない", "ほどほどに温まった", "右へならえの", "標準的な", "可もなく不可もない", "世渡り上手な", "適当にこなす", "世間並みの", "ほどよく焼けた", "馴染みのある", "ど真ん中を行く", "箸休めのような", "まあまらの出来の", "それなりの", "目立たない", "安定の", "ちょうど真ん中の", "普通を極めた"]
         };
 
         const NOUNS = ["対義語職人", "言葉の魔術師", "サバイバー", "語彙力の神", "猛者", "スピードスター", "守護神", "開拓者", "冒険家", "仕事人", "表現者", "伝道師", "探求者", "鉄人", "達人", "求道者", "マスター", "支配者", "覇者", "天才", "逸材", "革命児", "超新星", "英雄", "巨匠", "賢者", "策士", "実力派", "風雲児", "最終兵器"];
@@ -317,6 +317,7 @@
         let playerName = "名無し";
         let questionStartTime = 0;
         let usedQuestions = [];
+        let hasSentScore = false;
 
         function toggleMute() {
             isMuted = !isMuted;
@@ -374,6 +375,7 @@
             currentStageIndex = 0;
             combo = 0;
             usedQuestions = [];
+            hasSentScore = false;
             document.getElementById('total-score').textContent = "0";
             document.getElementById('game-screen').classList.remove('hidden');
             playBgm(STAGES[0].bgm);
@@ -437,7 +439,12 @@
                 score += points;
                 document.getElementById('total-score').textContent = score.toLocaleString();
                 
-                showFeedback("正解！", "text-emerald-400");
+                // 演出の表示
+                let feedbackText = "正解！";
+                if (timeTaken < 1.2) feedbackText = "Excellent!";
+                else if (timeTaken < 2.5) feedbackText = "Speed Bonus!";
+                showFeedback(feedbackText, "text-emerald-400");
+                
                 currentQuestionIndex++;
                 setTimeout(nextQuestion, 600);
             } else {
@@ -450,7 +457,7 @@
         function showFeedback(text, colorClass) {
             const layer = document.getElementById('feedback-layer');
             const pop = document.createElement('div');
-            pop.className = `feedback-pop text-6xl font-black italic ${colorClass} drop-shadow-2xl`;
+            pop.className = `feedback-pop text-5xl font-black italic ${colorClass} drop-shadow-2xl`;
             pop.textContent = text;
             layer.appendChild(pop);
             setTimeout(() => pop.remove(), 800);
@@ -482,6 +489,7 @@
             rankingContainer.classList.add('hidden');
             rankingTrigger.classList.remove('hidden');
             reloadBtn.classList.remove('hidden');
+            ov.scrollTop = 0;
 
             if (isClear) {
                 playBgm('bgm-ending');
@@ -502,32 +510,38 @@
                 <div class="text-slate-400 text-xs font-bold uppercase mb-2">Final Score</div>
                 <div class="text-5xl font-black text-yellow-400 mb-6 drop-shadow-lg">${score.toLocaleString()}</div>
                 <div class="text-slate-400 text-xs font-bold uppercase mb-2">称号</div>
-                <div class="text-xl font-bold text-white leading-tight">${title}</div>
+                <div class="text-xl font-bold text-white leading-tight" id="final-title-text">${title}</div>
             `;
 
-            bt.textContent = "記録を送信する";
+            bt.textContent = "リベンジする";
             bt.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
-            bt.onclick = async () => {
-                bt.disabled = true;
-                bt.textContent = "送信中...";
-                try {
-                    await fetch(GAS_URL, {
-                        method: "POST",
-                        mode: "no-cors",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ name: playerName, score: score, title: title })
-                    });
-                    bt.textContent = "送信完了！";
-                    bt.classList.replace('bg-emerald-600', 'bg-slate-700');
-                } catch (e) {
-                    bt.textContent = "エラーが発生しました";
-                    bt.disabled = false;
-                }
-            };
+            bt.onclick = () => location.reload();
         }
 
-        // 全国ランキング表示（リザルト画面からの呼び出しにも対応）
+        // スコア送信処理を分離
+        async function sendScoreAuto() {
+            if (hasSentScore) return;
+            const titleText = document.getElementById('final-title-text')?.textContent || "サバイバー";
+            try {
+                hasSentScore = true;
+                await fetch(GAS_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name: playerName, score: score, title: titleText })
+                });
+            } catch (e) {
+                hasSentScore = false;
+                console.error("Score sending failed");
+            }
+        }
+
         async function viewRankingOnly(fromResult = false) {
+            // リザルトからの場合は自動送信を実行
+            if (fromResult) {
+                sendScoreAuto();
+            }
+
             const ov = document.getElementById('overlay');
             const ic = document.getElementById('overlay-icon');
             const m = document.getElementById('overlay-message');
@@ -539,25 +553,23 @@
             const reloadBtn = document.getElementById('reload-btn');
 
             ov.classList.remove('hidden');
+            ov.scrollTop = 0;
             ic.textContent = "🏆";
             m.textContent = "全国ランキング";
             review.classList.add('hidden');
             scoreReport.classList.add('hidden');
-            rankingTrigger.classList.add('hidden'); // ランキング中はトリガーボタンを隠す
+            rankingTrigger.classList.add('hidden');
             rankingContainer.classList.remove('hidden');
             
-            bt.textContent = "閉じる";
+            bt.textContent = "戻る";
             bt.className = "w-full py-6 bg-slate-700 text-white rounded-3xl font-black text-2xl shadow-xl";
             
-            // 閉じるボタンの動作：リザルトから来た場合はリザルトに戻し、タイトルから来た場合は閉じる
             bt.onclick = () => {
                 if (fromResult) {
-                    // リザルト画面の状態に戻す
                     rankingContainer.classList.add('hidden');
                     rankingTrigger.classList.remove('hidden');
                     scoreReport.classList.remove('hidden');
                     reloadBtn.classList.remove('hidden');
-                    // アイコンとメッセージも元に戻す（簡易的に判定）
                     if (score > 0 && currentQuestionIndex < 60) {
                         ic.textContent = "💀";
                         m.textContent = "サバイバル終了";
@@ -566,28 +578,9 @@
                         ic.textContent = "👑";
                         m.textContent = "完全制覇！";
                     }
-                    // 送信ボタンの文言などは保持されている前提
-                    bt.textContent = "記録を送信する";
+                    bt.textContent = "リベンジする";
                     bt.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
-                    // 元の送信処理を復元（リロードしてないのでスコアなどは保持されている）
-                    bt.onclick = async () => { /* endGame内と同じロジックが走るように再設定が必要ならここで */ 
-                        const titleText = scoreReport.querySelector('.text-xl').textContent;
-                        bt.disabled = true;
-                        bt.textContent = "送信中...";
-                        try {
-                            await fetch(GAS_URL, {
-                                method: "POST",
-                                mode: "no-cors",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ name: playerName, score: score, title: titleText })
-                            });
-                            bt.textContent = "送信完了！";
-                            bt.classList.replace('bg-emerald-600', 'bg-slate-700');
-                        } catch (e) {
-                            bt.textContent = "エラーが発生しました";
-                            bt.disabled = false;
-                        }
-                    };
+                    bt.onclick = () => location.reload();
                 } else {
                     ov.classList.add('hidden');
                 }
@@ -629,11 +622,11 @@
 
                 row.innerHTML = `
                     <div class="text-2xl font-black ${rankColor} w-8 text-center">${index + 1}</div>
-                    <div class="flex-grow">
+                    <div class="flex-grow overflow-hidden">
                         <div class="text-white font-bold truncate">${item.name || '名無し'}</div>
                         <div class="text-[10px] text-slate-500 truncate">${item.title || '-'}</div>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right flex-shrink-0">
                         <div class="text-emerald-400 font-black text-lg">${(item.score || 0).toLocaleString()}</div>
                         <div class="text-[8px] text-slate-600 uppercase">Points</div>
                     </div>
@@ -643,4 +636,4 @@
         }
     </script>
 </body>
-</html>
+</html>l>
