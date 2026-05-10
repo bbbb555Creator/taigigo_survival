@@ -87,7 +87,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 2.3.2
+            VER 2.3.3
         </div>
 
         <script>
@@ -427,20 +427,19 @@
             if (isCorrect) {
                 playSfx('sfx-correct');
                 const timeTaken = (Date.now() - questionStartTime) / 1000;
-                let bonus = 0;
-                let rating = "GOOD";
-                let ratingColor = "text-white";
-                if (timeTaken < 1.2) {
-                    bonus = 500;
-                    rating = "EXCELLENT!!";
-                    ratingColor = "text-yellow-300";
-                } else if (timeTaken < 2.5) {
-                    bonus = 200;
-                    rating = "GREAT!";
-                    ratingColor = "text-emerald-300";
-                }
+            let points = 0;
+            if (timeTaken <= 1) {
+                points = 1500;
+            } else if (timeTaken <= 5) {
+                points = 1000 + Math.floor(500 * (1 - (timeTaken - 1) / 4));
+            } else {
+                points = 1000 - Math.floor((timeTaken - 5) * 100);
+            }
 
-                const points = 1000 + bonus;
+            if (points <= 0) {
+                gameOver("タイムオーバー！");
+                return;
+            }
                 score += points;
                 document.getElementById('total-score').textContent = score.toLocaleString();
                 showFeedback(points, rating, ratingColor);
