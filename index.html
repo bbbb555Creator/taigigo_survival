@@ -72,8 +72,8 @@
 
         @keyframes feedbackAnim {
             0% { opacity: 0; transform: translate(-50%, -30%) scale(0.5); }
-            20% { opacity: 1; transform: translate(-50%, -55%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -70%) scale(0.9); }
+            20% { opacity: 1; transform: translate(-50%, -55%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -70%) scale(1.1); }
         }
 
         .rank-row {
@@ -86,7 +86,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.0.0-call
+            VER 3.0.0
         </div>
 
         <div id="title-screen" class="flex-grow flex flex-col items-center justify-between text-center py-10 px-8 fade-in relative z-10">
@@ -381,25 +381,43 @@
 
             if (choice === q.a) {
                 playSound('sfx-correct');
-                showPop('○', 'text-emerald-400');
                 
-                const base = 100;
-                const speedBonus = Math.max(0, Math.floor((3 - timeTaken) * 50));
-                score += (base + speedBonus);
+                // 元の Excellent/Good 判定システム
+                let feedbackText = 'Excellent!';
+                let feedbackColor = 'text-yellow-400';
+                let points = 100;
+
+                if (timeTaken < 1.0) {
+                    feedbackText = 'Excellent!';
+                    feedbackColor = 'text-yellow-400';
+                    points = 150;
+                } else if (timeTaken < 2.0) {
+                    feedbackText = 'Good!';
+                    feedbackColor = 'text-emerald-400';
+                    points = 120;
+                } else {
+                    feedbackText = 'Nice!';
+                    feedbackColor = 'text-blue-400';
+                    points = 100;
+                }
+
+                showPop(feedbackText, feedbackColor);
+                
+                score += points;
                 combo++;
                 currentIndex++;
                 updateScore();
                 nextQuestion();
             } else {
                 playSound('sfx-wrong');
-                showPop('×', 'text-rose-500');
+                showPop('Wrong...', 'text-rose-500');
                 showResult(false);
             }
         }
 
         function showPop(text, colorClass) {
             const pop = document.createElement('div');
-            pop.className = `feedback-pop text-8xl font-black ${colorClass}`;
+            pop.className = `feedback-pop text-5xl md:text-6xl font-black ${colorClass} italic tracking-tighter`;
             pop.textContent = text;
             document.getElementById('feedback-layer').appendChild(pop);
             setTimeout(() => pop.remove(), 800);
@@ -469,11 +487,10 @@
 
             if (GAS_URL.includes("https")) {
                 try {
-                    const res = await fetch(GAS_URL, {
+                    await fetch(GAS_URL, {
                         method: "POST",
                         mode: "no-cors",
                         headers: { "Content-Type": "application/json" },
-                        // 称号（title）をbodyに追加
                         body: JSON.stringify({ name: playerName, score: score, mode: currentMode, title: title, accessKey: "03162017Rfv" })
                     });
                     
@@ -531,7 +548,6 @@
             const title = document.getElementById('ranking-title');
             title.textContent = currentMode === 'stage' ? "Stage Mode Top 10" : "Endless Mode Top 10";
             
-            // 称号（r.title）を表示する構造に修正
             list.innerHTML = data.map((r, i) => `
                 <div class="flex justify-between items-center py-4 px-4 rank-row ${r.name === playerName ? 'bg-emerald-500/20' : ''}">
                     <div class="flex items-center gap-3">
