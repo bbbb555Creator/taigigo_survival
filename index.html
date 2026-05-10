@@ -427,19 +427,20 @@
             if (isCorrect) {
                 playSfx('sfx-correct');
                 const timeTaken = (Date.now() - questionStartTime) / 1000;
-            let points = 0;
-            if (timeTaken <= 1) {
-                points = 1500;
-            } else if (timeTaken <= 5) {
-                points = 1000 + Math.floor(500 * (1 - (timeTaken - 1) / 4));
-            } else {
-                points = 1000 - Math.floor((timeTaken - 5) * 100);
-            }
+                let bonus = 0;
+                let rating = "GOOD";
+                let ratingColor = "text-white";
+                if (timeTaken < 1.2) {
+                    bonus = 500;
+                    rating = "EXCELLENT!!";
+                    ratingColor = "text-yellow-300";
+                } else if (timeTaken < 2.5) {
+                    bonus = 200;
+                    rating = "GREAT!";
+                    ratingColor = "text-emerald-300";
+                }
 
-            if (points <= 0) {
-                gameOver("タイムオーバー！");
-                return;
-            }
+                const points = 1000 + bonus;
                 score += points;
                 document.getElementById('total-score').textContent = score.toLocaleString();
                 showFeedback(points, rating, ratingColor);
