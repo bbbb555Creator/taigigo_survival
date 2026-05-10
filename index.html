@@ -85,7 +85,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.1.0
+            VER 3.1.1
         </div>
 
         <!-- タイトル画面 -->
@@ -540,7 +540,7 @@
                 try {
                     await fetch(GAS_URL, {
                         method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name: playerName, score: score, mode: currentMode, title: title, accessKey: "03162017Rfv" })
+                        mode: "no-cors", body: JSON.stringify({ name: playerName, score: score, mode: currentMode, title: title, accessKey: "03162017Rfv" })
                     });
                     const res = await fetch(`${GAS_URL}?mode=${currentMode}`);
                     const rankingData = await res.json();
