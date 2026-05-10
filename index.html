@@ -85,7 +85,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.0.0
+            VER 3.1.0
         </div>
 
         <!-- タイトル画面 -->
@@ -540,7 +540,7 @@
                 try {
                     await fetch(GAS_URL, {
                         method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name: playerName, score: score, mode: currentMode, accessKey: "03162017Rfv" })
+                        body: JSON.stringify({ name: playerName, score: score, mode: currentMode, title: title, accessKey: "03162017Rfv" })
                     });
                     const res = await fetch(`${GAS_URL}?mode=${currentMode}`);
                     const rankingData = await res.json();
@@ -555,10 +555,13 @@
             const title = document.getElementById('ranking-title');
             title.textContent = currentMode === 'stage' ? "Stage Mode Top 10" : "Endless Mode Top 10";
             list.innerHTML = data.map((r, i) => `
-                <div class="flex justify-between items-center py-3 px-4 rank-row ${r.name === playerName ? 'bg-emerald-500/20' : ''}">
-                    <div class="flex items-center">
+                <div class="flex justify-between items-center py-4 px-4 rank-row ${r.name === playerName ? 'bg-emerald-500/20' : ''}">
+                    <div class="flex items-center gap-3">
                         <span class="w-6 text-xs font-black ${i<3 ? 'text-yellow-400' : 'text-slate-500'}">${i+1}</span>
-                        <span class="text-sm font-bold text-slate-200">${r.name}</span>
+                        <div>
+                            <div class="text-sm font-bold text-slate-200">${r.name}</div>
+                            <div class="text-[9px] text-amber-500/80 font-bold">【${r.title || '無名の戦士'}】</div>
+                        </div>
                     </div>
                     <span class="text-sm font-black text-emerald-400 font-mono">${Number(r.score).toLocaleString()}</span>
                 </div>
