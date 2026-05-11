@@ -89,7 +89,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.2.0
+            VER 3.2.1
         </div>
 
         <!-- タイトル画面 -->
@@ -132,7 +132,7 @@
                 </div>
                 <div class="flex items-start gap-4">
                     <span class="bg-emerald-500 text-slate-900 w-6 h-6 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</span>
-                    <p class="leading-relaxed"><p class="leading-relaxed">速度に応じて<span class="text-yellow-400 font-bold">ボーナス</span>加算！</p>
+                    <p class="leading-relaxed">速度に応じて<span class="text-yellow-400 font-bold">ボーナス</span>加算！</p>
                 </div>
                 <div class="mt-6 pt-4 border-t border-emerald-500/20 text-center">
                     <p class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-1">Your Best Score</p>
@@ -156,7 +156,7 @@
                 </div>
                 <div class="flex items-start gap-4">
                     <span class="bg-blue-500 text-slate-900 w-6 h-6 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</span>
-                    <p class="leading-relaxed"><p class="leading-relaxed">回答する速度に応じて<span class="text-yellow-400 font-bold">ボーナス</span>が加算されます。</p>
+                    <p class="leading-relaxed">回答する速度に応じて<span class="text-yellow-400 font-bold">ボーナス</span>が加算されます。</p>
                 </div>
                 <div class="mt-6 pt-4 border-t border-blue-500/20 text-center">
                     <p class="text-[10px] text-blue-500 font-bold uppercase tracking-widest mb-1">Your Best Score</p>
@@ -286,14 +286,6 @@
         let quizList = [];
         let currentIndex = 0;
         let score = 0;
-        // ハイスコア管理
-        const HighScoreManager = {
-            get: (mode) => parseInt(localStorage.getItem('taigigo_best_' + mode)) || 0,
-            set: (mode, val) => {
-                const current = parseInt(localStorage.getItem('taigigo_best_' + mode)) || 0;
-                if (val > current) localStorage.setItem('taigigo_best_' + mode, val.toString());
-            }
-        };
         let playerName = "ななし";
         let questionStartTime = 0;
         let currentBgm = null;
@@ -329,6 +321,26 @@
             document.querySelectorAll('[id$="volume-on"]').forEach(i => i.classList.toggle('hidden', isMuted));
             document.querySelectorAll('[id$="volume-off"]').forEach(i => i.classList.toggle('hidden', !isMuted));
             if (currentBgm) isMuted ? currentBgm.pause() : currentBgm.play().catch(e => {});
+        }
+
+        
+        // ハイスコア管理ロジック
+        function updateAndShowBest(mode, currentScore = null) {
+            const key = 'taigigo_highscore_v321_' + mode;
+            let best = parseInt(localStorage.getItem(key)) || 0;
+            
+            if (currentScore !== null) {
+                const scoreNum = parseInt(currentScore);
+                if (scoreNum > best) {
+                    best = scoreNum;
+                    localStorage.setItem(key, best.toString());
+                }
+            }
+            
+            const displayEl = document.getElementById('best-' + mode);
+            if (displayEl) {
+                displayEl.textContent = best.toLocaleString();
+            }
         }
 
         function selectMode(mode) {
