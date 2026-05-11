@@ -89,7 +89,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.1.6
+            VER 3.1.7
         </div>
 
         <!-- タイトル画面 -->
@@ -323,23 +323,34 @@
             if (currentBgm) isMuted ? currentBgm.pause() : currentBgm.play().catch(e => {});
         }
 
+        
+        // 自己ベスト保存用関数
+        function updateBestScore(mode, currentScore) {
+            try {
+                const key = 'taigigo_best_' + mode;
+                const saved = localStorage.getItem(key) || "0";
+                if (parseInt(currentScore) > parseInt(saved)) {
+                    localStorage.setItem(key, currentScore.toString());
+                }
+            } catch (e) { console.error(e); }
+        }
+
                 function selectMode(mode) {
             currentMode = mode;
             document.getElementById('title-screen').classList.add('hidden');
             const targetScreen = mode === 'stage' ? 'instruction-screen-stage' : 'instruction-screen-endless';
             document.getElementById(targetScreen).classList.remove('hidden');
             
-            // --- 自己ベスト読み込みロジック (3.1.6) ---
+            // 読み込み処理
             try {
-                const storageKey = 'taigigo_best_' + mode;
-                const savedValue = localStorage.getItem(storageKey) || "0";
-                const displayId = 'best-' + mode;
-                const displayEl = document.getElementById(displayId);
-                if (displayEl) {
-                    displayEl.textContent = parseInt(savedValue).toLocaleString();
+                const val = localStorage.getItem('taigigo_best_' + mode) || "0";
+                const el = document.getElementById('best-' + mode);
+                if (el) {
+                    el.textContent = parseInt(val).toLocaleString();
                 }
-            } catch (err) {
-                console.error("Storage Load Error:", err);
+            } catch(e) {}
+        } else {
+                document.getElementById('instruction-screen-endless').classList.remove('hidden');
             }
         }
 
