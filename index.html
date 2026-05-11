@@ -89,7 +89,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.1.5
+            VER 3.1.6
         </div>
 
         <!-- タイトル画面 -->
@@ -323,13 +323,23 @@
             if (currentBgm) isMuted ? currentBgm.pause() : currentBgm.play().catch(e => {});
         }
 
-        function selectMode(mode) {
+                function selectMode(mode) {
             currentMode = mode;
             document.getElementById('title-screen').classList.add('hidden');
-            if (mode === 'stage') {
-                document.getElementById('instruction-screen-stage').classList.remove('hidden');
-            } else {
-                document.getElementById('instruction-screen-endless').classList.remove('hidden');
+            const targetScreen = mode === 'stage' ? 'instruction-screen-stage' : 'instruction-screen-endless';
+            document.getElementById(targetScreen).classList.remove('hidden');
+            
+            // --- 自己ベスト読み込みロジック (3.1.6) ---
+            try {
+                const storageKey = 'taigigo_best_' + mode;
+                const savedValue = localStorage.getItem(storageKey) || "0";
+                const displayId = 'best-' + mode;
+                const displayEl = document.getElementById(displayId);
+                if (displayEl) {
+                    displayEl.textContent = parseInt(savedValue).toLocaleString();
+                }
+            } catch (err) {
+                console.error("Storage Load Error:", err);
             }
         }
 
