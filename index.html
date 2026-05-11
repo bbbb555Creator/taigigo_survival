@@ -89,7 +89,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.3.1
+            VER 3.3.2
         </div>
 
         <!-- タイトル画面 -->
@@ -132,7 +132,11 @@
                 </div>
                 <div class="flex items-start gap-4">
                     <span class="bg-emerald-500 text-slate-900 w-6 h-6 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</span>
-                    <p class="leading-relaxed">速度に応じて<span class="text-yellow-400 font-bold">ボーナス</span>加算！</p>
+                    <p class="leading-relaxed"><p class="leading-relaxed">速度に応じて<span class="text-yellow-400 font-bold">ボーナス</span>加算！</p>
+                    <div class="mt-4 pt-4 border-t border-emerald-500/30">
+                        <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-1">Your Best Score</p>
+                        <p class="text-2xl font-black text-yellow-400"><span id="best-stage">0</span></p>
+                    </div>
                 </div>
             </div>
             <button onclick="showNicknameInput()" class="w-full max-w-xs py-5 bg-emerald-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95">次へ進む</button>
@@ -152,7 +156,11 @@
                 </div>
                 <div class="flex items-start gap-4">
                     <span class="bg-blue-500 text-slate-900 w-6 h-6 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</span>
-                    <p class="leading-relaxed">回答する速度に応じて<span class="text-yellow-400 font-bold">ボーナス</span>が加算されます。</p>
+                    <p class="leading-relaxed"><p class="leading-relaxed">回答する速度に応じて<span class="text-yellow-400 font-bold">ボーナス</span>が加算されます。</p>
+                    <div class="mt-4 pt-4 border-t border-blue-500/30">
+                        <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-1">Your Best Score</p>
+                        <p class="text-2xl font-black text-yellow-400"><span id="best-endless">0</span></p>
+                    </div>
                 </div>
             </div>
             <button onclick="showNicknameInput()" class="w-full max-w-xs py-5 bg-blue-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95">次へ進む</button>
@@ -313,19 +321,6 @@
             document.querySelectorAll('[id$="volume-on"]').forEach(i => i.classList.toggle('hidden', isMuted));
             document.querySelectorAll('[id$="volume-off"]').forEach(i => i.classList.toggle('hidden', !isMuted));
             if (currentBgm) isMuted ? currentBgm.pause() : currentBgm.play().catch(e => {});
-        }
-
-        
-        // ハイスコア管理
-        let sessionBest = { stage: 0, endless: 0 };
-        function updateBest(mode, s) {
-            try {
-                const key = 'taigigo_best_v331_' + mode;
-                const saved = parseInt(localStorage.getItem(key)) || 0;
-                const finalBest = Math.max(saved, sessionBest[mode], s);
-                localStorage.setItem(key, finalBest.toString());
-                sessionBest[mode] = finalBest;
-            } catch(e) { console.log(e); }
         }
 
         function selectMode(mode) {
@@ -644,6 +639,29 @@
                 rankingContainer.classList.remove('hidden');
             };
         }
+    </script>
+
+    <script>
+    // ハイスコア管理（3.3.2）
+    (function() {
+        const STORAGE_PREFIX = 'taigigo_v332_';
+
+        // 読み込み・表示関数
+        window.refreshBestDisplay = function(mode) {
+            const val = localStorage.getItem(STORAGE_PREFIX + mode) || "0";
+            const el = document.getElementById('best-' + mode);
+            if (el) el.textContent = parseInt(val).toLocaleString();
+        };
+
+        // 保存関数
+        window.saveIfBest = function(mode, currentScore) {
+            const key = STORAGE_PREFIX + mode;
+            const saved = parseInt(localStorage.getItem(key)) || 0;
+            if (currentScore > saved) {
+                localStorage.setItem(key, currentScore.toString());
+            }
+        };
+    })();
     </script>
 </body>
 </html>
