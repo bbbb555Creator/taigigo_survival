@@ -89,7 +89,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.1.9
+            VER 3.2.0
         </div>
 
         <!-- タイトル画面 -->
@@ -136,7 +136,7 @@
                 </div>
                 <div class="mt-6 pt-4 border-t border-emerald-500/20 text-center">
                     <p class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-1">Your Best Score</p>
-                    <p id="best-stage" class="text-2xl font-black text-white">---</p>
+                    <p id="best-stage" class="text-2xl font-black text-white">0</p>
                 </div>
             </div>
             <button onclick="showNicknameInput()" class="w-full max-w-xs py-5 bg-emerald-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95">次へ進む</button>
@@ -160,7 +160,7 @@
                 </div>
                 <div class="mt-6 pt-4 border-t border-blue-500/20 text-center">
                     <p class="text-[10px] text-blue-500 font-bold uppercase tracking-widest mb-1">Your Best Score</p>
-                    <p id="best-endless" class="text-2xl font-black text-white">---</p>
+                    <p id="best-endless" class="text-2xl font-black text-white">0</p>
                 </div>
             </div>
             <button onclick="showNicknameInput()" class="w-full max-w-xs py-5 bg-blue-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95">次へ進む</button>
@@ -286,6 +286,14 @@
         let quizList = [];
         let currentIndex = 0;
         let score = 0;
+        // ハイスコア管理
+        const HighScoreManager = {
+            get: (mode) => parseInt(localStorage.getItem('taigigo_best_' + mode)) || 0,
+            set: (mode, val) => {
+                const current = parseInt(localStorage.getItem('taigigo_best_' + mode)) || 0;
+                if (val > current) localStorage.setItem('taigigo_best_' + mode, val.toString());
+            }
+        };
         let playerName = "ななし";
         let questionStartTime = 0;
         let currentBgm = null;
