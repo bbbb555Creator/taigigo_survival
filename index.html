@@ -89,7 +89,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.2.1
+            VER 3.3.0
         </div>
 
         <!-- タイトル画面 -->
@@ -136,7 +136,7 @@
                 </div>
                 <div class="mt-6 pt-4 border-t border-emerald-500/20 text-center">
                     <p class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-1">Your Best Score</p>
-                    <p id="best-stage" class="text-2xl font-black text-white">0</p>
+                    <p id="best-stage" class="text-2xl font-black text-yellow-400">0</p>
                 </div>
             </div>
             <button onclick="showNicknameInput()" class="w-full max-w-xs py-5 bg-emerald-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95">次へ進む</button>
@@ -160,7 +160,7 @@
                 </div>
                 <div class="mt-6 pt-4 border-t border-blue-500/20 text-center">
                     <p class="text-[10px] text-blue-500 font-bold uppercase tracking-widest mb-1">Your Best Score</p>
-                    <p id="best-endless" class="text-2xl font-black text-white">0</p>
+                    <p id="best-endless" class="text-2xl font-black text-yellow-400">0</p>
                 </div>
             </div>
             <button onclick="showNicknameInput()" class="w-full max-w-xs py-5 bg-blue-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95">次へ進む</button>
@@ -321,26 +321,6 @@
             document.querySelectorAll('[id$="volume-on"]').forEach(i => i.classList.toggle('hidden', isMuted));
             document.querySelectorAll('[id$="volume-off"]').forEach(i => i.classList.toggle('hidden', !isMuted));
             if (currentBgm) isMuted ? currentBgm.pause() : currentBgm.play().catch(e => {});
-        }
-
-        
-        // ハイスコア管理ロジック
-        function updateAndShowBest(mode, currentScore = null) {
-            const key = 'taigigo_highscore_v321_' + mode;
-            let best = parseInt(localStorage.getItem(key)) || 0;
-            
-            if (currentScore !== null) {
-                const scoreNum = parseInt(currentScore);
-                if (scoreNum > best) {
-                    best = scoreNum;
-                    localStorage.setItem(key, best.toString());
-                }
-            }
-            
-            const displayEl = document.getElementById('best-' + mode);
-            if (displayEl) {
-                displayEl.textContent = best.toLocaleString();
-            }
         }
 
         function selectMode(mode) {
