@@ -85,7 +85,7 @@
         }
         .rank-row:last-child { border-bottom: none; }
     
-        /* --- スチームパンク装飾 --- */
+        /* --- スチームパンク装飾 (CSSのみ) --- */
         /* ボタンを真鍮のプレート風に */
         .choice-btn {
             background: linear-gradient(145deg, #b8860b, #8b4513) !important;
@@ -94,32 +94,37 @@
             color: #fff8e1 !important;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8) !important;
             border-radius: 8px !important;
+            position: relative;
+            overflow: hidden;
         }
-        .choice-btn:active {
-            background: linear-gradient(145deg, #8b4513, #b8860b) !important;
-            transform: translateY(2px);
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5) !important;
+        /* ボタンの装飾用ネジを擬似要素で */
+        .choice-btn::before, .choice-btn::after {
+            content: ""; position: absolute; width: 6px; height: 6px;
+            background: #5d4037; border-radius: 50%; opacity: 0.6;
         }
-        /* 問題エリアを古紙＆金属枠風に */
+        .choice-btn::before { top: 5px; left: 5px; }
+        .choice-btn::after { bottom: 5px; right: 5px; }
+
+        /* お題エリアを古紙＆金属枠風に */
         #question-container {
             background: #fdf5e6 !important;
             border: 6px double #d4af37 !important;
             box-shadow: 0 0 0 2px #5d4037, 0 10px 20px rgba(0,0,0,0.4) !important;
-            position: relative;
-            overflow: hidden;
+            position: relative !important;
+            overflow: visible !important; /* 歯車をはみ出させるため */
         }
-        /* 背景で回転する歯車（SVG） */
+        /* 回転する歯車のアニメーション */
         @keyframes gear-spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
-        .bg-gear {
+        .gear-visual {
             position: absolute;
             z-index: 0;
-            fill: #d4af37;
-            opacity: 0.15;
+            fill: #b8860b;
+            opacity: 0.2;
             pointer-events: none;
-            animation: gear-spin 15s linear infinite;
+            animation: gear-spin 10s linear infinite;
         }
 
     </style>
@@ -127,7 +132,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.1.2-Steamfull
+            VER 3.1.2-Steam-V3
         </div>
 
         <!-- タイトル画面 -->
