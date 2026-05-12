@@ -85,69 +85,49 @@
         }
         .rank-row:last-child { border-bottom: none; }
     
-        /* スチームパンク装飾の追加 */
-        
-        /* 1. 全体の背景に少し質感を出す */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 20%, #000 150%);
-            pointer-events: none;
-            z-index: 10;
-            opacity: 0.4;
-        }
-
-        /* 2. タイトルの装飾 */
-        h1 {
-            color: #d4af37 !important; /* 真鍮色 */
-            text-shadow: 2px 2px 0px #5d4037, 4px 4px 8px rgba(0,0,0,0.7) !important;
-        }
-
-        /* 3. ボタンの質感変更 (画像を使わずグラデーションとシャドウで表現) */
+        /* --- スチームパンク装飾 --- */
+        /* ボタンを真鍮のプレート風に */
         .choice-btn {
-            background: linear-gradient(145deg, #3d4a5d, #1e293b) !important;
-            border: 2px solid #b8860b !important; /* 真鍮の縁取り */
-            box-shadow: inset 1px 1px 2px rgba(255,255,255,0.1), 3px 3px 6px rgba(0,0,0,0.5) !important;
-            color: #fef3c7 !important;
-            font-weight: 900 !important;
+            background: linear-gradient(145deg, #b8860b, #8b4513) !important;
+            border: 3px solid #5d4037 !important;
+            box-shadow: inset 1px 1px 3px rgba(255,255,255,0.3), 0 4px 6px rgba(0,0,0,0.5) !important;
+            color: #fff8e1 !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8) !important;
+            border-radius: 8px !important;
         }
-
         .choice-btn:active {
-            background: #b8860b !important;
-            color: #1e293b !important;
+            background: linear-gradient(145deg, #8b4513, #b8860b) !important;
             transform: translateY(2px);
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5) !important;
         }
-
-        /* 4. 問題エリアの枠をパイプ風に */
+        /* 問題エリアを古紙＆金属枠風に */
         #question-container {
-            border: 4px double #b8860b !important;
-            background: rgba(248, 250, 252, 0.95) !important;
-            box-shadow: 0 0 0 2px #451a03, 0 10px 20px rgba(0,0,0,0.4) !important;
+            background: #fdf5e6 !important;
+            border: 6px double #d4af37 !important;
+            box-shadow: 0 0 0 2px #5d4037, 0 10px 20px rgba(0,0,0,0.4) !important;
+            position: relative;
+            overflow: hidden;
         }
-        
-        /* 5. 歯車の回転アニメーション (CSSのみ) */
+        /* 背景で回転する歯車（SVG） */
         @keyframes gear-spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
-
-        .gear-decorator {
+        .bg-gear {
             position: absolute;
-            width: 40px;
-            height: 40px;
-            fill: #b8860b;
-            opacity: 0.8;
-            animation: gear-spin 8s linear infinite;
+            z-index: 0;
+            fill: #d4af37;
+            opacity: 0.15;
             pointer-events: none;
+            animation: gear-spin 15s linear infinite;
         }
+
     </style>
 </head>
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.1.2
+            VER 3.1.2-Steam
         </div>
 
         <!-- タイトル画面 -->
