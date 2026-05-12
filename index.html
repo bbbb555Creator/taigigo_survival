@@ -85,7 +85,7 @@
         }
         .rank-row:last-child { border-bottom: none; }
     
-        /* --- スチームパンク装飾 (CSSのみ) --- */
+        
         /* ボタンを真鍮のプレート風に */
         .choice-btn {
             background: linear-gradient(145deg, #b8860b, #8b4513) !important;
@@ -128,7 +128,7 @@
         }
 
     
-        /* --- スチームパンク装飾 (最終可視化) --- */
+        
         #question-container {
             background: #fdf5e6 !important;
             border: 6px double #d4af37 !important;
@@ -152,12 +152,43 @@
             z-index: 10 !important;
         }
 
+    
+        /* --- 歯車可視化のための透過設定 --- */
+        #question-container {
+            /* 背景を半透明にして、背後の歯車を透かす */
+            background: rgba(253, 245, 230, 0.6) !important; 
+            border: 6px double #d4af37 !important;
+            position: relative !important;
+            overflow: hidden !important; 
+            z-index: 5 !important;
+        }
+        
+        @keyframes gear-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .gear-final {
+            position: absolute !important;
+            /* 枠の背景より前(z-index: 6)、文字より後ろ(z-index: 10) */
+            z-index: 6 !important; 
+            fill: #b8860b !important;
+            opacity: 0.6 !important; /* はっきり見えるように不透明度を上げる */
+            pointer-events: none;
+            animation: gear-spin 10s linear infinite;
+        }
+        
+        #word-display {
+            position: relative !important;
+            z-index: 10 !important; /* 確実に一番前 */
+        }
+
     </style>
 </head>
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.1.2-Steam-Visible
+            VER 3.1.2-Steam-Transparent
         </div>
 
         <!-- タイトル画面 -->
