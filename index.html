@@ -84,12 +84,22 @@
             transition: background 0.3s;
         }
         .rank-row:last-child { border-bottom: none; }
+    
+        /* スチームパンク装飾: 歯車の回転 */
+        @keyframes gear-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .gear-svg {
+            animation: gear-rotate 5s linear infinite;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
     </style>
 </head>
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.1.2
+            VER 3.6.5
         </div>
 
         <!-- タイトル画面 -->
