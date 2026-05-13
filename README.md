@@ -33,7 +33,7 @@ git clone [https://github.com/](https://github.com/)bbbb555/antonym-survival.git
 
 | ホーム画面 | プレイ画面 | ランキング |
 | :--- | :--- | :--- |
-| ![Home](home.jpeg) | ![Play](play.jpeg) | ![Rank](rank.jpeg) |
+| ![Home](home.jpg) | ![Play](play.jpg) | ![Rank](rank.jpg) |
 
 > ※ `img/` フォルダを作成し、そこに `home.png`, `play.png`, `rank.png` という名前でスクリーンショットを保存してください。
 
