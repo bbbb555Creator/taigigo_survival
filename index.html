@@ -112,7 +112,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.2 infomation
+            VER 3.1 Revenge
         </div>
 
         <div id="title-screen" class="flex-grow flex flex-col items-center justify-between text-center py-10 px-8 fade-in relative z-10">
@@ -125,7 +125,7 @@
 <div class="w-full absolute top-[5%] left-0">
                 <div class="ticker-container py-1">
                     <div class="ticker-text">
-                        【更新情報】2026.05.15：新旧のバージョンで遊べるようになりました。　　　　
+                        【更新情報】2026.05.16：新旧２つの問題を選べるようになりました。　　　　
                         【お知らせ】不具合報告は作者までお願いします。
                     </div>
                 </div>
@@ -171,7 +171,7 @@
         <ul class="space-y-4 text-left">
             <li class="flex items-start gap-3">
                 <span class="text-xl">🌀</span>
-                <p>全データから<span class="text-blue-400 font-bold">ランダム</span>に出題される対義語を選び続けろ。</p>
+                <p>全データから<span class="text-blue-400 font-bold">ランダム</span>に出題されるぞ。</p>
             </li>
             <li class="flex items-start gap-3">
                 <span class="text-xl">🔥</span>
@@ -559,15 +559,26 @@ function displayRanking(data) {
             const review = document.getElementById('review-box');
             const btn = document.getElementById('action-btn');
             
+            // すでに「タイトルに戻る」のサブボタンが残っていたら一旦消す（重複防止）
+            const oldHomeBtn = document.getElementById('sub-home-btn');
+            if (oldHomeBtn) oldHomeBtn.remove();
+            
             if (isClear) {
                 icon.innerText = '🏆';
                 msg.innerText = 'ALL CLEAR!';
                 const eb = document.getElementById('bgm-ending');
                 if (eb && !isMuted) eb.play().catch(()=>{});
                 
-                btn.innerText = "タイトルに戻る";
+                btn.innerText = "もう一度挑戦";
                 btn.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
-                btn.onclick = () => location.reload(); // 完全にリセット
+                btn.onclick = () => {
+                    ov.classList.add('hidden');
+                    // ゲーム状態を初期化して再スタート
+                    score = 0;
+                    currentQuestionIndex = 0;
+                    document.getElementById('total-score').innerText = "0";
+                    initialStart();
+                };
             } else {
                 icon.innerText = '💀';
                 msg.innerText = 'GAME OVER';
@@ -578,14 +589,31 @@ function displayRanking(data) {
                     document.getElementById('rev-a').innerText = lastQ.a;
                 }
                 
-                // ゲームオーバー時はタイトルに戻るボタンにする
-                btn.innerText = "タイトルに戻る";
-                btn.className = "w-full py-6 bg-slate-700 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
-                btn.onclick = () => location.reload(); // ページをリロードして初期化
+                // メインボタンを「リベンジする」に変更
+                btn.innerText = "リベンジする";
+                btn.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
+                btn.onclick = () => {
+                    ov.classList.add('hidden');
+                    // スコアとインデックスをリセットして最初から挑戦
+                    score = 0;
+                    currentQuestionIndex = 0;
+                    document.getElementById('total-score').innerText = "0";
+                    initialStart(); 
+                };
+
+                // 「リベンジする」ボタンの下に小さく「タイトルに戻る」を追加
+                const homeBtn = document.createElement('button');
+                homeBtn.id = 'sub-home-btn';
+                homeBtn.innerText = "タイトルに戻る";
+                homeBtn.className = "w-full mt-3 py-3 bg-slate-700/60 hover:bg-slate-700 text-slate-300 rounded-2xl font-bold text-sm shadow-md active:scale-95 transition-all";
+                homeBtn.onclick = () => location.reload(); // タイトルに戻る時は確実にリロード
+                
+                // ボタンのすぐ後ろに差し込む
+                btn.parentNode.insertBefore(homeBtn, btn.nextSibling);
             }
 
             document.getElementById('score-report').innerHTML = `
-                <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">プレイヤー</div>
+                <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">Player</div>
                 <div class="text-white font-black text-xl mb-4">${playerName}</div>
                 <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">獲得称号</div>
                 <div class="text-emerald-400 font-black text-lg mb-4">『${title}』</div>
