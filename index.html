@@ -136,12 +136,16 @@
 
                 <img src="logo.png" alt="対義語サバイバル" class="max-w-[280px] logo-float drop-shadow-[0_0_20px_rgba(52,211,153,0.3)]">
             </div>
-            <div class="w-full max-w-xs space-y-4 mb-6">
+           <div class="w-full max-w-xs space-y-4 mb-4 z-20">
                 <button onclick="selectMode('stage')" class="w-full active:scale-95 transition-all interactive-btn">
                     <img src="stm.png" alt="ステージモード" class="w-full drop-shadow-lg pointer-events-none">
                 </button>
                 <button onclick="selectMode('endless')" class="w-full active:scale-95 transition-all interactive-btn">
                     <img src="endless.png" alt="エンドレスモード" class="w-full drop-shadow-lg pointer-events-none">
+                </button>
+                
+                <button onclick="showInstallGuide()" class="w-full py-3.5 bg-slate-800/90 text-emerald-400 border border-emerald-500/40 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-all interactive-btn flex items-center justify-center gap-2 hover:bg-slate-700/90">
+                    <span>📱</span> アプリとしてダウンロード (PWA)
                 </button>
             </div>
         </div>
