@@ -79,16 +79,17 @@
         }
         
         @keyframes fadeOutUp {
-    0% { opacity: 0; transform: translateY(20px); }
-    20% { opacity: 1; transform: translateY(0); }
-    80% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(-40px); }
-}
-.fade-out-up { 
-    animation: fadeOutUp 0.8s ease-out forwards; 
-    pointer-events: none; /* これが重要！演出がボタンに重なってもクリックを通す */
-}
-/* ニュースティッカーの設定 */
+            0% { opacity: 0; transform: translateY(20px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-40px); }
+        }
+        .fade-out-up { 
+            animation: fadeOutUp 0.8s ease-out forwards; 
+            pointer-events: none;
+        }
+        
+        /* ニュースティッカーの設定 */
         .ticker-container {
             width: 100%;
             overflow: hidden;
@@ -114,7 +115,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.1 Revenge
+            VER 3.2 guide
         </div>
 
         <div id="title-screen" class="flex-grow flex flex-col items-center justify-between text-center py-10 px-8 fade-in relative z-10">
@@ -124,7 +125,7 @@
                     <svg id="title-volume-off" class="h-6 w-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
                 </button>
             </div>
-<div class="w-full absolute top-[5%] left-0">
+            <div class="w-full absolute top-[5%] left-0">
                 <div class="ticker-container py-1">
                     <div class="ticker-text">
                         【更新情報】2026.05.16：新旧２つの問題を選べるようになりました。　　　　
@@ -133,10 +134,9 @@
                 </div>
             </div>
             <div class="flex-grow flex items-center justify-center w-full">
-
                 <img src="logo.png" alt="対義語サバイバル" class="max-w-[280px] logo-float drop-shadow-[0_0_20px_rgba(52,211,153,0.3)]">
             </div>
-           <div class="w-full max-w-xs space-y-4 mb-4 z-20">
+            <div class="w-full max-w-xs space-y-4 mb-4 z-20">
                 <button onclick="selectMode('stage')" class="w-full active:scale-95 transition-all interactive-btn">
                     <img src="stm.png" alt="ステージモード" class="w-full drop-shadow-lg pointer-events-none">
                 </button>
@@ -150,47 +150,48 @@
             </div>
         </div>
 
-       <div id="instruction-screen-stage" class="hidden flex-grow flex flex-col items-center justify-center p-6 fade-in">
-    <h2 class="text-4xl font-black text-emerald-400 mb-8">遊び方</h2>
-    <div class="bg-slate-900/80 rounded-3xl p-8 border-2 border-emerald-500/30 text-slate-200 mb-10 w-full max-w-sm">
-        <ul class="space-y-4 text-left">
-            <li class="flex items-start gap-3">
-                <span class="text-xl">⚔️</span>
-                <p>表示された単語の<span class="text-emerald-400 font-bold">対義語</span>を4択から選ぼう。</p>
-            </li>
-            <li class="flex items-start gap-3">
-                <span class="text-xl">⏱️</span>
-                <p>早く答えるほど<span class="text-yellow-400 font-bold">高得点！</span></p>
-            </li>
-            <li class="flex items-start gap-3">
-                <span class="text-xl">⚠️</span>
-                <p>たった一度のミスで<span class="text-rose-500 font-bold">ゲームオーバー。</span></p>
-            </li>
-        </ul>
-    </div>
-    <button onclick="showVersionSelect()" class="w-full max-w-xs py-5 bg-emerald-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95 transition-transform">次へ進む</button>
-</div>
+        <div id="instruction-screen-stage" class="hidden flex-grow flex flex-col items-center justify-center p-6 fade-in">
+            <h2 class="text-4xl font-black text-emerald-400 mb-8">遊び方</h2>
+            <div class="bg-slate-900/80 rounded-3xl p-8 border-2 border-emerald-500/30 text-slate-200 mb-10 w-full max-w-sm">
+                <ul class="space-y-4 text-left">
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">⚔️</span>
+                        <p>表示された単語の<span class="text-emerald-400 font-bold">対義語</span>を4択から選ぼう。</p>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">⏱️</span>
+                        <p>早く答えるほど<span class="text-yellow-400 font-bold">高得点！</span></p>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">⚠️</span>
+                        <p>たった一度のミスで<span class="text-rose-500 font-bold">ゲームオーバー。</span></p>
+                    </li>
+                </ul>
+            </div>
+            <button onclick="showVersionSelect()" class="w-full max-w-xs py-5 bg-emerald-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95 transition-transform">次へ進む</button>
+        </div>
 
-<div id="instruction-screen-endless" class="hidden flex-grow flex flex-col items-center justify-center p-6 fade-in">
-    <h2 class="text-4xl font-black text-blue-400 mb-8">エンドレス</h2>
-    <div class="bg-slate-900/80 rounded-3xl p-8 border-2 border-blue-500/30 text-slate-200 mb-10 w-full max-w-sm">
-        <ul class="space-y-4 text-left">
-            <li class="flex items-start gap-3">
-                <span class="text-xl">🌀</span>
-                <p>全データから<span class="text-blue-400 font-bold">ランダム</span>に出題されるぞ。</p>
-            </li>
-            <li class="flex items-start gap-3">
-                <span class="text-xl">🔥</span>
-                <p>ミスするまで終わらない<span class="text-orange-400 font-bold">地獄モード。</span></p>
-            </li>
-            <li class="flex items-start gap-3">
-                <span class="text-xl">🏆</span>
-                <p>どこまで集中力を維持できるか！</p>
-            </li>
-        </ul>
-    </div>
-    <button onclick="showVersionSelect()" class="w-full max-w-xs py-5 bg-blue-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95 transition-transform">次へ進む</button>
-</div>
+        <div id="instruction-screen-endless" class="hidden flex-grow flex flex-col items-center justify-center p-6 fade-in">
+            <h2 class="text-4xl font-black text-blue-400 mb-8">エンドレス</h2>
+            <div class="bg-slate-900/80 rounded-3xl p-8 border-2 border-blue-500/30 text-slate-200 mb-10 w-full max-w-sm">
+                <ul class="space-y-4 text-left">
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">🌀</span>
+                        <p>全データから<span class="text-blue-400 font-bold">ランダム</span>に出題されるぞ。</p>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">🔥</span>
+                        <p>ミスするまで終わらない<span class="text-orange-400 font-bold">地獄モード。</span></p>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">🏆</span>
+                        <p>どこまで集中力を維持できるか！</p>
+                    </li>
+                </ul>
+            </div>
+            <button onclick="showVersionSelect()" class="w-full max-w-xs py-5 bg-blue-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95 transition-transform">次へ進む</button>
+        </div>
+
         <div id="version-select-screen" class="hidden flex-grow flex flex-col items-center justify-center p-8 fade-in">
             <h2 class="text-3xl font-black text-white mb-8 text-center">問題を選択</h2>
             <div class="w-full max-w-xs space-y-6">
@@ -245,6 +246,15 @@
                 <button id="action-btn" onclick="location.reload()" class="w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 text-white">タイトルへ</button>
             </div>
         </div>
+
+        <div id="install-guide" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl flex flex-col justify-between min-h-[300px]">
+                <div id="install-message" class="flex-grow flex items-center justify-center text-slate-200"></div>
+                
+                <button id="install-btn" onclick="document.getElementById('install-guide').classList.add('hidden')" class="w-full py-4 bg-slate-700 hover:bg-slate-600 active:scale-95 transition-all text-white rounded-2xl font-bold text-lg shadow-lg mt-6">戻る</button>
+            </div>
+        </div>
+
     </div>
 
     <audio id="bgm-stage1" loop preload="auto"><source src="1.mp3" type="audio/mpeg"></audio>
@@ -468,86 +478,79 @@ const DATA_OLD = {
         }
 
         function showFeedback(points, rating, colorClass) {
-    const layer = document.getElementById('feedback-layer');
-    if (!layer) return;
-    
-    const el = document.createElement('div');
-    // pointer-events-none を追加して、クリックを透過させる
-    el.className = `absolute inset-0 flex items-center justify-center pointer-events-none z-50`;
-    
-    el.innerHTML = `
-        <div class="bg-slate-900/90 border-2 border-emerald-500 rounded-2xl px-6 py-4 shadow-[0_0_20px_rgba(52,211,153,0.4)] flex flex-col items-center min-w-[160px] fade-out-up">
-            <div class="text-3xl font-black ${colorClass} drop-shadow-md mb-1 italic tracking-wider">${rating}</div>
-            <div class="text-xl font-bold text-white">+${points.toLocaleString()}</div>
-        </div>
-    `;
-    layer.appendChild(el);
-    setTimeout(() => el.remove(), 850);
-}
-
-async function sendScore(title) {
-    try {
-        // 保存に必要な情報をすべてセットする
-        const params = new URLSearchParams({
-            action: 'save',
-            accessKey: '03162017Rfv', // GAS側で設定した合言葉
-            name: playerName,
-            score: score,
-            title: title,
-            mode: gameMode,
-            version: currentVersion
-        });
-        
-        // キャッシュを防ぐためにタイムスタンプ（_=${Date.now()}）を付ける
-        const url = `${GAS_URL}?${params.toString()}&_=${Date.now()}`;
-        
-        const res = await fetch(url);
-        const data = await res.json();
-        
-        // 保存後の最新ランキングを表示
-        displayRanking(data); 
-    } catch (e) {
-        console.error('ランキング保存エラー:', e);
-    }
-}
-function displayRanking(data) {
-    const listContainer = document.getElementById('ranking-list');
-    if (!listContainer) return;
-
-    // データが空、またはエラーの場合
-    if (!data || data.error || !Array.isArray(data) || data.length === 0) {
-        listContainer.innerHTML = '<div class="text-center py-8 text-slate-500 text-xs">ランキングデータがありません</div>';
-        return;
-    }
-
-    // ランキングのHTMLを組み立てる
-    let html = '<div class="space-y-2">';
-    data.forEach((entry, index) => {
-        const medalColor = index === 0 ? 'text-yellow-400' : index === 1 ? 'text-slate-300' : index === 2 ? 'text-amber-600' : 'text-slate-500';
-        
-        html += `
-            <div class="flex items-center bg-slate-800/50 rounded-lg p-2 border border-slate-700/50">
-                <div class="w-8 flex-shrink-0 text-center font-black ${medalColor}">${index + 1}</div>
-                <div class="flex-grow min-w-0 px-2">
-                    <div class="text-white font-bold text-sm truncate">${entry.name}</div>
-                    <div class="text-[10px] text-emerald-400 truncate">${entry.title || "無名の戦士"}</div>
-                </div>
-                <div class="text-right flex-shrink-0">
-                    <div class="text-yellow-400 font-black text-sm">${Number(entry.score).toLocaleString()}</div>
-                    <div class="text-[9px] text-slate-500">${entry.date ? new Date(entry.date).toLocaleDateString() : ""}</div>
-                </div>
-            </div>
-        `;
-    });
-    html += '</div>';
-
-    // 画面に反映
-    listContainer.innerHTML = html;
-}
-        async function endGame(isClear) {
-            gameState = 'result';
+            const layer = document.getElementById('feedback-layer');
+            if (!layer) return;
             
-            // --- 全てのBGMを停止してリセット ---
+            const el = document.createElement('div');
+            el.className = `absolute inset-0 flex items-center justify-center pointer-events-none z-50`;
+            
+            el.innerHTML = `
+                <div class="bg-slate-900/90 border-2 border-emerald-500 rounded-2xl px-6 py-4 shadow-[0_0_20px_rgba(52,211,153,0.4)] flex flex-col items-center min-w-[160px] fade-out-up">
+                    <div class="text-3xl font-black ${colorClass} drop-shadow-md mb-1 italic tracking-wider">${rating}</div>
+                    <div class="text-xl font-bold text-white">+${points.toLocaleString()}</div>
+                </div>
+            `;
+            layer.appendChild(el);
+            setTimeout(() => el.remove(), 850);
+        }
+
+        async function sendScore(title) {
+            try {
+                const params = new URLSearchParams({
+                    action: 'save',
+                    accessKey: '03162017Rfv', // GAS側で設定した合言葉
+                    name: playerName,
+                    score: score,
+                    title: title,
+                    mode: gameMode,
+                    version: currentVersion
+                });
+                
+                const url = `${GAS_URL}?${params.toString()}&_=${Date.now()}`;
+                
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                displayRanking(data); 
+            } catch (e) {
+                console.error('ランキング保存エラー:', e);
+            }
+        }
+
+        function displayRanking(data) {
+            const listContainer = document.getElementById('ranking-list');
+            if (!listContainer) return;
+
+            if (!data || data.error || !Array.isArray(data) || data.length === 0) {
+                listContainer.innerHTML = '<div class="text-center py-8 text-slate-500 text-xs">ランキングデータがありません</div>';
+                return;
+            }
+
+            let html = '<div class="space-y-2">';
+            data.forEach((entry, index) => {
+                const medalColor = index === 0 ? 'text-yellow-400' : index === 1 ? 'text-slate-300' : index === 2 ? 'text-amber-600' : 'text-slate-500';
+                
+                html += `
+                    <div class="flex items-center bg-slate-800/50 rounded-lg p-2 border border-slate-700/50">
+                        <div class="w-8 flex-shrink-0 text-center font-black ${medalColor}">${index + 1}</div>
+                        <div class="flex-grow min-w-0 px-2">
+                            <div class="text-white font-bold text-sm truncate">${entry.name}</div>
+                            <div class="text-[10px] text-emerald-400 truncate">${entry.title || "無名の戦士"}</div>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <div class="text-yellow-400 font-black text-sm">${Number(entry.score).toLocaleString()}</div>
+                            <div class="text-[9px] text-slate-500">${entry.date ? new Date(entry.date).toLocaleDateString() : ""}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            listContainer.innerHTML = html;
+        }
+
+        async function endGame(isClear) {
+            // 全てのBGMを停止してリセット
             ["bgm-stage1", "bgm-stage2", "bgm-stage3", "bgm-stage4", "bgm-endless"].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
@@ -565,7 +568,6 @@ function displayRanking(data) {
             const review = document.getElementById('review-box');
             const btn = document.getElementById('action-btn');
             
-            // すでに「タイトルに戻る」のサブボタンが残っていたら一旦消す（重複防止）
             const oldHomeBtn = document.getElementById('sub-home-btn');
             if (oldHomeBtn) oldHomeBtn.remove();
             
@@ -579,7 +581,6 @@ function displayRanking(data) {
                 btn.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
                 btn.onclick = () => {
                     ov.classList.add('hidden');
-                    // ゲーム状態を初期化して再スタート
                     score = 0;
                     currentQuestionIndex = 0;
                     document.getElementById('total-score').innerText = "0";
@@ -595,26 +596,22 @@ function displayRanking(data) {
                     document.getElementById('rev-a').innerText = lastQ.a;
                 }
                 
-                // メインボタンを「リベンジする」に変更
                 btn.innerText = "リベンジする";
                 btn.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
                 btn.onclick = () => {
                     ov.classList.add('hidden');
-                    // スコアとインデックスをリセットして最初から挑戦
                     score = 0;
                     currentQuestionIndex = 0;
                     document.getElementById('total-score').innerText = "0";
                     initialStart(); 
                 };
 
-                // 「リベンジする」ボタンの下に小さく「タイトルに戻る」を追加
                 const homeBtn = document.createElement('button');
                 homeBtn.id = 'sub-home-btn';
                 homeBtn.innerText = "タイトルに戻る";
                 homeBtn.className = "w-full mt-3 py-3 bg-slate-700/60 hover:bg-slate-700 text-slate-300 rounded-2xl font-bold text-sm shadow-md active:scale-95 transition-all";
-                homeBtn.onclick = () => location.reload(); // タイトルに戻る時は確実にリロード
+                homeBtn.onclick = () => location.reload();
                 
-                // ボタンのすぐ後ろに差し込む
                 btn.parentNode.insertBefore(homeBtn, btn.nextSibling);
             }
 
@@ -690,9 +687,8 @@ function displayRanking(data) {
                     if(id === tid) el.play().catch(()=>{}); else el.pause();
                 }
             });
-        } // ← updateBGMはここで終わり！
+        }
 
-        // ステージクリア演出（独立した関数として外に出す）
         function showStageClearOverlay(stageNum) {
             const ov = document.getElementById('overlay');
             const icon = document.getElementById('overlay-icon');
@@ -707,8 +703,7 @@ function displayRanking(data) {
             ranking.classList.add('hidden');
             report.classList.remove('hidden');
             
-            // 3.1.2風の称号生成
-            const title = generateTitle(score, currentQuestionIndex);
+            const title = generateTitle();
             
             icon.textContent = "🏅";
             msg.innerHTML = `<span class="text-emerald-400">STAGE ${stageNum} クリア!</span><br>さらなる深淵へ...`;
@@ -727,11 +722,55 @@ function displayRanking(data) {
             btn.onclick = () => {
                 ov.classList.add('hidden');
                 ranking.classList.remove('hidden');
-                updateBGM(); // ここで次のステージの曲に切り替え！
+                updateBGM(); 
                 showQuestion();
             };
             
             playSFX('sfx-correct'); 
+        }
+
+        // ==========================================
+        // 【追加】PWA インストールガイド画面の表示ロジック
+        // ==========================================
+        function showInstallGuide() {
+            const guide = document.getElementById('install-guide');
+            const msg = document.getElementById('install-message');
+            if (!guide || !msg) return;
+
+            // iOS（iPhone/iPad）かどうかの判定
+            const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+            if (isiOS) {
+                msg.innerHTML = `
+                    <div class="text-left text-base space-y-4 px-2 w-full">
+                        <p class="font-bold text-emerald-400 text-center text-xl mb-4">iPhone / Safari の方</p>
+                        <div class="flex items-start gap-3">
+                            <span class="bg-slate-800 border border-slate-700 w-6 h-6 rounded-full flex items-center justify-center text-xs mt-0.5 flex-shrink-0">1</span>
+                            <p>Safariの画面下部にある<span class="text-white font-bold">「共有ボタン（四角から矢印が飛び出たアイコン）」</span>を押す</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="bg-slate-800 border border-slate-700 w-6 h-6 rounded-full flex items-center justify-center text-xs mt-0.5 flex-shrink-0">2</span>
+                            <p>メニューを下にスクロールして<span class="text-white font-bold">「ホーム画面に追加」</span>を選択</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                msg.innerHTML = `
+                    <div class="text-left text-base space-y-4 px-2 w-full">
+                        <p class="font-bold text-emerald-400 text-center text-xl mb-4">Android / Chrome の方</p>
+                        <div class="flex items-start gap-3">
+                            <span class="bg-slate-800 border border-slate-700 w-6 h-6 rounded-full flex items-center justify-center text-xs mt-0.5 flex-shrink-0">1</span>
+                            <p>右上の<span class="bg-slate-800 border border-slate-700 px-2 py-0.5 rounded text-sm">三点リーダー（⋮）</span>を押す</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="bg-slate-800 border border-slate-700 w-6 h-6 rounded-full flex items-center justify-center text-xs mt-0.5 flex-shrink-0">2</span>
+                            <p><span class="text-white font-bold">「アプリをインストール」</span>または<span class="text-white font-bold">「ホーム画面に追加」</span>を選択</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            guide.classList.remove('hidden');
         }
     </script>
 </body>
