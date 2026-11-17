@@ -153,8 +153,9 @@
                     <span>📱</span> アプリとしてダウンロード (PWA)
                 </button>
                 <button id="mistake-btn" onclick="startReview()" class="w-full py-3.5 bg-slate-800/90 text-rose-300 border border-rose-500/40 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-all interactive-btn flex items-center justify-center gap-2 hover:bg-slate-700/90">
-                    <span>📖</span> まちがい帳で復習（<span id="mistake-count">0</span>問）
+                    <span>📖</span> まちがい帳で復習（<span id="mistake-count">0</span>問）<span id="graduated-note"></span>
                 </button>
+                <p id="streak-line" class="hidden text-center text-amber-300 font-black text-sm mt-3"></p>
                 <div class="text-[11px] text-amber-300/80 leading-relaxed">※これは v4.0 改修のたたき台です。<br>ランキングへのスコア送信は無効化されています。</div>
            </div>
         </div>
@@ -583,6 +584,7 @@ const DATA_OLD = {
             if (gameMode === 'review') {
                 const rq = currentQuestions[currentQuestionIndex];
                 if (rq) removeMistake(rq.q);
+                bumpGraduated();
                 reviewCorrect++;
             }
             score += points;
@@ -739,11 +741,11 @@ const DATA_OLD = {
             if (scoreReport) {
                 scoreReport.innerHTML = `
                     <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">Review Result</div>
-                    <div class="text-white font-black text-xl mb-4">復習おつかれさま！</div>
+                    <div class="text-white font-black text-xl mb-4">${remain === 0 && reviewTotal > 0 ? '🎉 まちがい帳、全問卒業！' : '復習おつかれさま！'}</div>
                     <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">正解 / 挑戦</div>
                     <div class="text-emerald-400 font-black text-3xl mb-4">${reviewCorrect} / ${reviewTotal} 問</div>
                     <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">まちがい帳の残り</div>
-                    <div class="text-yellow-400 font-black text-4xl">${remain} 問</div>
+                    <div class="text-yellow-400 font-black text-4xl">${remain} 問</div>${remain === 0 && reviewTotal > 0 ? '<div class="text-amber-300 font-bold text-sm mt-3">弱点を全部克服したね！お見事！</div>' : ''}
                 `;
             }
             btn.innerText = "タイトルに戻る";
@@ -833,6 +835,10 @@ const DATA_OLD = {
         if (snsX) snsX.href = 'https://x.com/intent/tweet?text=' + encodeURIComponent(buildShareText());
         const snsTh = document.getElementById('sns-threads');
         if (snsTh) snsTh.href = 'https://www.threads.com/intent/post?text=' + encodeURIComponent(buildShareText());
+        if (gameMode === 'daily' && !isDailyPractice) {
+            recordDailyStreak();
+            if (window._streakNow >= 2 && msg) msg.innerHTML += '<br><span class="text-amber-300 font-black">🔥 ' + window._streakNow + '日連続！</span>';
+        }
 
         if (scoreReport) {
             scoreReport.innerHTML = `
@@ -856,6 +862,7 @@ const DATA_OLD = {
                 // 初回デイリーや通常モードは今まで通りスコアを送信してランキング更新
                 if (gameMode === 'daily') {
                     localStorage.setItem('lastPlayedDailyDate', getTodayString());
+                    recordDailyStreak();
                 }
                 rankingList.innerHTML = '<div class="text-center py-8 text-slate-500 animate-pulse text-xs">ランキング更新中...</div>'; 
                 await sendScore(title);
@@ -889,6 +896,9 @@ const DATA_OLD = {
         }
     }
 
+    const RARE_ADJECTIVES = ['きらめく', 'ふわふわ', 'もちもち', 'うきうき', 'もふもふ', 'ぷにぷに', 'くるくる', 'ごきげん', 'にこにこ', 'どきどき'];
+    const SEASON_ADJECTIVES = ['きよし', 'ゆきふる', 'ほしふる', 'ジンジャー', 'ホーリー'];
+
     function generateTitle() {
         let rank = 'E';
         if (score >= 50000) rank = 'A';
@@ -898,9 +908,18 @@ const DATA_OLD = {
 
         const adjList = ADJECTIVES[rank] || ['普通の'];
         const nounList = NOUNS[rank] || ['挑戦者'];
-        const adj = adjList[Math.floor(Math.random() * adjList.length)];
+        let adj = adjList[Math.floor(Math.random() * adjList.length)];
         const noun = nounList[Math.floor(Math.random() * nounList.length)];
-        return adj + noun;
+        let mark = '';
+        const roll = Math.random();
+        if (roll < 0.05) {
+            adj = RARE_ADJECTIVES[Math.floor(Math.random() * RARE_ADJECTIVES.length)];
+            mark = '✨レア';
+        } else if (new Date().getMonth() === 11 && roll < 0.30) {
+            adj = SEASON_ADJECTIVES[Math.floor(Math.random() * SEASON_ADJECTIVES.length)];
+            mark = '🎄';
+        }
+        return adj + noun + mark;
     }
 
     // デイリー以外の通常モード用配列シャッフル
@@ -1088,6 +1107,8 @@ const DATA_OLD = {
     function updateMistakeBtn() {
         const el = document.getElementById('mistake-count');
         if (el) el.innerText = loadMistakes().length;
+        const g = document.getElementById('graduated-note');
+        if (g) g.innerText = loadGraduated() > 0 ? ' ✨卒業' + loadGraduated() + '問' : '';
     }
 
     function startReview() {
@@ -1143,7 +1164,8 @@ const DATA_OLD = {
             + '称号：『' + shareTitle + '』\n'
             + squares + more + '\n'
             + endNote + '\n'
-            + 'https://bbbb555creator.github.io/taigigo_survival/';
+            + 'https://bbbb555creator.github.io/taigigo_survival/'
+            + '\n#対義語サバイバル';
         return text;
     }
 
@@ -1180,6 +1202,50 @@ const DATA_OLD = {
         }
     }
 
+    function ymdOf(d) {
+        return d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+    }
+    function loadStreak() {
+        try { return JSON.parse(localStorage.getItem('taigigoStreakV1')) || { count: 0, last: '' }; }
+        catch (e) { return { count: 0, last: '' }; }
+    }
+    function recordDailyStreak() {
+        const s = loadStreak();
+        const today = getTodayString();
+        if (s.last === today) { window._streakNow = s.count; return; }
+        const y = new Date(); y.setDate(y.getDate() - 1);
+        s.count = (s.last === ymdOf(y)) ? s.count + 1 : 1;
+        s.last = today;
+        try { localStorage.setItem('taigigoStreakV1', JSON.stringify(s)); } catch (e) {}
+        window._streakNow = s.count;
+    }
+    function updateStreakLine() {
+        const el = document.getElementById('streak-line');
+        if (!el) return;
+        const s = loadStreak();
+        const today = getTodayString();
+        const y = new Date(); y.setDate(y.getDate() - 1);
+        if (s.count >= 2 && s.last === today) {
+            el.textContent = '🔥 デイリー ' + s.count + '日連続！';
+            el.classList.remove('hidden');
+        } else if (s.count >= 2 && s.last === ymdOf(y)) {
+            el.textContent = '🔥 デイリー ' + s.count + '日連続中（今日の分はまだ）';
+            el.classList.remove('hidden');
+        } else if (s.count === 1 && s.last === today) {
+            el.textContent = '🔥 デイリー 1日目！明日も続けよう';
+            el.classList.remove('hidden');
+        } else {
+            el.classList.add('hidden');
+        }
+    }
+    function loadGraduated() {
+        const n = parseInt(localStorage.getItem('taigigoGraduatedV1') || '0', 10);
+        return isNaN(n) ? 0 : n;
+    }
+    function bumpGraduated() {
+        try { localStorage.setItem('taigigoGraduatedV1', String(loadGraduated() + 1)); } catch (e) {}
+    }
+
     // soft reset back to title (no location.reload, so it works in preview viewers too)
     function goTitle() {
         ["bgm-stage1", "bgm-stage2", "bgm-stage3", "bgm-stage4", "bgm-endless", "bgm-daily", "bgm-ending"].forEach(id => {
@@ -1200,6 +1266,7 @@ const DATA_OLD = {
         isDailyPractice = false;
         document.getElementById('total-score').innerText = '0';
         updateMistakeBtn();
+        updateStreakLine();
     }
 
     function copyShareText() {
@@ -1212,6 +1279,7 @@ const DATA_OLD = {
     }
 
     updateMistakeBtn();
+    updateStreakLine();
 </script>
 </body>
 </html>
