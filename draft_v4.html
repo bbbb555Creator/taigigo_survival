@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+    
+    <title>対義語サバイバル - 全国ランキング版 (v4.0 draft)</title>
+    
+    <link rel="apple-touch-icon" href="https://bbbb555creator.github.io/taigigo_survival/icon.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500;900&family=Noto+Serif+JP:wght@900&family=Sawarabi+Mincho&display=swap');
+
+        body { 
+            font-family: 'Kiwi Maru', serif; 
+            background-color: #0f172a;
+            background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('https://bbbb555creator.github.io/taigigo_survival/bg.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #f8fafc; 
+            touch-action: manipulation;
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+
+        #game-container {
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .logo-float { animation: float 4s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        #word-box {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border: 4px solid #34d399;
+            box-shadow: 0 0 30px rgba(52, 211, 153, 0.3);
+            border-radius: 2rem;
+        }
+
+        .choice-btn {
+            background: linear-gradient(145deg, #b8860b, #8b4513) !important;
+            border: 3px solid #5d4037 !important;
+            box-shadow: inset 1px 1px 3px rgba(255,255,255,0.3), 0 4px 6px rgba(0,0,0,0.5) !important;
+            color: #fff8e1 !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8) !important;
+            border-radius: 8px !important;
+            position: relative;
+            overflow: hidden;
+            font-size: 1.5rem;
+            font-weight: 900;
+            padding-top: 1.25rem;
+            padding-bottom: 1.25rem;
+            transition: all 0.1s;
+        }
+        .choice-btn:active { transform: scale(0.95); }
+
+        .rank-row {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: background 0.3s;
+        }
+
+        .interactive-btn {
+            position: relative;
+            z-index: 50;
+            cursor: pointer;
+        }
+        
+        @keyframes fadeOutUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-40px); }
+        }
+        .fade-out-up { 
+            animation: fadeOutUp 0.8s ease-out forwards;
+            pointer-events: none;
+        }
+        
+        /* ニュースティッカーの設定 */
+        .ticker-container {
+            width: 100%;
+            overflow: hidden;
+            background: rgba(15, 23, 42, 0.6);
+            border-top: 1px solid rgba(52, 211, 153, 0.2);
+            border-bottom: 1px solid rgba(52, 211, 153, 0.2);
+            white-space: nowrap;
+        }
+        .ticker-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: ticker 20s linear infinite;
+            font-weight: bold;
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container" class="w-full relative overflow-hidden">
+        <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
+            VER 4.0　DRAFT
+        </div>
+
+        <div id="title-screen" class="flex-grow flex flex-col items-center justify-between text-center py-10 px-8 fade-in relative z-10">
+            <div class="w-full flex justify-end">
+                 <button onclick="toggleMute()" class="p-3 bg-slate-800/90 rounded-full text-slate-400 border border-slate-700 interactive-btn">
+                    <svg id="title-volume-on" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.686-3.686a1 1 0 011.111-.238zm5.459 2.158a1 1 0 011.414 0 7.5 7.5 0 010 10.608 1 1 0 01-1.414-1.414 5.5 5.5 0 000-7.78 1 1 0 010-1.414zm-2.828 2.828a1 1 0 011.414 0 3.5 3.5 0 010 4.95" /></svg>
+                    <svg id="title-volume-off" class="h-6 w-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
+                </button>
+            </div>
+            <div class="w-full absolute top-[5%] left-0">
+                <div class="ticker-container py-1">
+                   <div class="ticker-text">
+                        【更新情報】2026.05.20：デイリーチャレンジモードが登場！1日1回だけチャレンジできます。　　　　
+                        【お知らせ】不具合報告は作者までお願いします。
+                    </div>
+                </div>
+            </div>
+            <div class="flex-grow flex items-center justify-center w-full">
+                <img src="https://bbbb555creator.github.io/taigigo_survival/logo.png" alt="対義語サバイバル" class="max-w-[280px] logo-float drop-shadow-[0_0_20px_rgba(52,211,153,0.3)]">
+            </div>
+            
+            <div class="w-full max-w-xs space-y-4 mb-4 z-20">
+                <button onclick="selectMode('stage')" class="w-full active:scale-95 transition-all interactive-btn">
+                    <img src="https://bbbb555creator.github.io/taigigo_survival/stm.png" alt="ステージモード" class="w-full drop-shadow-lg pointer-events-none">
+                </button>
+               <button onclick="selectMode('endless')" class="w-full active:scale-95 transition-all interactive-btn block p-0 bg-transparent border-0 outline-none">
+    <img src="https://bbbb555creator.github.io/taigigo_survival/endless.png" alt="エンドレスモード" class="w-full drop-shadow-lg pointer-events-none block">
+</button>
+                
+                <button onclick="selectMode('daily')" class="w-full active:scale-95 transition-all interactive-btn">
+    <img src="https://bbbb555creator.github.io/taigigo_survival/daily.png" alt="デイリーチャレンジ" class="w-full drop-shadow-lg pointer-events-none">
+</button>
+                
+                <button onclick="showInstallGuide()" class="w-full py-3.5 bg-slate-800/90 text-emerald-400 border border-emerald-500/40 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-all interactive-btn flex items-center justify-center gap-2 hover:bg-slate-700/90">
+                    <span>📱</span> アプリとしてダウンロード (PWA)
+                </button>
+                <button id="mistake-btn" onclick="startReview()" class="w-full py-3.5 bg-slate-800/90 text-rose-300 border border-rose-500/40 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-all interactive-btn flex items-center justify-center gap-2 hover:bg-slate-700/90">
+                    <span>📖</span> まちがい帳で復習（<span id="mistake-count">0</span>問）
+                </button>
+                <div class="text-[11px] text-amber-300/80 leading-relaxed">※これは v4.0 改修のたたき台です。<br>ランキングへのスコア送信は無効化されています。</div>
+           </div>
+        </div>
+
+        <div id="instruction-screen-stage" class="hidden flex-grow flex flex-col items-center justify-center p-6 fade-in">
+            <h2 class="text-4xl font-black text-emerald-400 mb-8">遊び方</h2>
+            <div class="bg-slate-900/80 rounded-3xl p-8 border-2 border-emerald-500/30 text-slate-200 mb-10 w-full max-w-sm">
+                <ul class="space-y-4 text-left">
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">⚔️</span>
+                        <p>表示された単語の<span class="text-emerald-400 font-bold">対義語</span>を4択から選ぼう。</p>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">⏱️</span>
+                        <p>早く答えるほど<span class="text-yellow-400 font-bold">高得点！</span></p>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">⚠️</span>
+                        <p>たった一度のミスで<span class="text-rose-500 font-bold">ゲームオーバー。</span></p>
+                    </li>
+                </ul>
+            </div>
+            <button onclick="showVersionSelect()" class="w-full max-w-xs py-5 bg-emerald-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95 transition-transform">次へ進む</button>
+        </div>
+
+        <div id="instruction-screen-endless" class="hidden flex-grow flex flex-col items-center justify-center p-6 fade-in">
+            <h2 class="text-4xl font-black text-blue-400 mb-8">エンドレス</h2>
+            <div class="bg-slate-900/80 rounded-3xl p-8 border-2 border-blue-500/30 text-slate-200 mb-10 w-full max-w-sm">
+                <ul class="space-y-4 text-left">
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">🌀</span>
+                        <p>全データから<span class="text-blue-400 font-bold">ランダム</span>に出題されるぞ。</p>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">🔥</span>
+                        <p>ミスするまで終わらない<span class="text-orange-400 font-bold">地獄モード。</span></p>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">🏆</span>
+                        <p>どこまで集中力を維持できるか！</p>
+                    </li>
+                </ul>
+            </div>
+            <button onclick="showVersionSelect()" class="w-full max-w-xs py-5 bg-blue-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95 transition-transform">次へ進む</button>
+        </div>
+
+        <div id="instruction-screen-daily" class="hidden flex-grow flex flex-col items-center justify-center p-6 fade-in">
+            <h2 class="text-4xl font-black text-amber-400 mb-8">デイリー</h2>
+            <div class="bg-slate-900/80 rounded-3xl p-8 border-2 border-amber-500/30 text-slate-200 mb-10 w-full max-w-sm">
+                <ul class="space-y-4 text-left">
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">📅</span>
+                        <p>毎日変わる、本日限定の<span class="text-amber-400 font-bold">厳選20問</span>に挑戦！</p>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">🏅</span>
+                        <p>初回プレイの結果のみが全国ランキングに登録されるぞ。</p>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-xl">🔄</span>
+                        <p>2回目以降は、同じ問題で特訓できる<span class="text-emerald-400 font-bold">「練習モード」</span>に！</p>
+                    </li>
+                </ul>
+            </div>
+            <button onclick="showVersionSelect()" class="w-full max-w-xs py-5 bg-amber-600 rounded-2xl text-white font-black text-xl shadow-lg active:scale-95 transition-transform">次へ進む</button>
+        </div>
+
+        <div id="version-select-screen" class="hidden flex-grow flex flex-col items-center justify-center p-8 fade-in">
+            <h2 class="text-3xl font-black text-white mb-8 text-center">問題を選択</h2>
+            <div class="w-full max-w-xs space-y-6">
+                <button onclick="setVersion('new')" class="w-full py-6 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl text-white font-black text-2xl shadow-xl active:scale-95">vol.2</button>
+                <button onclick="setVersion('old')" class="w-full py-6 bg-gradient-to-r from-slate-600 to-slate-700 rounded-2xl text-slate-200 font-black text-2xl shadow-xl active:scale-95">vol.1</button>
+            </div>
+            <button onclick="backToInstruction()" class="mt-8 text-slate-400 font-bold">戻る</button>
+        </div>
+
+        <div id="nickname-screen" class="hidden flex-grow flex flex-col items-center justify-center p-8 fade-in">
+            <h2 class="text-3xl font-black text-white mb-8 text-center">名を入力せよ</h2>
+            <input type="text" id="player-name" maxlength="10" placeholder="ニックネーム" class="w-full max-w-xs py-5 px-6 bg-slate-800 border-2 border-emerald-500 rounded-2xl text-white text-center text-2xl mb-8">
+            <button onclick="initialStart()" class="w-full max-w-xs py-5 bg-gradient-to-r from-emerald-500 to-blue-600 rounded-2xl text-white font-black text-2xl shadow-xl active:scale-95">挑戦開始</button>
+        </div>
+
+        <div id="game-screen" class="hidden flex-grow flex flex-col p-6 fade-in relative">
+            <div id="feedback-layer"></div>
+            <div class="flex justify-between items-end mb-4 pt-10">
+                <div id="level-badge" class="px-4 py-1.5 text-white text-xs rounded-full font-bold"></div>
+                <div class="text-right">
+                    <div class="text-[10px] text-slate-400 uppercase font-bold">Score</div>
+                    <div id="total-score" class="text-2xl font-black text-yellow-400 leading-none">0</div>
+                </div>
+            </div>
+            <div class="relative w-full bg-slate-800/60 h-3 rounded-full overflow-hidden border border-slate-700">
+                <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <div class="text-center my-6 flex-grow flex flex-col justify-center">
+                <div id="word-box" class="w-full py-12 px-4 mx-auto mt-6">
+                    <div id="question-word" class="text-5xl md:text-6xl font-black text-white drop-shadow-lg">---</div>
+                </div>
+            </div>
+            <div id="choices-grid" class="grid grid-cols-1 gap-4 mt-auto mb-8"></div>
+        </div>
+
+        <div id="overlay" class="hidden absolute inset-0 z-50 flex items-start justify-center bg-slate-950/98 p-6 backdrop-blur-xl text-center overflow-y-auto">
+            <div id="result-content" class="w-full max-w-sm fade-in flex flex-col items-center py-10">
+                <div id="overlay-icon" class="text-7xl mb-4"></div>
+                <div id="overlay-message" class="text-2xl font-bold mb-4 text-slate-200"></div>
+                <div id="review-box" class="hidden w-full p-6 mb-6 bg-rose-950/30 border border-rose-500/50 rounded-3xl text-left">
+                    <div class="flex items-center justify-between">
+                        <div id="rev-q" class="text-2xl font-black text-white">---</div>
+                        <div class="text-rose-400 mx-2">⇔</div>
+                        <div id="rev-a" class="text-2xl font-black text-emerald-400 underline">---</div>
+                    </div>
+                    <div id="rev-picked" class="mt-4 text-sm text-slate-300"></div>
+                    <div id="rev-note" class="mt-2 text-xs leading-relaxed text-amber-300/90"></div>
+                </div>
+                <div id="score-report" class="w-full mb-8 p-6 bg-slate-900/50 rounded-3xl border border-slate-800"></div>
+                <div id="ranking-container" class="w-full mb-8">
+                    <h3 class="text-sm font-black text-slate-400 mb-4 tracking-widest uppercase">National Top 10</h3>
+                    <div id="ranking-list" class="bg-slate-900/30 rounded-2xl border border-slate-800/50 overflow-hidden text-left"></div>
+                </div>
+                <button id="action-btn" class="w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 text-white">タイトルへ</button>
+                <div id="share-area" class="hidden w-full">
+                    <button id="share-btn" onclick="shareResult()" class="w-full mt-3 py-4 bg-sky-600 rounded-3xl font-black text-lg shadow-xl active:scale-95 transition-all text-white">📤 結果をシェアする</button>
+                    <div class="w-full mt-2 grid grid-cols-3 gap-2">
+                        <a id="sns-x" href="#" target="_blank" rel="noopener" class="py-3 bg-black border border-slate-600 rounded-2xl font-black text-sm text-white active:scale-95 transition-all flex items-center justify-center">𝕏 ポスト</a>
+                        <a id="sns-threads" href="#" target="_blank" rel="noopener" class="py-3 bg-slate-800 border border-slate-600 rounded-2xl font-black text-sm text-white active:scale-95 transition-all flex items-center justify-center">Threads</a>
+                        <a id="sns-instagram" href="https://www.instagram.com/" target="_blank" rel="noopener" onclick="copyShareText()" class="py-3 bg-gradient-to-tr from-amber-500 via-pink-600 to-purple-600 rounded-2xl font-black text-sm text-white active:scale-95 transition-all flex items-center justify-center">Instagram</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="install-guide" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl flex flex-col justify-between min-h-[300px]">
+                <div id="install-message" class="flex-grow flex items-center justify-center text-slate-200"></div>
+                <button id="install-btn" onclick="document.getElementById('install-guide').classList.add('hidden')" class="w-full py-4 bg-slate-700 hover:bg-slate-600 active:scale-95 transition-all text-white rounded-2xl font-bold text-lg shadow-lg mt-6">戻る</button>
+            </div>
+        </div>
+
+    </div>
+
+    <audio id="bgm-stage1" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/1.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm-stage2" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/2.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm-stage3" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/3.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm-stage4" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/4.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm-endless" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/3.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm-daily" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/daily_bgm.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm-ending" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/end.ogg" type="audio/ogg"></audio>
+    <audio id="sfx-correct" preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/maru.mp3" type="audio/mpeg"></audio>
+    <audio id="sfx-wrong" preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/batu.mp3" type="audio/mpeg"></audio>
+
+   <script>
+        // ==========================================
+        // 1. データ変数は外部から注入される前提
+        // ==========================================
+       const ADJECTIVES = {
+    A: ["鼻血が出そうな", "お湯も沸かせる", "味が濃すぎる", "地球を救いそうな", "牛乳を吹き出す", "目がバッキバキの", "100点満点を超えた", "止まると死ぬ", "お祭り騒ぎの", "筋肉痛になりそうな", "稲妻が走る", "本気を出しすぎた", "奇跡しか起きない", "絶好調すぎる", "燃えさかる", "声がデカすぎる", "夢にまで出てくる", "宇宙まで飛んでいく", "完璧に仕上がった", "神がかり的な", "爆笑を誘う", "まばたきを忘れた", "画面が割れそうな", "磁石のように吸い付く", "100年に一度の", "勢いが止まらない", "誰にも止められない", "太陽より熱い", "伝説になりそうな", "息継ぎなしの"],
+    B: ["脂が乗ってきた", "おかわりが欲しい", "ノリにノっている", "鼻歌まじりの", "準備万端な", "歯切れの良い", "結構やる気な", "ドヤ顔がすぎる", "勢いがある", "ちょっと自慢げな", "期待を裏切らない", "かなりキマっている", "独自のキレがある", "油断ならない", "本気を出しかけた", "絶妙なタイミングの", "噂になりそうな", "磨けば光る", "安定感のある", "独自の進化をした", "声高らかな", "手応えバッチリの", "確信に満ちた", "意外と強気な", "独自のセンスが光る", "一味ちがう", "自信満々な", "スピードに乗った", "キラキラしている", "ちょうど食べごろな"],
+    C: ["そこそこやる", "クラスで3番目の", "絶妙にふつうの", "意外と頑張る", "腹八分目の", "安定した", "ほどよい温度の", "どこにでもいる", "平均的な", "無難すぎる", "まあまあの", "どっちつかずの", "パッとしない", "ほどほどに温まった", "右へならえの", "標準的な", "可もなく不可もない", "世渡り上手な", "適当にこなす", "世間並みの", "ほどよく焼けた", "馴染みのある", "ど真ん中を行く", "箸休めのような", "まあまあの出来の", "それなりの", "目立たない", "安定の", "ちょうど真ん中の", "普通を極めた"],
+    D: ["伸びしろしかない", "寝起きの", "よちよちの", "迷走している", "震える足の", "産まれたての", "おぼつかない", "崖っぷちの", "頼りない", "初々しい", "危なっかしい", "心もとない", "彷徨っている", "弱気な", "控えめな", "遠慮がちな", "借りてきた猫のような", "半信半疑の", "おそるおそるの", "手探りな", "未熟な", "幼い", "甘噛みの", "へっぴり腰の", "自信なげな", "霧の中にいるような", "ぼんやりした", "お腹をこわした", "忘れ物をした", "宿題が嫌いな"],
+    E: ["ほぼ寝ている", "止まったままの", "ぐにゃぐにゃな", "お腹がすいた", "ぼーっとした", "穴のあいた", "すべって転んだ", "宿題を忘れた", "忘れ物ばかりの", "歯をみがいていない", "迷子になった", "自信のない", "まだ準備中の", "弱々しい", "まばたきしすぎた", "鼻歌まじりの", "ぼんやりした", "ふらふらの", "夢の中の", "ぼーっとしている", "お菓子を食べたい", "ぬるくなった", "頼りない", "影のうすい", "眠気に負けた", "風に流された", "名前を忘れた", "足がしびれた", "ぼけっとしている", "魂が抜けた"]
+};
+const NOUNS = {
+    A: ["ヒーロー", "大統領", "王様", "優勝者", "宇宙人", "伝説", "天才", "守護神", "救世主", "1等賞", "金メダル", "ボス", "隊長", "師匠", "魔法使い", "チャンピオン", "主人公", "未来人", "知恵袋", "司令官", "発明家", "星", "太陽", "超人", "大黒柱", "神様", "巨匠", "勝ち組", "生き字引", "冒険王"],
+    B: ["期待の星", "選手", "隊員", "リーダー", "兄貴", "職人", "先輩", "実力者", "実行委員", "人気者", "代表者", "助っ人", "有名人", "まとめ役", "現場監督", "勝ち組の卵", "特待生", "優等生", "秘密兵器", "副隊長", "班長", "勝ち組候補", "やり手", "切れ者", "指導員", "選抜メンバー", "自信家", "働き者", "知恵者", "鉄人"],
+    C: ["一般市民", "村人", "通行人", "観客", "どこかの誰か", "隣の住人", "バイトリーダー", "係員", "出席者", "案内係", "メンバー", "サラリーマン", "主婦", "郵便屋さん", "おじさん", "お姉さん", "店員さん", "普通の人", "背番号のないエース", "掃除当番", "予備軍", "飼育員", "受講生", "散歩中の人", "待機中の人", "看板娘", "住み込みの人", "会員", "旅行者"],
+    D: ["挑戦者", "ひよこ", "初心者", "見習い", "練習生", "散歩中の子犬", "隠れキャラ", "野良猫", "迷走中の人", "研究生", "補習を受けている人", "予備校生", "駆け出し", "まだ何者でもない人", "新入り", "迷子の大人", "迷子のクジラ", "まだ起きていない人", "名前を募集中の方", "練習中の方", "探しもの中の人", "たまご", "冒険の準備中の人", "お留守番係", "見守り隊", "お昼寝中の人", "順番待ちの人", "忘れ物を取りに帰った人", "準備体操中の人", "通りすがりの人"],
+    E: ["かかし", "石ころ", "置物", "どろだんご", "お地蔵さん", "消しゴムのかす", "ぬけがら", "ちり紙", "落ち葉", "ありんこ", "砂つぶ", "ほこり", "影ぼうし", "まくら", "たわし", "水たまり", "空き箱", "雑草", "ビー玉", "扇風機（弱）", "かたつむり", "おたまじゃくし", "豆腐", "プリン", "ふせん", "穴のあいた靴下", "迷子のひよこ", "割れたコップ", "鉛筆のしん", "1円玉"]
+};
+
+// 2. 問題データ（ここはそのままコピペして使ってください）
+const DATA_NEW = {
+   elementary: [
+        {q:'座る',a:'立つ',d:['寝る','歩く','跳ぶ']},{q:'脱ぐ',a:'着る',d:['洗う','畳む','選ぶ']},{q:'泣く',a:'笑う',d:['怒る','叫ぶ','黙る']},{q:'拾う',a:'捨てる',d:['置く','運ぶ','包む']},{q:'増える',a:'減る',d:['止まる','消える','混ざる']},{q:'浮く',a:'沈む',d:['跳ねる','揺れる','溶ける']},{q:'冷たい',a:'熱い',d:['硬い','甘い','痛い']},{q:'硬い',a:'柔らかい',d:['軽い','薄い','浅い']},{q:'近い',a:'遠い',d:['広い','深い','高い']},{q:'太い',a:'細い',d:['短い','薄い','低い']},
+        {q:'出す',a:'入れる',d:['消す','止める','捨てる']},{q:'開ける',a:'閉める',d:['止める','引く','叩く']},{q:'押す',a:'引く',d:['止める','振る','回す']},{q:'曲がる',a:'伸びる',d:['折れる','切れる','割れる']},{q:'乾く',a:'濡れる',d:['温まる','凍る','汚れる']},{q:'結ぶ',a:'解く',d:['切る','貼る','折る']},{q:'重い',a:'軽い',d:['薄い','低い','弱い']},{q:'強い',a:'弱い',d:['軽い','低い','遅い']},{q:'早い',a:'遅い',d:['短い','低い','弱い']},{q:'明るい',a:'暗い',d:['重い','遅い','狭い']},
+        {q:'始まる',a:'終わる',d:['休む','止まる','遅れる']},{q:'登る',a:'下りる',d:['飛ぶ','走る','止まる']},{q:'送る',a:'受け取る',d:['捨てる','運ぶ','なくす']},{q:'貸す',a:'借りる',d:['売る','直す','見せる']},{q:'売る',a:'買う',d:['貸す','捨てる','配る']},{q:'投げる',a:'捕る',d:['打つ','蹴る','離す']},{q:'借りる',a:'返す',d:['貸す','売る','持つ']},{q:'洗う',a:'汚す',d:['拭く','磨く','絞る']},{q:'隠す',a:'現す',d:['消す','広げる','飾る']},{q:'太る',a:'痩せる',d:['縮む','減る','老いる']},
+        {q:'冷める',a:'温まる',d:['溶ける','焦げる','煮える']},{q:'凍る',a:'溶ける',d:['割れる','濁る','砕ける']},{q:'混ぜる',a:'分ける',d:['振る','練る','こねる']},{q:'晴れる',a:'曇る',d:['降る','吹く','荒れる']},{q:'浮かぶ',a:'沈む',d:['消える','揺れる','光る']},{q:'勝つ',a:'負ける',d:['投げる','逃げる','挑む']},{q:'止まる',a:'動く',d:['歩く','進む','踊る']},{q:'離れる',a:'近づく',d:['止まる','戻る','見つめる']},{q:'出会う',a:'別れる',d:['集まる','帰る','逃げる']},{q:'上げる',a:'下げる',d:['引く','押す','回す']},
+        {q:'下げる',a:'上げる',d:['引く','押す','叩く']},{q:'抜く',a:'挿す',d:['切る','折る','貼る']},{q:'貼る',a:'剥がす',d:['切る','塗る','折る']},{q:'膨らむ',a:'萎む',d:['縮む','破れる','腐る']},{q:'固まる',a:'溶ける',d:['割れる','砕ける','崩れる']},{q:'捕まえる',a:'逃がす',d:['隠す','拾う','追う']},{q:'守る',a:'攻める',d:['逃げる','隠れる','耐える']},{q:'増やす',a:'減らす',d:['止める','戻る','隠す']},{q:'似る',a:'異なる',d:['変わる','離れる','混ざる']},{q:'集まる',a:'散る',d:['消える','落ちる','流れる']}
+    ],
+    intermediate: [
+        {q:'公立',a:'私立',d:['国立','共立','連立']},{q:'加害者',a:'被害者',d:['傍観者','目撃者','実行犯']},{q:'生産',a:'消費',d:['保管','廃棄','輸送']},{q:'密集',a:'分散',d:['孤立','集中','混乱']},{q:'単数',a:'複数',d:['多数','総数','全数']},{q:'都会',a:'田舎',d:['郊外','下町','観光地']},{q:'垂直',a:'水平',d:['平行','直角','斜め']},{q:'権利',a:'義務',d:['特権','自由','使命']},{q:'和風',a:'洋風',d:['中華','欧州','モダン']},{q:'既婚',a:'未婚',d:['新婚','婚約','金婚']},
+        {q:'往路',a:'復路',d:['通路','岐路','経路']},{q:'有償',a:'無償',d:['高価','安価','定価']},{q:'加熱',a:'冷却',d:['凍結','沸騰','蒸発']},{q:'前半',a:'後半',d:['中盤','序盤','終盤']},{q:'本題',a:'余談',d:['序論','結論','私見']},{q:'平日',a:'休日',d:['午前','翌日','昨晩']},{q:'定刻',a:'遅延',d:['早退','欠席','運休']},{q:'満席',a:'空席',d:['指定','予約','立席']},{q:'天然',a:'養殖',d:['密猟','栽培','加工']},{q:'有料',a:'無料',d:['特価','免除','還元']},
+        {q:'一括',a:'分割',d:['継続','停止','保留']},{q:'本番',a:'練習',d:['予習','復習','準備']},{q:'実在',a:'架空',d:['伝説','神話','未来']},{q:'臨時',a:'定期',d:['特例','通常','随時']},{q:'強制',a:'任意',d:['協力','自動','固定']},{q:'内勤',a:'外回り',d:['受付','事務','出張']},{q:'既製品',a:'特注品',d:['中古品','非売品','粗悪品']},{q:'単独',a:'共同',d:['分離','分散','孤立']},{q:'常勤',a:'非常勤',d:['嘱託','派遣','出向']},{q:'新品',a:'中古',d:['遺物','備品','廃品']},
+        {q:'先着',a:'抽選',d:['予約','招待','指名']},{q:'縦書き',a:'横書き',d:['裏書き','直書き','下書き']},{q:'屋内',a:'屋外',d:['室内','圏外','境内']},{q:'文系',a:'理系',d:['体育系','芸術系','工業系']},{q:'先攻',a:'後攻',d:['攻撃','防御','完封']},{q:'直営',a:'委託',d:['経営','運営','協力']},{q:'直通',a:'経由',d:['停車','迂回','終点']},{q:'正規',a:'非正規',d:['特別','限定','不当']},{q:'傑作',a:'駄作',d:['力作','新作','旧作']},{q:'国内産',a:'海外産',d:['地元産','県内産','特産品']},
+        {q:'実費',a:'報酬',d:['利益','経費','支出']},{q:'昼勤',a:'夜勤',d:['残業','当直','欠勤']},{q:'定価',a:'特価',d:['減価','評価','額面']},{q:'正門',a:'裏門',d:['西門','北門','南門']},{q:'独占',a:'競争',d:['占有','協調','譲渡']},{q:'全盛',a:'衰退',d:['絶頂','混乱','停滞']},{q:'新設',a:'廃止',d:['移転','解体','停止']},{q:'合流',a:'分岐',d:['交差','終点','始点']},{q:'輸入車',a:'国産車',d:['新車','中古車','名車']},{q:'本人',a:'代理',d:['他人','同行者','立会人']}
+    ],
+    advanced: [
+        {q:'自立',a:'依存',d:['孤立','支援','従属']},{q:'渇望',a:'充足',d:['希求','飽和','欠乏']},{q:'看過',a:'注視',d:['黙認','静観','等閑']},{q:'奇策',a:'正攻法',d:['定石','奸計','策略']},{q:'修復',a:'破壊',d:['損耗','放置','修繕']},{q:'詭弁',a:'正論',d:['虚偽','放言','屁理屈']},{q:'欺瞞',a:'誠実',d:['詐称','背信','偽装']},{q:'求心',a:'遠心',d:['求道','中心','偏向']},{q:'供述',a:'黙秘',d:['自白','宣誓','陳述']},{q:'顕示',a:'隠匿',d:['誇示','呈示','秘匿']},
+        {q:'謙遜',a:'誇耀',d:['謙虚','卑下','自負']},{q:'厳格',a:'寛大',d:['厳密','窮屈','苛烈']},{q:'巧妙',a:'拙劣',d:['巧緻','凡庸','稚拙']},{q:'固辞',a:'快諾',d:['受諾','受理','保留']},{q:'固執',a:'放棄',d:['執着','固守','譲歩']},{q:'誇張',a:'矮小',d:['誇示','収縮','過少']},{q:'誤謬',a:'真理',d:['虚偽','過失','誤解']},{q:'猜疑',a:'盲信',d:['懐疑','確信','不信']},{q:'詐取',a:'返還',d:['奪取','横領','徴収']},{q:'漸進',a:'急進',d:['漸次','進取','保守']},
+        {q:'自賛',a:'卑下',d:['自負','傲慢','謙遜']},{q:'謝絶',a:'応諾',d:['辞退','拒絶','受諾']},{q:'凝縮',a:'拡散',d:['収束','縮小','蒸発']},{q:'識別',a:'混同',d:['判別','乖離','分類']},{q:'俊敏',a:'緩慢',d:['迅速','鈍重','脆弱']},{q:'消失',a:'存続',d:['滅失','消滅','維持']},{q:'焦燥',a:'安寧',d:['苛立ち','安堵','悠久']},{q:'親近',a:'疎遠',d:['親密','孤立','敬遠']},{q:'進取',a:'守旧',d:['革新','保守','伝統']},{q:'浸食',a:'堆積',d:['腐食','摩耗','堆肥']},
+        {q:'遂行',a:'頓挫',d:['完遂','中断','停滞']},{q:'推賞',a:'酷評',d:['推薦','称賛','糾弾']},{q:'切迫',a:'弛緩',d:['緊迫','余裕','緩和']},{q:'羨望',a:'蔑視',d:['憧憬','嫉妬','軽蔑']},{q:'高尚',a:'低俗',d:['風流','凡俗','風雅']},{q:'扇動',a:'鎮静',d:['教唆','激変','誘導']},{q:'不遜',a:'謙虚',d:['傲慢','無礼','卑下']},{q:'躍進',a:'凋落',d:['躍動','衰退','没落']},{q:'相違',a:'合致',d:['乖離','不一致','齟齬']},{q:'豪華',a:'質素',d:['華麗','盛大','凡庸']},
+        {q:'相反',a:'符合',d:['不一致','対立','合致']},{q:'阻害',a:'助長',d:['妨害','抑制','促進']},{q:'訴求',a:'忌避',d:['追求','嫌悪','排除']},{q:'粗忽',a:'几帳面',d:['粗野','油断','丁寧']},{q:'阻止',a:'容認',d:['妨害','歓迎','放置']},{q:'排除',a:'受容',d:['隔離','疎遠','追放']},{q:'堕落',a:'昇華',d:['頽廃','向上','精進']},{q:'熱中',a:'冷淡',d:['没頭','油断','退屈']},{q:'断絶',a:'継承',d:['分離','遮断','接続']},{q:'瓦解',a:'成就',d:['崩壊','成功','完遂']}
+    ],
+    insane: [
+        {q:'先発',a:'抑え',d:['代打', '完投', '併殺']},{q:'安打',a:'凡退',d:['失策', '盗塁', '出塁']},{q:'ゾーン',a:'マンマーク',d:['プレス', 'オフサイド', 'リベロ']},{q:'起点',a:'終点',d:['経由', '接点', '地点']},{q:'アウトコース',a:'インコース',d:['ラフ', 'バンカー', 'グリーン']},{q:'ドロー',a:'フェード',d:['フック', 'スライス', 'ロブ']},{q:'サーブ',a:'レシーブ',d:['トス', 'アタック', 'ブロック']},{q:'短距離',a:'長距離',d:['障害', '競歩', '跳躍']},{q:'押し',a:'引き',d:['投げ', '掛け', '反り']},{q:'ベビーフェイス',a:'ヒール',d:['レフェリー', 'セコンド', 'プロモーター']},{q:'確変',a:'通常',d:['時短', '潜伏', '連続']},{q:'貯玉',a:'交換',d:['処分', '入金', '返却']},{q:'同期',a:'非同期',d:['転送', '圧縮', '暗号']},{q:'有線',a:'無線',d:['光速', '衛星', '回路']},{q:'冗長',a:'簡素',d:['最適', '精密', '強固']},{q:'論理削除',a:'物理削除',d:['一括削除', '上書き', '初期化']},{q:'強気',a:'弱気',d:['中立', '慎重', '楽観']},{q:'現物',a:'信用',d:['先物', 'オプション', '債券']},{q:'利確',a:'損切り',d:['成行', '指値', '逆指値']},{q:'更地',a:'上物',d:['廃墟', '宅地', '私道']},{q:'賃貸',a:'分譲',d:['管理', '仲介', '清掃']},{q:'急性期',a:'慢性期',d:['回復期', '終末期', '潜伏期']},{q:'往診',a:'来院',d:['回診', '転院', '退院']},{q:'初校',a:'校了',d:['再校', '入稿', '下版']},{q:'縦組み',a:'横組み',d:['平積み', '箱組み', '袋綴じ']},{q:'本番',a:'リハ',d:['収録', '編集', '中継']},{q:'実写',a:'特撮',d:['脚本', '配給', '合成']},{q:'入庫',a:'出庫',d:['検品', '保管', '配送']},{q:'発送',a:'着荷',d:['転送', '追跡', '不在']},{q:'接客',a:'調理',d:['清掃', '会計', '発注']},{q:'予約',a:'フリー',d:['延長', '指名', '団体']},{q:'既製服',a:'注文服',d:['古着', '私服', '制服']},{q:'前輪駆動',a:'後輪駆動',d:['四輪駆動', '自動運転', '電気走行']},{q:'往路',a:'復路',d:['直行', '経由', '途中']},{q:'国内線',a:'国際線',d:['貨物便', '定期便', '臨時便']},{q:'与党',a:'野党',d:['閣僚', '会派', '議連']},{q:'中央',a:'地方',d:['都心', '近郊', '離島']},{q:'原告',a:'被告',d:['検察', '弁護', '証人']},{q:'勝訴',a:'敗訴',d:['和解', '棄却', '上告']},{q:'定石',a:'奇策',d:['布石', '手止まり', '投了']},{q:'先手',a:'後手',d:['王手', '千日手', '投了']},{q:'独奏',a:'合奏',d:['伴奏', '斉唱', '指揮']},{q:'生演奏',a:'録音',d:['放送', '配信', '編曲']},{q:'表舞台',a:'舞台裏',d:['花道', '客席', '楽屋']},{q:'登頂',a:'下山',d:['滑落', '遭難', '設営']},{q:'露出',a:'隠匿',d:['制作', '審査', '沈黙']},{q:'登校',a:'下校',d:['休校', '転校', '不登校']},{q:'新規',a:'既存',d:['見込', '提携', '優良']},{q:'内定',a:'お祈り',d:['採用', '不採用', '辞退']},{q:'卸売',a:'小売',d:['直販', '委託', '転売']}
+    ]
+};
+const DATA_OLD = {
+    elementary: [
+        {q:'表',a:'裏',d:['外','横','奥']},{q:'右',a:'左',d:['上','下','後']},{q:'入口',a:'出口',d:['窓口','北口','改札']},{q:'長い',a:'短い',d:['広い','狭い','高い']},{q:'大きい',a:'小さい',d:['細い','薄い','軽い']},{q:'新しい',a:'古い',d:['汚い','遅い','弱い']},{q:'勝つ',a:'負ける',d:['逃げる','耐える','挑む']},{q:'行く',a:'来る',d:['帰る','止まる','歩く']},{q:'寒い',a:'暑い',d:['温かい','涼しい','痛い']},{q:'夜',a:'昼',d:['朝','夕','晩']},{q:'好き',a:'嫌い',d:['普通','苦手','怖い']},{q:'男',a:'女',d:['人','友','親']},{q:'善',a:'悪',d:['偽','真','無']},{q:'得',a:'損',d:['負','負','苦']},{q:'白',a:'黒',d:['赤','青','黄']},{q:'縦',a:'横',d:['奥','斜','深']},{q:'空',a:'陸',d:['海','山','川']},{q:'北',a:'南',d:['西','東','中央']},{q:'昨日',a:'明日',d:['今日','明後日','一昨日']},{q:'敵',a:'味方',d:['親友','仲間','隣人']},{q:'広い',a:'狭い',d:['長い','太い','重い']},{q:'重い',a:'軽い',d:['薄い','低い','弱い']},{q:'強い',a:'弱い',d:['軽い','低い','遅い']},{q:'高い',a:'低い',d:['狭い','薄い','浅い']},{q:'暑い',a:'寒い',d:['涼しい','温かい','痛い']},{q:'明るい',a:'暗い',d:['重い','遅い','狭い']},{q:'太い',a:'細い',d:['短い','薄い','低い']},{q:'速い',a:'遅い',d:['弱い','短い','低い']},{q:'深い',a:'浅い',d:['低い','短い','薄い']},{q:'厚い',a:'薄い',d:['低い','短い','浅い']},{q:'安全',a:'危険',d:['不安','心配','不全']},{q:'正解',a:'不正解',d:['失敗','間違い','誤答']},{q:'成功',a:'失敗',d:['負け','間違い','中止']},{q:'安心',a:'不安',d:['心配','危険','恐怖']},{q:'開ける',a:'閉める',d:['止める','引く','押す']},{q:'押す',a:'引く',d:['止める','開ける','閉める']},{q:'出す',a:'入れる',d:['消す','止める','捨てる']},{q:'上',a:'下',d:['右','左','中']},{q:'左',a:'右',d:['上','下','中']},{q:'前',a:'後',d:['上','下','横']},{q:'始まり',a:'終わり',d:['中止','停止','休み']},{q:'最初',a:'最後',d:['途中','終盤','末尾']},{q:'売る',a:'買う',d:['貸す','捨てる','送る']},{q:'貸す',a:'借りる',d:['売る','返す','送る']},{q:'笑う',a:'泣く',d:['怒る','叫ぶ','黙る']},{q:'春',a:'秋',d:['夏','冬','雨']},{q:'夏',a:'冬',d:['春','秋','朝']},{q:'東',a:'西',d:['南','北','中央']},{q:'質問',a:'回答',d:['問題','返事','返信']},{q:'嘘',a:'本当',d:['誠実','真実','正解']}
+    ],
+    intermediate: [
+        {q:'肯定',a:'否定',d:['反対','拒否','批判']},{q:'需要',a:'供給',d:['配給','支給','提供']},{q:'理想',a:'現実',d:['実情','現場','事象']},{q:'楽観',a:'悲観',d:['達観','諦観','冷静']},{q:'積極',a:'消極',d:['静止','後退','謙虚']},{q:'具体',a:'抽象',d:['曖昧','複雑','概念']},{q:'容易',a:'困難',d:['複雑','劣悪','多忙']},{q:'開始',a:'終了',d:['閉鎖','撤退','停止']},{q:'幸福',a:'不幸',d:['悲劇','憂鬱','災難']},{q:'期待',a:'失望',d:['絶望','後悔','落胆']},{q:'信頼',a:'不信',d:['疑惑','嫌悪','恐怖']},{q:'許可',a:'禁止',d:['拒絶','却下','制限']},{q:'主役',a:'脇役',d:['端役','悪役','代役']},{q:'平和',a:'戦争',d:['紛争','混乱','暴動']},{q:'自然',a:'人工',d:['模造','創作','合成']},{q:'過去',a:'未来',d:['現在','来世','昨今']},{q:'天国',a:'地獄',d:['煉獄','下界','深淵']},{q:'直感',a:'思考',d:['熟考','準備','経験']},{q:'輸出',a:'輸入',d:['移送','転送','搬入']},{q:'利益',a:'損失',d:['負債','経費','減益']},{q:'原因',a:'結果',d:['成果','結論','事象']},{q:'供給',a:'需要',d:['支給','配給','必要']},{q:'集中',a:'拡散',d:['散乱','乖離','独立']},{q:'主観',a:'客観',d:['達観','俯瞰','傍観']},{q:'能動',a:'受動',d:['反動','流動','振動']},{q:'偶然',a:'必然',d:['当然','自然','強制的']},{q:'保存',a:'破棄',d:['撤去','保持','移動']},{q:'拡大',a:'縮小',d:['減少','低下','減衰']},{q:'文明',a:'未開',d:['原始','太古','混沌']},{q:'直接',a:'間接',d:['経由','遠隔','付近']},{q:'個人',a:'団体',d:['社会','組織','集合']},{q:'平等',a:'差別',d:['批判','偏見','孤立']},{q:'共通',a:'固有',d:['独自','個別','特殊']},{q:'固定',a:'流動',d:['移動','変化','不安定']},{q:'勝利',a:'敗北',d:['惜敗','惨敗','撤退']},{q:'一般',a:'特別',d:['個別','例外','特定']},{q:'本物',a:'偽物',d:['模造','コピー','カバー']},{q:'参入',a:'撤退',d:['後退','解除','参加']},{q:'増加',a:'減少',d:['低下','縮小','減衰']},{q:'誕生',a:'死亡',d:['消滅','解体','撤去']},{q:'謙虚',a:'傲慢',d:['横柄','不遜','不敵']},{q:'勇気',a:'臆病',d:['臆面','弱気','慎重']},{q:'歓迎',a:'拒絶',d:['辞退','謝絶','却下']},{q:'開放',a:'閉鎖',d:['停止','禁止','終了']},{q:'集合',a:'解散',d:['孤独','分離','撤退']},{q:'内側',a:'外側',d:['側面','背面','周辺']},{q:'上昇',a:'下降',d:['低下','沈下','減衰']},{q:'進出',a:'撤退',d:['帰宅','敗走','離脱']},{q:'親切',a:'不親切',d:['冷淡','残酷','無慈悲']},{q:'可能',a:'不可能',d:['難解','困難','無理']}
+    ],
+    advanced: [
+        {q:'克己',a:'放縦',d:['怠慢','妥結','屈服']},{q:'帰納',a:'演繹',d:['類推','推論','逆説']},{q:'普遍',a:'特殊',d:['個別','例外','局所']},{q:'緻密',a:'粗雑',d:['散漫','粗末','適当']},{q:'脆弱',a:'強靭',d:['堅牢','頑丈','巨大']},{q:'饒舌',a:'寡黙',d:['沈黙','臆病','謙虚']},{q:'収束',a:'拡散',d:['膨張','発散','混乱']},{q:'絶対',a:'相対',d:['曖昧','比較','流動']},{q:'洗練',a:'野卑',d:['粗末','凡庸','稚拙']},{q:'内在',a:'超越',d:['外挿','逸脱','顕在']},{q:'隆起',a:'沈降',d:['没落','低下','沈殿']},{q:'隠蔽',a:'暴露',d:['発覚','明示','提示']},{q:'過剰',a:'過小',d:['欠乏','枯渇','貧弱']},{q:'承諾',a:'拒絶',d:['謝絶','却下','辞退']},{q:'主導',a:'追随',d:['依存','随行','劣勢']},{q:'秩序',a:'混沌',d:['混迷','無法','散乱']},{q:'独創',a:'模倣',d:['複製','剽窃','借用']},{q:'建設',a:'破壊',d:['解体','撤去','消滅']},{q:'革新',a:'保守',d:['維持','停滞','伝統']},{q:'楽観',a:'悲観',d:['絶望','後悔','落胆']},{q:'剛毅',a:'柔弱',d:['虚弱','軟弱','貧弱']},{q:'枯渇',a:'氾濫',d:['充満','過剰','充足']},{q:'暫定',a:'確定',d:['本決定','恒久','終結']},{q:'需要',a:'供給',d:['支給','配給','提供']},{q:'遵守',a:'逸脱',d:['違反','放棄','無視']},{q:'促進',a:'抑制',d:['阻害','停止','遅延']},{q:'対立',a:'調和',d:['融和','妥協','協力']},{q:'抽象',a:'具体',d:['実体','詳細','個別']},{q:'沈黙',a:'雄弁',d:['演説','発言','叫び']},{q:'停滞',a:'進展',d:['前進','飛躍','活動']},{q:'統制',a:'放任',d:['自由','混乱','独立']},{q:'内向',a:'外向',d:['外交','社交','活発']},{q:'卑屈',a:'尊大',d:['横柄','不遜','不敵']},{q:'披露',a:'秘匿',d:['隠蔽','内緒','秘密']},{q:'膨張',a:'収縮',d:['縮小','凝縮','圧縮']},{q:'包括',a:'除外',d:['排除','例外','孤立']},{q:'冒涜',a:'崇拝',d:['信仰','礼賛','尊敬']},{q:'矛盾',a:'整合',d:['一致','妥当','正当']},{q:'野生',a:'飼育',d:['家畜','養殖','栽培']},{q:'優越',a:'劣等',d:['下位','敗北','凡庸']},{q:'有益',a:'無益',d:['有害','不要','損害']},{q:'抑制',a:'促進',d:['加速','奨励','推進']},{q:'利己',a:'利他',d:['奉仕','慈愛','慈善']},{q:'流動',a:'固定',d:['静止','安定','不変']},{q:'理論',a:'実践',d:['実務','実行','現物']},{q:'冷静',a:'興奮',d:['混乱','激昂','動揺']},{q:'露呈',a:'隠蔽',d:['秘匿','秘蔵','潜伏']},{q:'和解',a:'決裂',d:['対立','破局','衝突']},{q:'婉曲',a:'露骨',d:['直截','単刀直入','明白']},{q:'傲慢',a:'謙虚',d:['卑下','謙遜','慎み']}
+    ],
+    insane: [
+        {q:'メリット',a:'デメリット',d:['アセット','クレジット','リミット']},{q:'インドア',a:'アウトドア',d:['サイドドア','バックドア','ルーフ']},{q:'ポジティブ',a:'ネガティブ',d:['アクティブ','オルタナティブ','ネイティブ']},{q:'アナログ',a:'デジタル',d:['シグナル','チャネル','ビジュアル']},{q:'インフレ',a:'デフレ',d:['リフレ','デバフ','デリート']},{q:'プラス',a:'マイナス',d:['ボーナス','バランス','ステータス']},{q:'プロローグ',a:'エピローグ',d:['カタログ','モノローグ','ダイアログ']},{q:'マクロ',a:'ミクロ',d:['マグロ','レトロ','メトロ']},{q:'インプット',a:'アウトプット',d:['スループット','オフセット','アップセット']},{q:'メジャー',a:'マイナー',d:['レジャー','バリア','マスター']},{q:'アッパー',a:'ダウナー',d:['ショッパー','ホッパー','ストッパー']},{q:'バーチャル',a:'リアル',d:['ビジュアル','デジタル','メンタル']},{q:'マキシマム',a:'ミニマム',d:['ミディアム','プレミアム','アルバム']},{q:'パッシブ',a:'アクティブ',d:['ネガティブ','ポジティブ','プロアクティブ']},{q:'ハード',a:'ソフト',d:['カード','モード','ルート']},{q:'オン',a:'オフ',d:['アウト','オーバー','オープン']},{q:'ライト',a:'レフト',d:['ライド','リード','ラスト']},{q:'シンプル',a:'コンプレックス',d:['コミックス','デュプレックス','サービス']},{q:'メロディ',a:'リズム',d:['ハーモニー','コーラス','ライブ']},{q:'フィジカル',a:'メンタル',d:['ビジュアル','デジタル','メディカル']},{q:'インポート',a:'エクスポート',d:['サポート','レポート','トランスポート']},{q:'ドライ',a:'ウェット',d:['セット','ホット','カット']},{q:'マジョリティ',a:'マイノリティ',d:['クオリティ','セキュリティ','プロパティ']},{q:'ハイ',a:'ロー',d:['ニュートラル','ロング','ワイド']},{q:'ビギナー',a:'エキスパート',d:['プレイヤー','マネージャー','パートナー']},{q:'ストレート',a:'カーブ',d:['シュート','スライダー','フォーク']},{q:'アタック',a:'ディフェンス',d:['ガード','ブロック','リターン']},{q:'オリジナル',a:'コピー',d:['フェイク','カバー','レプリカ']},{q:'フロント',a:'バック',d:['センター','サイド','トップ']},{q:'エントリー',a:'イグジット',d:['リタイア','エディット','リセット']},{q:'ベスト',a:'ワースト',d:['ラスト','コスト','テスト']},{q:'ボトム',a:'トップ',d:['アップ','ピーク','ハイ']},{q:'スタート',a:'ゴール',d:['パス','エントリー','ストップ']},{q:'シンクロ',a:'アシンクロ',d:['ユニクロ','ユニゾン','コブクロ']},{q:'オーガニック',a:'ケミカル',d:['マジカル','フィジカル','テクニカル']},{q:'コンサバ',a:'プログレ',d:['アグレッシブ','カジュアル','モード']},{q:'ワイド',a:'ナロー',d:['スリム','タイト','ショート']},{q:'フィクション',a:'ノンフィクション',d:['ドキュメント','リアル','ファクト']},{q:'アップ',a:'ダウン',d:['オフ','アウト','バック']},{q:'オープン',a:'クローズ',d:['ロック','シール','エンド']},{q:'セーフ',a:'アウト',d:['ファウル','エラー','ストライク']},{q:'ピーク',a:'ボトム',d:['フィニッシュ','ラスト','エンド']},{q:'セントラル',a:'ペリフェラル',d:['アウトラル','シェル','カバー']},{q:'アウェー',a:'ホーム',d:['ハウス','ルーム','コート']},{q:'シングル',a:'ダブル',d:['ペア','コンビ','ユニット']},{q:'ショート',a:'ロング',d:['ワイド','トール','ラージ']},{q:'プロ',a:'アマ',d:['マスター','ルーキー','ファン']},{q:'ホワイト',a:'ブラック',d:['ブルー','レッド','グレー']},{q:'プッシュ',a:'プル',d:['プレス','タップ','スライド']},{q:'フロントエンド',a:'バックエンド',d:['サーバーサイド','クライアント','インフラ']}
+    ]
+};
+   // 日付をシード値にした乱数生成器（全員同じランダムを作るため）
+    function seededRandom(seed) {
+        // 前置インクリメントにするか、渡されたシードを確実に変化させる
+        let x = Math.sin(++seed) * 10000;
+        return x - Math.floor(x);
+    }
+
+    // 新旧400問から「今日の20問」を生成する関数
+    function getDailyQuestions() {
+        let allQuestions = [];
+        const modes = ['elementary', 'intermediate', 'advanced', 'insane'];
+        
+        modes.forEach(mode => {
+            if(DATA_NEW[mode]) allQuestions = allQuestions.concat(DATA_NEW[mode]);
+            if(DATA_OLD[mode]) allQuestions = allQuestions.concat(DATA_OLD[mode]);
+        });
+
+        // 今日の方角・日付の数字をシード値にする
+        const todayStr = getTodayString();
+        let seed = parseInt(todayStr, 10);
+
+        // フィッシャー・イェーツのシャッフルをシード乱数で再現
+        let shuffled = [...allQuestions];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            // seed + i で毎回違う値が渡るように調整
+            const r = Math.floor(seededRandom(seed + i) * (i + 1));
+            let temp = shuffled[i];
+            shuffled[i] = shuffled[r];
+            shuffled[r] = temp;
+        }
+
+        return shuffled.slice(0, 20);
+    }
+
+    // 「YYYYMMDD」の形式で今日の日付文字列を返すヘルパー関数
+    function getTodayString() {
+        return new Date().toLocaleDateString('ja-JP', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).replace(/\//g, '');
+    }
+
+    // ==========================================
+    // 2. GAS設定
+    // ==========================================
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzwY3r-LT1-7NuvPmYS6xgj7ajOpbS1f7At41CWJUWbAvNJ1u2D0eElQfrWd3g_ywVKgA/exec';
+    const DRAFT_MODE = true; // v4.0 draft: disable score sending, fetch ranking only
+
+    // ==========================================
+    // 3. ステージ設定
+    // ==========================================
+    const STAGES = [
+        { id: 'elementary', label: '初級', color: 'bg-emerald-500', count: 15 },
+        { id: 'intermediate', label: '中級', color: 'bg-blue-500', count: 15 },
+        { id: 'advanced', label: '上級', color: 'bg-purple-500', count: 15 },
+        { id: 'insane', label: '超人', color: 'bg-rose-500', count: 15 }
+    ];
+
+    // ==========================================
+    // 4. ゲームロジック
+    // ==========================================
+    let gameMode = '';
+    let currentVersion = 'new';
+    let playerName = '';
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let isMuted = false;
+    let questionStartTime = 0; 
+
+    let isDailyPractice = false; // 2回目以降の「練習モード」なら true になる
+    let dailyQuestions = [];     // 今日の20問を格納する配列 
+
+    function selectMode(mode) {
+        gameMode = mode;
+        document.getElementById('title-screen').classList.add('hidden');
+        
+        // デイリーも含めて、まずはそれぞれの遊び方説明画面（instruction-screen-○○）を表示する
+        document.getElementById(`instruction-screen-${mode}`).classList.remove('hidden');
+    }
+
+   function showVersionSelect() {
+        document.getElementById(`instruction-screen-${gameMode}`).classList.add('hidden');
+        
+        // デイリーモードのときは、vol選択画面をスキップして直接名前入力画面へ！
+        if (gameMode === 'daily') {
+            document.getElementById('nickname-screen').classList.remove('hidden');
+        } else {
+            document.getElementById('version-select-screen').classList.remove('hidden');
+        }
+    }
+
+    function backToInstruction() {
+        document.getElementById('version-select-screen').classList.add('hidden');
+        document.getElementById(`instruction-screen-${gameMode}`).classList.remove('hidden');
+    }
+
+    function setVersion(ver) {
+        currentVersion = ver;
+        document.getElementById('version-select-screen').classList.add('hidden');
+        document.getElementById('nickname-screen').classList.remove('hidden');
+    }
+
+    function initialStart() {
+        const input = document.getElementById('player-name').value.trim();
+        playerName = input || '無名の戦士';
+        document.getElementById('nickname-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        
+        // --- ★デイリー対応の分岐＆ローカルストレージ判定 ---
+        if (gameMode === 'daily') {
+            const todayStr = getTodayString();
+            const lastPlayedDaily = localStorage.getItem('lastPlayedDailyDate');
+
+            // すでに今日プレイ済み（日付が一致）なら、リロード後でも練習モードにする
+            if (lastPlayedDaily === todayStr) {
+                isDailyPractice = true;
+            }
+
+            if (isDailyPractice && dailyQuestions.length > 0) {
+                // 同じセッション内でのリトライ時は保持している問題を使う（順番もそのままならシャッフルを外す）
+                currentQuestions = [...dailyQuestions];
+            } else {
+                // 初回プレイ、またはリロード直後の1回目なら今日の20問を生成
+                currentQuestions = getDailyQuestions();
+                dailyQuestions = [...currentQuestions]; // 練習モード用にストック
+            }
+        } else if (gameMode === 'stage') {
+            const source = currentVersion === 'new' ? DATA_NEW : DATA_OLD;
+            currentQuestions = STAGES.flatMap(s => shuffle(source[s.id] || []).slice(0, s.count));
+        } else {
+            const source = currentVersion === 'new' ? DATA_NEW : DATA_OLD;
+            currentQuestions = shuffle(Object.values(source).flat());
+        }
+        // -------------------------------------------
+        
+        runLog = [];
+        lastPicked = '';
+        updateBGM();
+        showQuestion();
+    }
+
+    function showQuestion() {
+        if (currentQuestionIndex >= currentQuestions.length) {
+            endGame(true);
+            return;
+        }
+
+        const qData = currentQuestions[currentQuestionIndex];
+        const badge = document.getElementById('level-badge');
+        
+        if (gameMode === 'daily') {
+            const modeLabel = isDailyPractice ? "DAILY(練習)" : "DAILY";
+            badge.innerText = `${modeLabel} ${currentQuestionIndex + 1}/20`;
+            badge.className = `px-4 py-1.5 text-white text-xs rounded-full font-bold bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.4)]`;
+        } else if (gameMode === 'stage') {
+            const stageIdx = Math.floor(currentQuestionIndex / 15);
+            const stage = STAGES[stageIdx];
+            if (stage) {
+                badge.innerText = `${stage.label} ${currentQuestionIndex % 15 + 1}/15`;
+                badge.className = `px-4 py-1.5 text-white text-xs rounded-full font-bold ${stage.color}`;
+            }
+        } else if (gameMode === 'review') {
+            badge.innerText = `REVIEW ${currentQuestionIndex + 1}/${currentQuestions.length}`;
+            badge.className = `px-4 py-1.5 text-white text-xs rounded-full font-bold bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.4)]`;
+        } else {
+            badge.innerText = `ENDLESS ${currentQuestionIndex + 1}`;
+            badge.className = `px-4 py-1.5 text-white text-xs rounded-full font-bold bg-slate-700`;
+        }
+
+        document.getElementById('question-word').innerText = qData.q;
+        document.getElementById('progress-bar').style.width = `${(currentQuestionIndex / currentQuestions.length) * 100}%`;
+
+        const choices = shuffle([qData.a, ...qData.d]);
+        const grid = document.getElementById('choices-grid');
+        grid.innerHTML = '';
+        
+        questionStartTime = Date.now();
+
+        choices.forEach(c => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn w-full';
+            btn.innerText = c;
+            btn.onclick = () => checkAnswer(c, qData.a);
+            grid.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selected, correct) {
+        const solveTime = (Date.now() - questionStartTime) / 1000;
+
+        if (selected === correct) {
+            playSFX('sfx-correct');
+            
+            let points = 0;
+            let rating = "";
+            let colorClass = "";
+
+            if (solveTime < 1.2) {
+                points = 1500;
+                rating = "EXCELLENT!!";
+                colorClass = "text-yellow-300";
+            } else if (solveTime < 2.5) {
+                points = 1200;
+                rating = "GREAT!";
+                colorClass = "text-emerald-300";
+            } else {
+                points = 1000;
+                rating = "GOOD";
+                colorClass = "text-white";
+            }
+
+            runLog.push(true);
+            if (gameMode === 'review') {
+                const rq = currentQuestions[currentQuestionIndex];
+                if (rq) removeMistake(rq.q);
+                reviewCorrect++;
+            }
+            score += points;
+            document.getElementById('total-score').innerText = score.toLocaleString();
+            
+            showFeedback(points, rating, colorClass);
+
+            currentQuestionIndex++;
+
+            if (gameMode === 'stage' && currentQuestionIndex % 15 === 0 && currentQuestionIndex < currentQuestions.length) {
+                const stageNum = Math.floor(currentQuestionIndex / 15);
+                showStageClearOverlay(stageNum);
+                return;
+            }
+
+            updateBGM();
+            setTimeout(showQuestion, 600);
+        } else {
+            playSFX('sfx-wrong');
+            runLog.push(false);
+            lastPicked = selected;
+            const mq = currentQuestions[currentQuestionIndex];
+            if (mq) addMistake(mq);
+            if (gameMode === 'review') {
+                showFeedback(0, 'MISS…', 'text-rose-400');
+                currentQuestionIndex++;
+                setTimeout(showQuestion, 900);
+            } else {
+                endGame(false);
+            }
+        }
+    }
+
+    function showFeedback(points, rating, colorClass) {
+        const layer = document.getElementById('feedback-layer');
+        if (!layer) return;
+        
+        const el = document.createElement('div');
+        el.className = `absolute inset-0 flex items-center justify-center pointer-events-none z-50`;
+        
+        el.innerHTML = `
+            <div class="bg-slate-900/90 border-2 border-emerald-500 rounded-2xl px-6 py-4 shadow-[0_0_20px_rgba(52,211,153,0.4)] flex flex-col items-center min-w-[160px] fade-out-up">
+                <div class="text-3xl font-black ${colorClass} drop-shadow-md mb-1 italic tracking-wider">${rating}</div>
+                <div class="text-xl font-bold text-white">+${points.toLocaleString()}</div>
+            </div>
+        `;
+        layer.appendChild(el);
+        setTimeout(() => el.remove(), 850);
+    }
+
+    // ★二重送信を防ぐためのフラグ（関数の外に置いてね）
+    let isSendingScore = false;
+
+    async function sendScore(title) {
+        // ★すでに送信中なら、処理を強制終了して2回目の送信を完全にブロック！
+        if (isSendingScore) return;
+        if (DRAFT_MODE) { await fetchRankingOnly(); return; } // draft: never write to production ranking
+        isSendingScore = true; // 送信中フラグをONにする
+
+        try {
+            const params = new URLSearchParams({
+                action: 'save',
+                accessKey: '03162017Rfv',
+                name: playerName,
+                score: score,
+                title: title,
+                mode: gameMode,
+                version: currentVersion
+            });
+            
+            const url = `${GAS_URL}?${params.toString()}&_=${Date.now()}`;
+            
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            displayRanking(data); 
+        } catch (e) {
+            console.error('ランキング保存エラー:', e);
+        } finally {
+            // ★通信が終わったら（成功してもエラーになっても）フラグをOFFに戻す
+            isSendingScore = false;
+        }
+    }
+
+    function displayRanking(data) {
+        const listContainer = document.getElementById('ranking-list');
+        if (!listContainer) return;
+
+        if (!data || data.error || !Array.isArray(data) || data.length === 0) {
+            listContainer.innerHTML = '<div class="text-center py-8 text-slate-500 text-xs">ランキングデータがありません</div>';
+            return;
+        }
+
+        let html = '<div class="space-y-2">';
+        data.forEach((entry, index) => {
+            const medalColor = index === 0 ? 'text-yellow-400' : index === 1 ? 'text-slate-300' : index === 2 ? 'text-amber-600' : 'text-slate-500';
+            
+            html += `
+                <div class="flex items-center bg-slate-800/50 rounded-lg p-2 border border-slate-700/50">
+                    <div class="w-8 flex-shrink-0 text-center font-black ${medalColor}">${index + 1}</div>
+                    <div class="flex-grow min-w-0 px-2">
+                        <div class="text-white font-bold text-sm truncate">${entry.name}</div>
+                        <div class="text-[10px] text-emerald-400 truncate">${entry.title || "無名の戦士"}</div>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <div class="text-yellow-400 font-black text-sm">${Number(entry.score).toLocaleString()}</div>
+                        <div class="text-[9px] text-slate-500">${entry.date ? new Date(entry.date).toLocaleDateString() : ""}</div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+
+        listContainer.innerHTML = html;
+    }
+
+   async function endGame(isClear) {
+        // すべてのBGMを停止（bgm-dailyも追加！）
+        ["bgm-stage1", "bgm-stage2", "bgm-stage3", "bgm-stage4", "bgm-endless", "bgm-daily", "bgm-ending"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.pause();
+                el.currentTime = 0;
+            }
+        });
+
+        const title = generateTitle();
+        
+        const ov = document.getElementById('overlay');
+        ov.classList.remove('hidden');
+        const icon = document.getElementById('overlay-icon');
+        const msg = document.getElementById('overlay-message');
+        const review = document.getElementById('review-box');
+        const btn = document.getElementById('action-btn');
+        
+        // ★ステージクリアで隠された可能性のあるコンテナ類を確実に表示状態に戻す
+        const rankingContainer = document.getElementById('ranking-container');
+        if (rankingContainer) rankingContainer.classList.remove('hidden');
+        const scoreReport = document.getElementById('score-report');
+        if (scoreReport) scoreReport.classList.remove('hidden');
+
+        const oldHomeBtn = document.getElementById('sub-home-btn');
+        if (oldHomeBtn) oldHomeBtn.remove();
+
+        // review mode: no ranking send, show summary and finish
+        if (gameMode === 'review') {
+            icon.innerText = '📖';
+            msg.innerText = 'REVIEW COMPLETE!';
+            if (review) review.classList.add('hidden');
+            if (rankingContainer) rankingContainer.classList.add('hidden');
+            const shareBtnR = document.getElementById('share-area');
+            if (shareBtnR) shareBtnR.classList.add('hidden');
+            const remain = loadMistakes().length;
+            if (scoreReport) {
+                scoreReport.innerHTML = `
+                    <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">Review Result</div>
+                    <div class="text-white font-black text-xl mb-4">復習おつかれさま！</div>
+                    <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">正解 / 挑戦</div>
+                    <div class="text-emerald-400 font-black text-3xl mb-4">${reviewCorrect} / ${reviewTotal} 問</div>
+                    <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">まちがい帳の残り</div>
+                    <div class="text-yellow-400 font-black text-4xl">${remain} 問</div>
+                `;
+            }
+            btn.innerText = "タイトルに戻る";
+            btn.className = "w-full py-6 bg-rose-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
+            btn.onclick = () => goTitle();
+            if (remain > 0) {
+                const againBtn = document.createElement('button');
+                againBtn.id = 'sub-home-btn';
+                againBtn.innerText = "残りをもう一度復習する";
+                againBtn.className = "w-full mt-3 py-3 bg-slate-700/60 hover:bg-slate-700 text-slate-300 rounded-2xl font-bold text-sm shadow-md active:scale-95 transition-all";
+                againBtn.onclick = () => { ov.classList.add('hidden'); startReview(); };
+                btn.parentNode.insertBefore(againBtn, btn.nextSibling);
+            }
+            return;
+        }
+        
+        if (isClear) {
+            icon.innerText = '🏆';
+            msg.innerText = gameMode === 'daily' ? 'DAILY COMPLETE!' : 'ALL CLEAR!';
+            
+            // クリア時はレビューボックス（間違えた問題の表示）を隠す
+            if (review) review.classList.add('hidden');
+            
+            const eb = document.getElementById('bgm-ending');
+            if (eb && !isMuted) eb.play().catch(()=>{});
+            
+            btn.innerText = gameMode === 'daily' ? "本日の練習モード" : "もう一度挑戦";
+            btn.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
+            btn.onclick = () => {
+                ov.classList.add('hidden');
+                if (gameMode === 'daily') {
+                    isDailyPractice = true;
+                }
+                score = 0;
+                currentQuestionIndex = 0;
+                document.getElementById('total-score').innerText = "0";
+                initialStart();
+            };
+        } else {
+            icon.innerText = '💀';
+            msg.innerText = 'GAME OVER';
+            
+            // ゲームオーバー時はレビューボックスを表示する
+            if (review) review.classList.remove('hidden');
+            
+            const lastQ = currentQuestions[currentQuestionIndex];
+            if (lastQ) {
+                document.getElementById('rev-q').innerText = lastQ.q;
+                document.getElementById('rev-a').innerText = lastQ.a;
+            }
+            const rp = document.getElementById('rev-picked');
+            if (rp) rp.innerHTML = lastPicked ? `あなたの答え：<span class="text-rose-400 font-bold">${lastPicked}</span>` : '';
+            const rn = document.getElementById('rev-note');
+            if (rn) rn.innerText = lastQ ? trapNote(lastQ, lastPicked) : '';
+            
+            btn.innerText = gameMode === 'daily' ? "練習モードでリベンジ" : "リベンジする";
+            btn.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
+            btn.onclick = () => {
+                ov.classList.add('hidden');
+                if (gameMode === 'daily') {
+                    isDailyPractice = true;
+                }
+                score = 0;
+                currentQuestionIndex = 0;
+                document.getElementById('total-score').innerText = "0";
+                initialStart(); 
+            };
+
+            const homeBtn = document.createElement('button');
+            homeBtn.id = 'sub-home-btn';
+            homeBtn.innerText = "タイトルに戻る";
+            homeBtn.className = "w-full mt-3 py-3 bg-slate-700/60 hover:bg-slate-700 text-slate-300 rounded-2xl font-bold text-sm shadow-md active:scale-95 transition-all";
+            homeBtn.onclick = () => goTitle();
+            
+            btn.parentNode.insertBefore(homeBtn, btn.nextSibling);
+        }
+
+        let displayTitle = title;
+        if (gameMode === 'daily' && isDailyPractice) {
+            displayTitle = `${title}（練習）`;
+        }
+        shareTitle = displayTitle;
+        shareClear = isClear;
+        const shareBtn = document.getElementById('share-area');
+        if (shareBtn) shareBtn.classList.remove('hidden');
+        const snsX = document.getElementById('sns-x');
+        if (snsX) snsX.href = 'https://x.com/intent/tweet?text=' + encodeURIComponent(buildShareText());
+        const snsTh = document.getElementById('sns-threads');
+        if (snsTh) snsTh.href = 'https://www.threads.com/intent/post?text=' + encodeURIComponent(buildShareText());
+
+        if (scoreReport) {
+            scoreReport.innerHTML = `
+                <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">Player</div>
+                <div class="text-white font-black text-xl mb-4">${playerName}</div>
+                <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">獲得称号</div>
+                <div class="text-emerald-400 font-black text-lg mb-4">『${displayTitle}』</div>
+                <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">Final Score</div>
+                <div class="text-yellow-400 font-black text-4xl">${score.toLocaleString()}</div>
+            `;
+        }
+
+        // ランキング出し分けの安全な処理
+        const rankingList = document.getElementById('ranking-list');
+        if (rankingList) {
+            if (gameMode === 'daily' && isDailyPractice) {
+                // 練習モードの時は、スコア送信はせず、取得だけ行う用の新しい関数を呼ぶ
+                rankingList.innerHTML = '<div class="text-center py-8 text-slate-500 animate-pulse text-xs">ランキング読み込み中...</div>';
+                await fetchRankingOnly();
+            } else {
+                // 初回デイリーや通常モードは今まで通りスコアを送信してランキング更新
+                if (gameMode === 'daily') {
+                    localStorage.setItem('lastPlayedDailyDate', getTodayString());
+                }
+                rankingList.innerHTML = '<div class="text-center py-8 text-slate-500 animate-pulse text-xs">ランキング更新中...</div>'; 
+                await sendScore(title);
+            }
+        }
+    } // 👈★ここに endGame 関数をきっちり終わらせるためのカッコを1つ追加！
+
+    // 練習モード用：スコアを保存せずにランキングデータだけを取得して表示する関数
+    async function fetchRankingOnly() {
+        try {
+            const params = new URLSearchParams({
+                action: 'get', // 保存(save)ではなく取得(get)を指示
+                accessKey: '03162017Rfv',
+                mode: gameMode,
+                version: currentVersion
+            });
+            
+            const url = `${GAS_URL}?${params.toString()}&_=${Date.now()}`;
+            
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            // 既存の表示関数をそのまま使ってランキングを描画
+            displayRanking(data); 
+        } catch (e) {
+            console.error('ランキング取得エラー:', e);
+            const rankingList = document.getElementById('ranking-list');
+            if (rankingList) {
+                rankingList.innerHTML = '<div class="text-center py-8 text-slate-500 text-xs">ランキングの取得に失敗しました</div>';
+            }
+        }
+    }
+
+    function generateTitle() {
+        let rank = 'E';
+        if (score >= 50000) rank = 'A';
+        else if (score >= 30000) rank = 'B';
+        else if (score >= 15000) rank = 'C';
+        else if (score >= 5000) rank = 'D';
+
+        const adjList = ADJECTIVES[rank] || ['普通の'];
+        const nounList = NOUNS[rank] || ['挑戦者'];
+        const adj = adjList[Math.floor(Math.random() * adjList.length)];
+        const noun = nounList[Math.floor(Math.random() * nounList.length)];
+        return adj + noun;
+    }
+
+    // デイリー以外の通常モード用配列シャッフル
+    function shuffle(array) {
+        const a = [...array];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    function toggleMute() {
+        isMuted = !isMuted;
+        document.getElementById("title-volume-on").classList.toggle('hidden', isMuted);
+        document.getElementById("title-volume-off").classList.toggle('hidden', !isMuted);
+        if (isMuted) {
+            // ミュート時に bgm-daily も止まるように配列に追加
+            ["bgm-stage1", "bgm-stage2", "bgm-stage3", "bgm-stage4", "bgm-endless", "bgm-daily", "bgm-ending"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.pause();
+            });
+        } else {
+            updateBGM();
+        }
+    }
+
+    function playSFX(id) { 
+        if (!isMuted) { 
+            const s = document.getElementById(id); 
+            if (s) { s.currentTime = 0; s.play().catch(()=>{}); }
+        } 
+    }
+
+    function updateBGM() {
+        if (isMuted) return;
+        
+        // デイリーなら bgm-daily、エンドレスなら bgm-endless、それ以外（ステージ）なら bgm-stage1 を初期値にする
+        let tid = "bgm-stage1";
+        if (gameMode === 'endless') {
+            tid = "bgm-endless";
+        } else if (gameMode === 'daily') {
+            tid = "bgm-daily";
+        }
+        
+        if (gameMode === 'stage') {
+            const level = Math.floor(currentQuestionIndex / 15) + 1;
+            if(level === 2) tid = "bgm-stage2";
+            if(level === 3) tid = "bgm-stage3";
+            if(level >= 4) tid = "bgm-stage4";
+        }
+        
+        // ループ処理の配列にも "bgm-daily" をしっかり含めるよ
+        ["bgm-stage1", "bgm-stage2", "bgm-stage3", "bgm-stage4", "bgm-endless", "bgm-daily", "bgm-ending"].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                if(id === tid) {
+                    // すでに再生中なら重ねて play() しない！
+                    if (el.paused) el.play().catch(()=>{});
+                } else {
+                    el.pause();
+                }
+            }
+        });
+    } // 👈★ここに updateBGM 関数をきっちり終わらせるための閉じカッコを追加！
+
+    function showStageClearOverlay(stageNum) {
+        const ov = document.getElementById('overlay');
+        const icon = document.getElementById('overlay-icon');
+        const msg = document.getElementById('overlay-message');
+        const report = document.getElementById('score-report');
+        const btn = document.getElementById('action-btn');
+        const ranking = document.getElementById('ranking-container');
+        const review = document.getElementById('review-box');
+
+        ov.classList.remove('hidden');
+        review.classList.add('hidden');
+        ranking.classList.add('hidden');
+        const sbStage = document.getElementById('share-area');
+        if (sbStage) sbStage.classList.add('hidden');
+        report.classList.remove('hidden');
+        
+        const title = generateTitle();
+        
+        icon.textContent = "🏅";
+        msg.innerHTML = `<span class="text-emerald-400">STAGE ${stageNum} クリア!</span><br>さらなる深淵へ...`;
+        
+        report.innerHTML = `
+            <div class="text-slate-400 text-sm mb-1">現在の暫定称号</div>
+            <div class="text-2xl font-black text-amber-400 mb-4">【${title}】</div>
+            <div class="text-slate-400 text-xs uppercase mb-1">Current Score</div>
+            <div class="text-5xl font-black text-yellow-400 mb-1">${score.toLocaleString()}</div>
+            <div class="text-emerald-500 text-xs font-bold animate-pulse">ステージクリア!</div>
+        `;
+        
+        btn.innerText = "次のステージへ進む";
+        btn.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
+        
+        btn.onclick = () => {
+            ov.classList.add('hidden');
+            ranking.classList.remove('hidden');
+            updateBGM(); 
+            showQuestion();
+        };
+        
+        playSFX('sfx-correct'); 
+    }
+
+    function showInstallGuide() {
+        const guide = document.getElementById('install-guide');
+        const msg = document.getElementById('install-message');
+        if (!guide || !msg) return;
+
+        const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        if (isiOS) {
+            msg.innerHTML = `
+                <div class="text-left text-base space-y-4 px-2 w-full">
+                    <p class="font-bold text-emerald-400 text-center text-xl mb-4">iPhone / Safari の方</p>
+                    <div class="flex items-start gap-3">
+                        <span class="bg-slate-800 border border-slate-700 w-6 h-6 rounded-full flex items-center justify-center text-xs mt-0.5 flex-shrink-0">1</span>
+                        <p>Safariの画面下部にある<span class="text-white font-bold">「共有ボタン（四角から矢印が飛び出たアイコン）」</span>を押す</p>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="bg-slate-800 border border-slate-700 w-6 h-6 rounded-full flex items-center justify-center text-xs mt-0.5 flex-shrink-0">2</span>
+                        <p>メニューを下にスクロールして<span class="text-white font-bold">「ホーム画面に追加」</span>を選択</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            msg.innerHTML = `
+                <div class="text-left text-base space-y-4 px-2 w-full">
+                    <p class="font-bold text-emerald-400 text-center text-xl mb-4">Android / Chrome の方</p>
+                    <div class="flex items-start gap-3">
+                        <span class="bg-slate-800 border border-slate-700 w-6 h-6 rounded-full flex items-center justify-center text-xs mt-0.5 flex-shrink-0">1</span>
+                        <p>右上の<span class="bg-slate-800 border border-slate-700 px-2 py-0.5 rounded text-sm">三点リーダー（⋮）</span>を押す</p>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="bg-slate-800 border border-slate-700 w-6 h-6 rounded-full flex items-center justify-center text-xs mt-0.5 flex-shrink-0">2</span>
+                        <p><span class="text-white font-bold">「アプリをインストール」</span>または<span class="text-white font-bold">「ホーム画面に追加」</span>を選択</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        guide.classList.remove('hidden');
+    }
+
+    // ==========================================
+    // v4.0 draft additions: share / mistake book / review mode
+    // ==========================================
+    let runLog = [];
+    let lastPicked = '';
+    let shareTitle = '';
+    let shareClear = false;
+    let reviewTotal = 0;
+    let reviewCorrect = 0;
+    const MISTAKE_KEY = 'taigigoMistakesV1';
+
+    function loadMistakes() {
+        try {
+            const raw = localStorage.getItem(MISTAKE_KEY);
+            const arr = raw ? JSON.parse(raw) : [];
+            return Array.isArray(arr) ? arr : [];
+        } catch (e) { return []; }
+    }
+
+    function saveMistakes(list) {
+        try { localStorage.setItem(MISTAKE_KEY, JSON.stringify(list)); } catch (e) {}
+        updateMistakeBtn();
+    }
+
+    function addMistake(qData) {
+        if (!qData || !qData.q) return;
+        const list = loadMistakes();
+        if (list.some(m => m.q === qData.q)) return;
+        list.push({ q: qData.q, a: qData.a, d: [...qData.d] });
+        saveMistakes(list);
+    }
+
+    function removeMistake(qText) {
+        saveMistakes(loadMistakes().filter(m => m.q !== qText));
+    }
+
+    function updateMistakeBtn() {
+        const el = document.getElementById('mistake-count');
+        if (el) el.innerText = loadMistakes().length;
+    }
+
+    function startReview() {
+        const book = loadMistakes();
+        if (!book.length) {
+            alert('まちがい帳は空っぽです。ゲームで間違えた問題がここに貯まります。');
+            return;
+        }
+        gameMode = 'review';
+        playerName = '復習チャレンジャー';
+        document.getElementById('title-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        currentQuestions = shuffle(book.map(m => ({ q: m.q, a: m.a, d: [...m.d] })));
+        score = 0;
+        currentQuestionIndex = 0;
+        runLog = [];
+        lastPicked = '';
+        reviewTotal = currentQuestions.length;
+        reviewCorrect = 0;
+        document.getElementById('total-score').innerText = '0';
+        updateBGM();
+        showQuestion();
+    }
+
+    function trapNote(qData, picked) {
+        if (!picked) return 'まちがい帳に登録しました。復習モードで再挑戦できます。';
+        const uniq = arr => [...new Set(arr)];
+        const withAnswer = uniq([...picked].filter(ch => qData.a.includes(ch)));
+        const withQuestion = uniq([...picked].filter(ch => qData.q.includes(ch)));
+        if (withAnswer.length) {
+            return '「' + picked + '」は正解「' + qData.a + '」と共通の文字（' + withAnswer.join('・') + '）を含む、ひっかけ選択肢でした。まちがい帳に登録しました。';
+        }
+        if (withQuestion.length) {
+            return '「' + picked + '」はお題「' + qData.q + '」と共通の文字（' + withQuestion.join('・') + '）を含む選択肢でした。まちがい帳に登録しました。';
+        }
+        return '正解ペア「' + qData.q + ' ⇔ ' + qData.a + '」をまちがい帳に登録しました。復習モードで定着させましょう。';
+    }
+
+    function buildShareText() {
+        const modeNames = {
+            stage: 'ステージモード',
+            endless: 'エンドレス',
+            daily: isDailyPractice ? 'デイリー（練習）' : 'デイリー'
+        };
+        const modeName = modeNames[gameMode] || gameMode;
+        const dateStr = gameMode === 'daily' ? ' ' + new Date().toLocaleDateString('ja-JP') : '';
+        const squares = runLog.slice(0, 40).map(r => r ? '🟩' : '🟥').join('');
+        const more = runLog.length > 40 ? '…（全' + runLog.length + '問）' : '';
+        const correctCount = runLog.filter(Boolean).length;
+        const endNote = shareClear ? '全問正解でクリア！🏆' : correctCount + '問正解';
+        const text = '対義語サバイバル【' + modeName + dateStr + '】\n'
+            + 'スコア：' + score.toLocaleString() + '点\n'
+            + '称号：『' + shareTitle + '』\n'
+            + squares + more + '\n'
+            + endNote + '\n'
+            + 'https://bbbb555creator.github.io/taigigo_survival/';
+        return text;
+    }
+
+    function shareResult() {
+        const text = buildShareText();
+        if (navigator.share) {
+            navigator.share({ text }).catch(() => {});
+        } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(text)
+                .then(() => alert('結果をコピーしました！'))
+                .catch(() => alert('コピーに失敗しました'));
+        } else {
+            alert(text);
+        }
+    }
+
+    function shareToSNS(kind) {
+        const text = buildShareText();
+        if (kind === 'x') {
+            window.open('https://x.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
+        } else if (kind === 'threads') {
+            window.open('https://www.threads.com/intent/post?text=' + encodeURIComponent(text), '_blank');
+        } else if (kind === 'instagram') {
+            // Instagram has no web post intent: copy the text first, then open Instagram
+            const openIG = () => window.open('https://www.instagram.com/', '_blank');
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text)
+                    .then(() => { alert('結果をコピーしました。Instagramで貼り付けて投稿してね'); openIG(); })
+                    .catch(openIG);
+            } else {
+                alert(text);
+                openIG();
+            }
+        }
+    }
+
+    // soft reset back to title (no location.reload, so it works in preview viewers too)
+    function goTitle() {
+        ["bgm-stage1", "bgm-stage2", "bgm-stage3", "bgm-stage4", "bgm-endless", "bgm-daily", "bgm-ending"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.pause(); el.currentTime = 0; }
+        });
+        document.getElementById('overlay').classList.add('hidden');
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('nickname-screen').classList.add('hidden');
+        document.getElementById('version-select-screen').classList.add('hidden');
+        ['stage', 'endless', 'daily'].forEach(m => {
+            const el = document.getElementById('instruction-screen-' + m);
+            if (el) el.classList.add('hidden');
+        });
+        document.getElementById('title-screen').classList.remove('hidden');
+        score = 0;
+        currentQuestionIndex = 0;
+        isDailyPractice = false;
+        document.getElementById('total-score').innerText = '0';
+        updateMistakeBtn();
+    }
+
+    function copyShareText() {
+        const text = buildShareText();
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text)
+                .then(() => alert('結果をコピーしました。Instagramで貼り付けて投稿してね'))
+                .catch(() => {});
+        }
+    }
+
+    updateMistakeBtn();
+</script>
+</body>
+</html>
