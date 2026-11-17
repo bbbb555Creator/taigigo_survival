@@ -7,9 +7,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
     
-    <title>対義語サバイバル - 全国ランキング版</title>
+    <title>対義語サバイバル - 全国ランキング版 (v4.0 draft)</title>
     
-    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="apple-touch-icon" href="https://bbbb555creator.github.io/taigigo_survival/icon.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -18,7 +18,7 @@
         body { 
             font-family: 'Kiwi Maru', serif; 
             background-color: #0f172a;
-            background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('bg.png');
+            background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('https://bbbb555creator.github.io/taigigo_survival/bg.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -115,7 +115,7 @@
 <body>
     <div id="game-container" class="w-full relative overflow-hidden">
         <div class="absolute top-4 left-4 z-50 text-[10px] font-mono text-slate-500 tracking-widest pointer-events-none">
-            VER 3.9.3　daily
+            VER 4.0
         </div>
 
         <div id="title-screen" class="flex-grow flex flex-col items-center justify-between text-center py-10 px-8 fade-in relative z-10">
@@ -128,30 +128,35 @@
             <div class="w-full absolute top-[5%] left-0">
                 <div class="ticker-container py-1">
                    <div class="ticker-text">
-                        【更新情報】2026.05.20：デイリーチャレンジモードが登場！1日1回だけチャレンジできます。　　　　
+                        【更新情報】2026.11.17：v4.0アップデート！「まちがい帳」で復習できるようになりました。レア称号とデイリー連続記録（ストリーク）も追加、結果のシェアもできます！　　　　
                         【お知らせ】不具合報告は作者までお願いします。
                     </div>
                 </div>
             </div>
             <div class="flex-grow flex items-center justify-center w-full">
-                <img src="logo.png" alt="対義語サバイバル" class="max-w-[280px] logo-float drop-shadow-[0_0_20px_rgba(52,211,153,0.3)]">
+                <img src="https://bbbb555creator.github.io/taigigo_survival/logo.png" alt="対義語サバイバル" class="max-w-[280px] logo-float drop-shadow-[0_0_20px_rgba(52,211,153,0.3)]">
             </div>
             
             <div class="w-full max-w-xs space-y-4 mb-4 z-20">
                 <button onclick="selectMode('stage')" class="w-full active:scale-95 transition-all interactive-btn">
-                    <img src="stm.png" alt="ステージモード" class="w-full drop-shadow-lg pointer-events-none">
+                    <img src="https://bbbb555creator.github.io/taigigo_survival/stm.png" alt="ステージモード" class="w-full drop-shadow-lg pointer-events-none">
                 </button>
                <button onclick="selectMode('endless')" class="w-full active:scale-95 transition-all interactive-btn block p-0 bg-transparent border-0 outline-none">
-    <img src="endless.png" alt="エンドレスモード" class="w-full drop-shadow-lg pointer-events-none block">
+    <img src="https://bbbb555creator.github.io/taigigo_survival/endless.png" alt="エンドレスモード" class="w-full drop-shadow-lg pointer-events-none block">
 </button>
                 
                 <button onclick="selectMode('daily')" class="w-full active:scale-95 transition-all interactive-btn">
-    <img src="daily.png" alt="デイリーチャレンジ" class="w-full drop-shadow-lg pointer-events-none">
+    <img src="https://bbbb555creator.github.io/taigigo_survival/daily.png" alt="デイリーチャレンジ" class="w-full drop-shadow-lg pointer-events-none">
 </button>
                 
                 <button onclick="showInstallGuide()" class="w-full py-3.5 bg-slate-800/90 text-emerald-400 border border-emerald-500/40 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-all interactive-btn flex items-center justify-center gap-2 hover:bg-slate-700/90">
                     <span>📱</span> アプリとしてダウンロード (PWA)
                 </button>
+                <button id="mistake-btn" onclick="startReview()" class="w-full py-3.5 bg-slate-800/90 text-rose-300 border border-rose-500/40 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-all interactive-btn flex items-center justify-center gap-2 hover:bg-slate-700/90">
+                    <span>📖</span> まちがい帳で復習（<span id="mistake-count">0</span>問）<span id="graduated-note"></span>
+                </button>
+                <p id="streak-line" class="hidden text-center text-amber-300 font-black text-sm mt-3"></p>
+                <div class="text-[11px] text-amber-300/80 leading-relaxed">※これは v4.0 改修のたたき台です。<br>ランキングへのスコア送信は無効化されています。</div>
            </div>
         </div>
 
@@ -263,6 +268,8 @@
                         <div class="text-rose-400 mx-2">⇔</div>
                         <div id="rev-a" class="text-2xl font-black text-emerald-400 underline">---</div>
                     </div>
+                    <div id="rev-picked" class="mt-4 text-sm text-slate-300"></div>
+                    <div id="rev-note" class="mt-2 text-xs leading-relaxed text-amber-300/90"></div>
                 </div>
                 <div id="score-report" class="w-full mb-8 p-6 bg-slate-900/50 rounded-3xl border border-slate-800"></div>
                 <div id="ranking-container" class="w-full mb-8">
@@ -270,6 +277,14 @@
                     <div id="ranking-list" class="bg-slate-900/30 rounded-2xl border border-slate-800/50 overflow-hidden text-left"></div>
                 </div>
                 <button id="action-btn" class="w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 text-white">タイトルへ</button>
+                <div id="share-area" class="hidden w-full">
+                    <button id="share-btn" onclick="shareResult()" class="w-full mt-3 py-4 bg-sky-600 rounded-3xl font-black text-lg shadow-xl active:scale-95 transition-all text-white">📤 結果をシェアする</button>
+                    <div class="w-full mt-2 grid grid-cols-3 gap-2">
+                        <a id="sns-x" href="#" target="_blank" rel="noopener" class="py-3 bg-black border border-slate-600 rounded-2xl font-black text-sm text-white active:scale-95 transition-all flex items-center justify-center">𝕏 ポスト</a>
+                        <a id="sns-threads" href="#" target="_blank" rel="noopener" class="py-3 bg-slate-800 border border-slate-600 rounded-2xl font-black text-sm text-white active:scale-95 transition-all flex items-center justify-center">Threads</a>
+                        <a id="sns-instagram" href="https://www.instagram.com/" target="_blank" rel="noopener" onclick="copyShareText()" class="py-3 bg-gradient-to-tr from-amber-500 via-pink-600 to-purple-600 rounded-2xl font-black text-sm text-white active:scale-95 transition-all flex items-center justify-center">Instagram</a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -282,15 +297,15 @@
 
     </div>
 
-    <audio id="bgm-stage1" loop preload="auto"><source src="1.mp3" type="audio/mpeg"></audio>
-    <audio id="bgm-stage2" loop preload="auto"><source src="2.mp3" type="audio/mpeg"></audio>
-    <audio id="bgm-stage3" loop preload="auto"><source src="3.mp3" type="audio/mpeg"></audio>
-    <audio id="bgm-stage4" loop preload="auto"><source src="4.mp3" type="audio/mpeg"></audio>
-    <audio id="bgm-endless" loop preload="auto"><source src="3.mp3" type="audio/mpeg"></audio>
-    <audio id="bgm-daily" loop preload="auto"><source src="daily_bgm.mp3" type="audio/mpeg"></audio>
-    <audio id="bgm-ending" loop preload="auto"><source src="end.mp3" type="audio/mpeg"></audio>
-    <audio id="sfx-correct" preload="auto"><source src="maru.mp3" type="audio/mpeg"></audio>
-    <audio id="sfx-wrong" preload="auto"><source src="batu.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm-stage1" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/1.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm-stage2" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/2.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm-stage3" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/3.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm-stage4" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/4.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm-endless" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/3.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm-daily" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/daily_bgm.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm-ending" loop preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/end.ogg" type="audio/ogg"></audio>
+    <audio id="sfx-correct" preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/maru.mp3" type="audio/mpeg"></audio>
+    <audio id="sfx-wrong" preload="auto"><source src="https://bbbb555creator.github.io/taigigo_survival/batu.mp3" type="audio/mpeg"></audio>
 
    <script>
         // ==========================================
@@ -399,6 +414,7 @@ const DATA_OLD = {
     // 2. GAS設定
     // ==========================================
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbzwY3r-LT1-7NuvPmYS6xgj7ajOpbS1f7At41CWJUWbAvNJ1u2D0eElQfrWd3g_ywVKgA/exec';
+    const DRAFT_MODE = false; // safety switch: when true, fetch ranking only and never send scores
 
     // ==========================================
     // 3. ステージ設定
@@ -488,6 +504,8 @@ const DATA_OLD = {
         }
         // -------------------------------------------
         
+        runLog = [];
+        lastPicked = '';
         updateBGM();
         showQuestion();
     }
@@ -512,6 +530,9 @@ const DATA_OLD = {
                 badge.innerText = `${stage.label} ${currentQuestionIndex % 15 + 1}/15`;
                 badge.className = `px-4 py-1.5 text-white text-xs rounded-full font-bold ${stage.color}`;
             }
+        } else if (gameMode === 'review') {
+            badge.innerText = `REVIEW ${currentQuestionIndex + 1}/${currentQuestions.length}`;
+            badge.className = `px-4 py-1.5 text-white text-xs rounded-full font-bold bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.4)]`;
         } else {
             badge.innerText = `ENDLESS ${currentQuestionIndex + 1}`;
             badge.className = `px-4 py-1.5 text-white text-xs rounded-full font-bold bg-slate-700`;
@@ -559,6 +580,13 @@ const DATA_OLD = {
                 colorClass = "text-white";
             }
 
+            runLog.push(true);
+            if (gameMode === 'review') {
+                const rq = currentQuestions[currentQuestionIndex];
+                if (rq) removeMistake(rq.q);
+                bumpGraduated();
+                reviewCorrect++;
+            }
             score += points;
             document.getElementById('total-score').innerText = score.toLocaleString();
             
@@ -576,7 +604,17 @@ const DATA_OLD = {
             setTimeout(showQuestion, 600);
         } else {
             playSFX('sfx-wrong');
-            endGame(false);
+            runLog.push(false);
+            lastPicked = selected;
+            const mq = currentQuestions[currentQuestionIndex];
+            if (mq) addMistake(mq);
+            if (gameMode === 'review') {
+                showFeedback(0, 'MISS…', 'text-rose-400');
+                currentQuestionIndex++;
+                setTimeout(showQuestion, 900);
+            } else {
+                endGame(false);
+            }
         }
     }
 
@@ -603,6 +641,7 @@ const DATA_OLD = {
     async function sendScore(title) {
         // ★すでに送信中なら、処理を強制終了して2回目の送信を完全にブロック！
         if (isSendingScore) return;
+        if (DRAFT_MODE) { await fetchRankingOnly(); return; } // safety switch on: never write to ranking
         isSendingScore = true; // 送信中フラグをONにする
 
         try {
@@ -689,6 +728,39 @@ const DATA_OLD = {
 
         const oldHomeBtn = document.getElementById('sub-home-btn');
         if (oldHomeBtn) oldHomeBtn.remove();
+
+        // review mode: no ranking send, show summary and finish
+        if (gameMode === 'review') {
+            icon.innerText = '📖';
+            msg.innerText = 'REVIEW COMPLETE!';
+            if (review) review.classList.add('hidden');
+            if (rankingContainer) rankingContainer.classList.add('hidden');
+            const shareBtnR = document.getElementById('share-area');
+            if (shareBtnR) shareBtnR.classList.add('hidden');
+            const remain = loadMistakes().length;
+            if (scoreReport) {
+                scoreReport.innerHTML = `
+                    <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">Review Result</div>
+                    <div class="text-white font-black text-xl mb-4">${remain === 0 && reviewTotal > 0 ? '🎉 まちがい帳、全問卒業！' : '復習おつかれさま！'}</div>
+                    <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">正解 / 挑戦</div>
+                    <div class="text-emerald-400 font-black text-3xl mb-4">${reviewCorrect} / ${reviewTotal} 問</div>
+                    <div class="text-slate-400 text-xs mb-1 uppercase tracking-widest">まちがい帳の残り</div>
+                    <div class="text-yellow-400 font-black text-4xl">${remain} 問</div>${remain === 0 && reviewTotal > 0 ? '<div class="text-amber-300 font-bold text-sm mt-3">弱点を全部克服したね！お見事！</div>' : ''}
+                `;
+            }
+            btn.innerText = "タイトルに戻る";
+            btn.className = "w-full py-6 bg-rose-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
+            btn.onclick = () => goTitle();
+            if (remain > 0) {
+                const againBtn = document.createElement('button');
+                againBtn.id = 'sub-home-btn';
+                againBtn.innerText = "残りをもう一度復習する";
+                againBtn.className = "w-full mt-3 py-3 bg-slate-700/60 hover:bg-slate-700 text-slate-300 rounded-2xl font-bold text-sm shadow-md active:scale-95 transition-all";
+                againBtn.onclick = () => { ov.classList.add('hidden'); startReview(); };
+                btn.parentNode.insertBefore(againBtn, btn.nextSibling);
+            }
+            return;
+        }
         
         if (isClear) {
             icon.innerText = '🏆';
@@ -724,6 +796,10 @@ const DATA_OLD = {
                 document.getElementById('rev-q').innerText = lastQ.q;
                 document.getElementById('rev-a').innerText = lastQ.a;
             }
+            const rp = document.getElementById('rev-picked');
+            if (rp) rp.innerHTML = lastPicked ? `あなたの答え：<span class="text-rose-400 font-bold">${lastPicked}</span>` : '';
+            const rn = document.getElementById('rev-note');
+            if (rn) rn.innerText = lastQ ? trapNote(lastQ, lastPicked) : '';
             
             btn.innerText = gameMode === 'daily' ? "練習モードでリベンジ" : "リベンジする";
             btn.className = "w-full py-6 bg-emerald-600 rounded-3xl font-black text-2xl shadow-xl active:scale-95 transition-all text-white";
@@ -742,7 +818,7 @@ const DATA_OLD = {
             homeBtn.id = 'sub-home-btn';
             homeBtn.innerText = "タイトルに戻る";
             homeBtn.className = "w-full mt-3 py-3 bg-slate-700/60 hover:bg-slate-700 text-slate-300 rounded-2xl font-bold text-sm shadow-md active:scale-95 transition-all";
-            homeBtn.onclick = () => location.reload();
+            homeBtn.onclick = () => goTitle();
             
             btn.parentNode.insertBefore(homeBtn, btn.nextSibling);
         }
@@ -750,6 +826,18 @@ const DATA_OLD = {
         let displayTitle = title;
         if (gameMode === 'daily' && isDailyPractice) {
             displayTitle = `${title}（練習）`;
+        }
+        shareTitle = displayTitle;
+        shareClear = isClear;
+        const shareBtn = document.getElementById('share-area');
+        if (shareBtn) shareBtn.classList.remove('hidden');
+        const snsX = document.getElementById('sns-x');
+        if (snsX) snsX.href = 'https://x.com/intent/tweet?text=' + encodeURIComponent(buildShareText());
+        const snsTh = document.getElementById('sns-threads');
+        if (snsTh) snsTh.href = 'https://www.threads.com/intent/post?text=' + encodeURIComponent(buildShareText());
+        if (gameMode === 'daily' && !isDailyPractice) {
+            recordDailyStreak();
+            if (window._streakNow >= 2 && msg) msg.innerHTML += '<br><span class="text-amber-300 font-black">🔥 ' + window._streakNow + '日連続！</span>';
         }
 
         if (scoreReport) {
@@ -774,6 +862,7 @@ const DATA_OLD = {
                 // 初回デイリーや通常モードは今まで通りスコアを送信してランキング更新
                 if (gameMode === 'daily') {
                     localStorage.setItem('lastPlayedDailyDate', getTodayString());
+                    recordDailyStreak();
                 }
                 rankingList.innerHTML = '<div class="text-center py-8 text-slate-500 animate-pulse text-xs">ランキング更新中...</div>'; 
                 await sendScore(title);
@@ -807,6 +896,9 @@ const DATA_OLD = {
         }
     }
 
+    const RARE_ADJECTIVES = ['きらめく', 'ふわふわ', 'もちもち', 'うきうき', 'もふもふ', 'ぷにぷに', 'くるくる', 'ごきげん', 'にこにこ', 'どきどき'];
+    const SEASON_ADJECTIVES = ['きよし', 'ゆきふる', 'ほしふる', 'ジンジャー', 'ホーリー'];
+
     function generateTitle() {
         let rank = 'E';
         if (score >= 50000) rank = 'A';
@@ -816,9 +908,18 @@ const DATA_OLD = {
 
         const adjList = ADJECTIVES[rank] || ['普通の'];
         const nounList = NOUNS[rank] || ['挑戦者'];
-        const adj = adjList[Math.floor(Math.random() * adjList.length)];
+        let adj = adjList[Math.floor(Math.random() * adjList.length)];
         const noun = nounList[Math.floor(Math.random() * nounList.length)];
-        return adj + noun;
+        let mark = '';
+        const roll = Math.random();
+        if (roll < 0.05) {
+            adj = RARE_ADJECTIVES[Math.floor(Math.random() * RARE_ADJECTIVES.length)];
+            mark = '✨レア';
+        } else if (new Date().getMonth() === 11 && roll < 0.30) {
+            adj = SEASON_ADJECTIVES[Math.floor(Math.random() * SEASON_ADJECTIVES.length)];
+            mark = '🎄';
+        }
+        return adj + noun + mark;
     }
 
     // デイリー以外の通常モード用配列シャッフル
@@ -897,6 +998,8 @@ const DATA_OLD = {
         ov.classList.remove('hidden');
         review.classList.add('hidden');
         ranking.classList.add('hidden');
+        const sbStage = document.getElementById('share-area');
+        if (sbStage) sbStage.classList.add('hidden');
         report.classList.remove('hidden');
         
         const title = generateTitle();
@@ -964,6 +1067,219 @@ const DATA_OLD = {
 
         guide.classList.remove('hidden');
     }
+
+    // ==========================================
+    // v4.0 draft additions: share / mistake book / review mode
+    // ==========================================
+    let runLog = [];
+    let lastPicked = '';
+    let shareTitle = '';
+    let shareClear = false;
+    let reviewTotal = 0;
+    let reviewCorrect = 0;
+    const MISTAKE_KEY = 'taigigoMistakesV1';
+
+    function loadMistakes() {
+        try {
+            const raw = localStorage.getItem(MISTAKE_KEY);
+            const arr = raw ? JSON.parse(raw) : [];
+            return Array.isArray(arr) ? arr : [];
+        } catch (e) { return []; }
+    }
+
+    function saveMistakes(list) {
+        try { localStorage.setItem(MISTAKE_KEY, JSON.stringify(list)); } catch (e) {}
+        updateMistakeBtn();
+    }
+
+    function addMistake(qData) {
+        if (!qData || !qData.q) return;
+        const list = loadMistakes();
+        if (list.some(m => m.q === qData.q)) return;
+        list.push({ q: qData.q, a: qData.a, d: [...qData.d] });
+        saveMistakes(list);
+    }
+
+    function removeMistake(qText) {
+        saveMistakes(loadMistakes().filter(m => m.q !== qText));
+    }
+
+    function updateMistakeBtn() {
+        const el = document.getElementById('mistake-count');
+        if (el) el.innerText = loadMistakes().length;
+        const g = document.getElementById('graduated-note');
+        if (g) g.innerText = loadGraduated() > 0 ? ' ✨卒業' + loadGraduated() + '問' : '';
+    }
+
+    function startReview() {
+        const book = loadMistakes();
+        if (!book.length) {
+            alert('まちがい帳は空っぽです。ゲームで間違えた問題がここに貯まります。');
+            return;
+        }
+        gameMode = 'review';
+        playerName = '復習チャレンジャー';
+        document.getElementById('title-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        currentQuestions = shuffle(book.map(m => ({ q: m.q, a: m.a, d: [...m.d] })));
+        score = 0;
+        currentQuestionIndex = 0;
+        runLog = [];
+        lastPicked = '';
+        reviewTotal = currentQuestions.length;
+        reviewCorrect = 0;
+        document.getElementById('total-score').innerText = '0';
+        updateBGM();
+        showQuestion();
+    }
+
+    function trapNote(qData, picked) {
+        if (!picked) return 'まちがい帳に登録しました。復習モードで再挑戦できます。';
+        const uniq = arr => [...new Set(arr)];
+        const withAnswer = uniq([...picked].filter(ch => qData.a.includes(ch)));
+        const withQuestion = uniq([...picked].filter(ch => qData.q.includes(ch)));
+        if (withAnswer.length) {
+            return '「' + picked + '」は正解「' + qData.a + '」と共通の文字（' + withAnswer.join('・') + '）を含む、ひっかけ選択肢でした。まちがい帳に登録しました。';
+        }
+        if (withQuestion.length) {
+            return '「' + picked + '」はお題「' + qData.q + '」と共通の文字（' + withQuestion.join('・') + '）を含む選択肢でした。まちがい帳に登録しました。';
+        }
+        return '正解ペア「' + qData.q + ' ⇔ ' + qData.a + '」をまちがい帳に登録しました。復習モードで定着させましょう。';
+    }
+
+    function buildShareText() {
+        const modeNames = {
+            stage: 'ステージモード',
+            endless: 'エンドレス',
+            daily: isDailyPractice ? 'デイリー（練習）' : 'デイリー'
+        };
+        const modeName = modeNames[gameMode] || gameMode;
+        const dateStr = gameMode === 'daily' ? ' ' + new Date().toLocaleDateString('ja-JP') : '';
+        const squares = runLog.slice(0, 40).map(r => r ? '🟩' : '🟥').join('');
+        const more = runLog.length > 40 ? '…（全' + runLog.length + '問）' : '';
+        const correctCount = runLog.filter(Boolean).length;
+        const endNote = shareClear ? '全問正解でクリア！🏆' : correctCount + '問正解';
+        const text = '対義語サバイバル【' + modeName + dateStr + '】\n'
+            + 'スコア：' + score.toLocaleString() + '点\n'
+            + '称号：『' + shareTitle + '』\n'
+            + squares + more + '\n'
+            + endNote + '\n'
+            + 'https://bbbb555creator.github.io/taigigo_survival/'
+            + '\n#対義語サバイバル';
+        return text;
+    }
+
+    function shareResult() {
+        const text = buildShareText();
+        if (navigator.share) {
+            navigator.share({ text }).catch(() => {});
+        } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(text)
+                .then(() => alert('結果をコピーしました！'))
+                .catch(() => alert('コピーに失敗しました'));
+        } else {
+            alert(text);
+        }
+    }
+
+    function shareToSNS(kind) {
+        const text = buildShareText();
+        if (kind === 'x') {
+            window.open('https://x.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
+        } else if (kind === 'threads') {
+            window.open('https://www.threads.com/intent/post?text=' + encodeURIComponent(text), '_blank');
+        } else if (kind === 'instagram') {
+            // Instagram has no web post intent: copy the text first, then open Instagram
+            const openIG = () => window.open('https://www.instagram.com/', '_blank');
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text)
+                    .then(() => { alert('結果をコピーしました。Instagramで貼り付けて投稿してね'); openIG(); })
+                    .catch(openIG);
+            } else {
+                alert(text);
+                openIG();
+            }
+        }
+    }
+
+    function ymdOf(d) {
+        return d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+    }
+    function loadStreak() {
+        try { return JSON.parse(localStorage.getItem('taigigoStreakV1')) || { count: 0, last: '' }; }
+        catch (e) { return { count: 0, last: '' }; }
+    }
+    function recordDailyStreak() {
+        const s = loadStreak();
+        const today = getTodayString();
+        if (s.last === today) { window._streakNow = s.count; return; }
+        const y = new Date(); y.setDate(y.getDate() - 1);
+        s.count = (s.last === ymdOf(y)) ? s.count + 1 : 1;
+        s.last = today;
+        try { localStorage.setItem('taigigoStreakV1', JSON.stringify(s)); } catch (e) {}
+        window._streakNow = s.count;
+    }
+    function updateStreakLine() {
+        const el = document.getElementById('streak-line');
+        if (!el) return;
+        const s = loadStreak();
+        const today = getTodayString();
+        const y = new Date(); y.setDate(y.getDate() - 1);
+        if (s.count >= 2 && s.last === today) {
+            el.textContent = '🔥 デイリー ' + s.count + '日連続！';
+            el.classList.remove('hidden');
+        } else if (s.count >= 2 && s.last === ymdOf(y)) {
+            el.textContent = '🔥 デイリー ' + s.count + '日連続中（今日の分はまだ）';
+            el.classList.remove('hidden');
+        } else if (s.count === 1 && s.last === today) {
+            el.textContent = '🔥 デイリー 1日目！明日も続けよう';
+            el.classList.remove('hidden');
+        } else {
+            el.classList.add('hidden');
+        }
+    }
+    function loadGraduated() {
+        const n = parseInt(localStorage.getItem('taigigoGraduatedV1') || '0', 10);
+        return isNaN(n) ? 0 : n;
+    }
+    function bumpGraduated() {
+        try { localStorage.setItem('taigigoGraduatedV1', String(loadGraduated() + 1)); } catch (e) {}
+    }
+
+    // soft reset back to title (no location.reload, so it works in preview viewers too)
+    function goTitle() {
+        ["bgm-stage1", "bgm-stage2", "bgm-stage3", "bgm-stage4", "bgm-endless", "bgm-daily", "bgm-ending"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.pause(); el.currentTime = 0; }
+        });
+        document.getElementById('overlay').classList.add('hidden');
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('nickname-screen').classList.add('hidden');
+        document.getElementById('version-select-screen').classList.add('hidden');
+        ['stage', 'endless', 'daily'].forEach(m => {
+            const el = document.getElementById('instruction-screen-' + m);
+            if (el) el.classList.add('hidden');
+        });
+        document.getElementById('title-screen').classList.remove('hidden');
+        score = 0;
+        currentQuestionIndex = 0;
+        isDailyPractice = false;
+        document.getElementById('total-score').innerText = '0';
+        updateMistakeBtn();
+        updateStreakLine();
+    }
+
+    function copyShareText() {
+        const text = buildShareText();
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text)
+                .then(() => alert('結果をコピーしました。Instagramで貼り付けて投稿してね'))
+                .catch(() => {});
+        }
+    }
+
+    updateMistakeBtn();
+    updateStreakLine();
 </script>
 </body>
 </html>
